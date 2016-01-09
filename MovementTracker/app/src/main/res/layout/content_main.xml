@@ -22,37 +22,92 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginBottom="50dp">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
         <TextView
             android:id="@+id/current_locationHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Current Location:"
-            android:layout_marginTop="20dp"/>
+             android:layout_marginRight="10dp"/>
+
+            <TextView
+                android:id="@+id/current_locationText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold|italic"
+                android:text="Omole"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
         <TextView
-            android:id="@+id/longLatHintHint"
+            android:id="@+id/longLatHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="LongitudeLatitude:"
-
-            android:layout_marginTop="10dp"/>
+            android:layout_marginRight="10dp"/>
+            <TextView
+                android:id="@+id/current_longlatText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold|italic"
+                android:text="6.2344,2.4445"/>
+            </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
         <TextView
             android:id="@+id/currentActivityHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Current Activity:"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginRight="10dp"/>
+            <TextView
+                android:id="@+id/current_ActivityText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold|italic"
+                android:text="walking"/>
+            </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
         <TextView
             android:id="@+id/time_spentHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Time Spent:"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginRight="10dp"/>
+            <TextView
+                android:id="@+id/time_spentText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold|italic"
+                android:text="00.00"
+                />
+            </LinearLayout>
     </LinearLayout>
-    <Button
+    <ToggleButton
         android:id="@+id/tracker_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:background="@drawable/button_style"
+        android:textColor="@color/buttontextColor"
+        android:textOn="Stop Tracking"
+        android:textOff="Start Tracking"
         android:text="Start Tracking"/>
 </LinearLayout>
 
