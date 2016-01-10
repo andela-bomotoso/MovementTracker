@@ -67,45 +67,58 @@ LocationListener,ResultCallback<Status> {
     private String street;
     protected ActivityDetectionBroadcastReceiver activityDetectionBroadcastReceiver;
     private final String TAG = "LOCATION_FINDER";
+    private DrawerLayout drawer;
+    private ActionBarDrawerToggle toggle;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        initializeComponents();
+        initializeActivity();
+        googleApiClient = initializeGoogleApiClient(googleApiClient);
+    }
+
+    public void onClickTrackerButton(View view) {
+        boolean on = ((ToggleButton) view).isChecked();
+        if (on) {
+            Toast.makeText(context, "Tracking Started", Toast.LENGTH_SHORT).show();
+            startTracking();
+        } else {
+            Toast.makeText(context, "Tracking Stopped", Toast.LENGTH_SHORT).show();
+            stopTracking();
+        }
+    }
+
+    private void initializeActivity() {
+        buildGoogleApiClient();
+        activityDetectionBroadcastReceiver = new ActivityDetectionBroadcastReceiver();
+        geocoder = new Geocoder(MainActivity.this);
+    }
+
+    private void initializeComponents() {
+
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        buildGoogleApiClient();
-        activityDetectionBroadcastReceiver = new ActivityDetectionBroadcastReceiver();
-        geocoder = new Geocoder(MainActivity.this);
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this).build();
+
+        trackerButton = (ToggleButton)findViewById(R.id.tracker_button);
         longLatText = (TextView)findViewById(R.id.current_longlatText);
         currentLocationText = (TextView)findViewById(R.id.current_locationText);
         currentActivityText = (TextView)findViewById(R.id.current_ActivityText);
-        context = getApplicationContext();
-        trackerButton = (ToggleButton)findViewById(R.id.tracker_button);
-        trackerButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                boolean on = ((ToggleButton) view).isChecked();
-                if (on) {
-                    Toast.makeText(context, "Tracking Started", Toast.LENGTH_SHORT).show();
-                    startTracking();
-                } else
-                    Toast.makeText(context, "Tracking Stopped", Toast.LENGTH_SHORT).show();
-            }
-        });
 
+        context = getApplicationContext();
     }
 
     @Override
@@ -199,6 +212,7 @@ LocationListener,ResultCallback<Status> {
 
         if(googleApiClient.isConnected()) {
                 LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+
             }
     }
 
@@ -216,7 +230,7 @@ LocationListener,ResultCallback<Status> {
         longLatText.setText(location.getLongitude()+", "+location.getLatitude()+"");
         currentLocationText.setText(getStreetName());
         longitude = location.getLongitude();
-        latitude = location.getLatitude();
+        latitude =  location.getLatitude();
     }
 
     public String getStreetName() {
@@ -241,6 +255,15 @@ LocationListener,ResultCallback<Status> {
                 .build();
     }
 
+    private GoogleApiClient initializeGoogleApiClient(GoogleApiClient googleApiClient1) {
+        googleApiClient1 = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this).build();
+        return googleApiClient1;
+    }
+
+
     public void onResult(Status status) {
         if(status.isSuccess()) {
             Log.e(TAG, "Successfully added activity detection");
@@ -262,10 +285,10 @@ LocationListener,ResultCallback<Status> {
 
     public void stopTracking() {
 
-        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClient,getActivityDetectionPendingIntent())
+        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity,getActivityDetectionPendingIntent())
                 .setResultCallback(this);
 
-        currentActivityText.setText("Tracking stopped");
+        currentActivityText.setText("tracking not started");
     }
 
     public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver {
@@ -323,5 +346,4 @@ LocationListener,ResultCallback<Status> {
         activity = activities.get(count);
         return activity;
     }
-
 }
