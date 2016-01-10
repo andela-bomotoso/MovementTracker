@@ -31,7 +31,7 @@
             android:id="@+id/current_locationHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Current Location:"
+            android:text="Current Location"
              android:layout_marginRight="10dp"/>
 
             <TextView
@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold|italic"
-                android:text="Omole"/>
+                android:text="searching location ..."/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
@@ -57,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold|italic"
-                android:text="6.2344,2.4445"/>
+                android:text="retrieving ..."/>
             </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
@@ -93,7 +93,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold|italic"
-                android:text="00.00"
+                android:text="00:00"
                 />
             </LinearLayout>
     </LinearLayout>

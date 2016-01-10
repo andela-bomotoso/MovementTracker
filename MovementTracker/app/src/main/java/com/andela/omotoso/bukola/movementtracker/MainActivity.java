@@ -16,15 +16,11 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.LocationListener;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.DetectedActivity;
-import com.google.android.gms.location.LocationListener;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
-import android.speech.tts.TextToSpeech;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -40,8 +36,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -67,30 +61,27 @@ LocationListener,ResultCallback<Status> {
     private String street;
     protected ActivityDetectionBroadcastReceiver activityDetectionBroadcastReceiver;
     private final String TAG = "LOCATION_FINDER";
-    private DrawerLayout drawer;
-    private ActionBarDrawerToggle toggle;
-    private NavigationView navigationView;
-    private Toolbar toolbar;
+    private TextView timeSpentText;
+    private Handler handler = new Handler();
+    private long startTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
         initializeComponents();
         initializeActivity();
         googleApiClient = initializeGoogleApiClient(googleApiClient);
-    }
-
-    public void onClickTrackerButton(View view) {
-        boolean on = ((ToggleButton) view).isChecked();
-        if (on) {
-            Toast.makeText(context, "Tracking Started", Toast.LENGTH_SHORT).show();
-            startTracking();
-        } else {
-            Toast.makeText(context, "Tracking Stopped", Toast.LENGTH_SHORT).show();
-            stopTracking();
-        }
     }
 
     private void initializeActivity() {
@@ -100,26 +91,17 @@ LocationListener,ResultCallback<Status> {
     }
 
     private void initializeComponents() {
-
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         trackerButton = (ToggleButton)findViewById(R.id.tracker_button);
         longLatText = (TextView)findViewById(R.id.current_longlatText);
         currentLocationText = (TextView)findViewById(R.id.current_locationText);
         currentActivityText = (TextView)findViewById(R.id.current_ActivityText);
-
+        timeSpentText = (TextView)findViewById(R.id.time_spentText);
         context = getApplicationContext();
     }
+
 
     @Override
     public void onBackPressed() {
@@ -176,6 +158,48 @@ LocationListener,ResultCallback<Status> {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void onClickTrackerButton(View view) {
+        boolean on = ((ToggleButton) view).isChecked();
+        if (on) {
+            Toast.makeText(context, "Tracking Started", Toast.LENGTH_SHORT).show();
+            startTracking();
+        } else {
+            Toast.makeText(context, "Tracking Stopped", Toast.LENGTH_SHORT).show();
+            stopTracking();
+        }
+    }
+
+    private Runnable updateTimeTask = new Runnable() {
+        @Override
+        public void run() {
+            final long start = startTime;
+            long millis = SystemClock.uptimeMillis() - start;
+            int seconds = (int) (millis/1000);
+            int minutes = seconds / 60;
+            seconds = seconds % 60;
+
+            if(seconds < 10) {
+                timeSpentText.setText(""+ minutes + ":0" +seconds);
+            }
+            else {
+                timeSpentText.setText(""+ minutes + ":" +seconds);
+            }
+            handler.postAtTime(this,start + (((minutes * 60) + seconds + 1) * 1000));
+        }
+    };
+
+    public void startTimer() {
+        if(startTime == 0L) {
+            startTime = System.currentTimeMillis();
+            handler.removeCallbacks(updateTimeTask);
+            handler.postDelayed(updateTimeTask,100);
+        }
+    }
+
+    private void stopTimer() {
+        handler.removeCallbacks(updateTimeTask);
     }
 
     @Override
@@ -276,7 +300,7 @@ LocationListener,ResultCallback<Status> {
         return PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
     }
     public void startTracking() {
-
+        startTimer();
         if(googleApiClientActivity.isConnected()) {
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
                     getActivityDetectionPendingIntent()).setResultCallback(this);
@@ -284,7 +308,7 @@ LocationListener,ResultCallback<Status> {
     }
 
     public void stopTracking() {
-
+        stopTimer();
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity,getActivityDetectionPendingIntent())
                 .setResultCallback(this);
 
