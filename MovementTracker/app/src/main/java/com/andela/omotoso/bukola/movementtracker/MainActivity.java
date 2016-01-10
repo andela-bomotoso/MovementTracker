@@ -253,10 +253,7 @@ LocationListener,ResultCallback<Status> {
         return PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
     }
     public void startTracking() {
-//        if(!googleApiClientActivity.isConnected()) {
-//            Toast.makeText(this,getString(R.string.error_msg),Toast.LENGTH_SHORT).show();
-//            return;
-//        }
+
         if(googleApiClientActivity.isConnected()) {
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
                     getActivityDetectionPendingIntent()).setResultCallback(this);
@@ -265,10 +262,10 @@ LocationListener,ResultCallback<Status> {
 
     public void stopTracking() {
 
-//        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClient,getActivityDetectionPendingIntent())
-//                .setResultCallback(this);
+        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClient,getActivityDetectionPendingIntent())
+                .setResultCallback(this);
 
-        //statusTextView.setText("");
+        currentActivityText.setText("Tracking stopped");
     }
 
     public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver {
@@ -278,19 +275,14 @@ LocationListener,ResultCallback<Status> {
             List<Integer>confidenceLevels = new ArrayList<>();
             List<String>activities = new ArrayList<>();
             ArrayList<DetectedActivity> updatedActivities = intent.getParcelableArrayListExtra(Constants.ACTIVITY_EXTRA);
-            String status = "";
+            String status="";
             for(DetectedActivity activity : updatedActivities) {
 
                 status += getActivityType(activity.getType()) + activity.getConfidence()+"%\n";
-                activities.add(activity.getType()+"");
+                activities.add(getActivityType(activity.getType())+"");
                 confidenceLevels.add(activity.getConfidence());
             }
-            Log.d("Detected Activity", status);
-//            Log.d("activity size",activities.size()+"");
-//            Log.d("confidence size",confidenceLevels.size()+"");
-//            Log.d("current activity",getHighestActivityConfidence(confidenceLevels,activities));
-            currentActivityText.setText(getHighestActivityConfidence(confidenceLevels, activities));
-            //statusTextView.setText(status);
+           currentActivityText.setText(getHighestActivityConfidence(confidenceLevels,activities));
         }
 
         public String getActivityType(int detectedActivityType) {
@@ -321,14 +313,14 @@ LocationListener,ResultCallback<Status> {
     public String getHighestActivityConfidence(List<Integer>confidenceLevels,List<String>activities) {
         double max = confidenceLevels.get(0);
         int count = 0;
-        String activity = "";
+        String activity;
         for(Integer value:confidenceLevels){
             if(value > max){
                 max = value;
-                activity = activities.get(count);
                 count++;
             }
         }
+        activity = activities.get(count);
         return activity;
     }
 
