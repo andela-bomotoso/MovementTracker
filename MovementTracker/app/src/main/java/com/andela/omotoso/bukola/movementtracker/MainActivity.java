@@ -225,7 +225,7 @@ LocationListener,ResultCallback<Status> {
         double lat = location.getLatitude();
 
         longLatText.setText(location.getLongitude() + ", " + location.getLatitude() + "");
-        currentLocationText.setText(Utilities.getStreetName(lng, lat, this));
+        currentLocationText.setText(StreetName.getStreetName(lng, lat, this));
         longitude = location.getLongitude();
         latitude = location.getLatitude();
     }
