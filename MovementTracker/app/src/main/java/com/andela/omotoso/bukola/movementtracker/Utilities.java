@@ -14,20 +14,6 @@ public class Utilities {
 
     }
 
-    public static String getHighestActivityConfidence(List<Integer> confidenceLevels,List<String>activities) {
-        double max = confidenceLevels.get(0);
-        int count = 0;
-        String activity;
-        for(Integer value:confidenceLevels){
-            if(value > max){
-                max = value;
-                count++;
-            }
-        }
-        activity = activities.get(count);
-        return activity;
-    }
-
     public static String getStreetName(double longitude, double latitude, Activity activity) {
         //MyActivity myActivity = (MyActivity) getContext();
         String street = "";

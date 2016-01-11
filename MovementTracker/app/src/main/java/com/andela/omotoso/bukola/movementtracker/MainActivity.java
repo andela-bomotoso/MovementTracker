@@ -84,18 +84,18 @@ LocationListener,ResultCallback<Status> {
 
     private void initializeActivity() {
         buildGoogleApiClient();
-        activityDetectionBroadcastReceiver = new ActivityDetectionBroadcastReceiver();
+        activityDetectionBroadcastReceiver = new ActivityDetectionBroadcastReceiver(currentActivityText);
     }
 
     private void initializeComponents() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        trackerButton = (ToggleButton)findViewById(R.id.tracker_button);
-        longLatText = (TextView)findViewById(R.id.current_longlatText);
-        currentLocationText = (TextView)findViewById(R.id.current_locationText);
-        currentActivityText = (TextView)findViewById(R.id.current_ActivityText);
-        timeSpentText = (TextView)findViewById(R.id.time_spentText);
+        trackerButton = (ToggleButton) findViewById(R.id.tracker_button);
+        longLatText = (TextView) findViewById(R.id.current_longlatText);
+        currentLocationText = (TextView) findViewById(R.id.current_locationText);
+        currentActivityText = (TextView) findViewById(R.id.current_ActivityText);
+        timeSpentText = (TextView) findViewById(R.id.time_spentText);
 
         timer = new Timer();
         timer.setTimeSpentText(timeSpentText);
@@ -187,7 +187,7 @@ LocationListener,ResultCallback<Status> {
     }
 
     @Override
-    protected void onPause()  {
+    protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(activityDetectionBroadcastReceiver);
         super.onPause();
     }
@@ -204,10 +204,10 @@ LocationListener,ResultCallback<Status> {
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(1000);
 
-        if(googleApiClient.isConnected()) {
-                LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+        if (googleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
 
-            }
+        }
     }
 
     @Override
@@ -224,10 +224,10 @@ LocationListener,ResultCallback<Status> {
         double lng = location.getLongitude();
         double lat = location.getLatitude();
 
-        longLatText.setText(location.getLongitude()+", "+location.getLatitude()+"");
-        currentLocationText.setText(Utilities.getStreetName(lng,lat,this));
+        longLatText.setText(location.getLongitude() + ", " + location.getLatitude() + "");
+        currentLocationText.setText(Utilities.getStreetName(lng, lat, this));
         longitude = location.getLongitude();
-        latitude =  location.getLatitude();
+        latitude = location.getLatitude();
     }
 
 
@@ -249,21 +249,21 @@ LocationListener,ResultCallback<Status> {
 
 
     public void onResult(Status status) {
-        if(status.isSuccess()) {
+        if (status.isSuccess()) {
             Log.e(TAG, "Successfully added activity detection");
         } else
-            Log.e(TAG,"Error adding activity detection");
+            Log.e(TAG, "Error adding activity detection");
     }
 
     private PendingIntent getActivityDetectionPendingIntent() {
-        Intent intent = new Intent(this,ActivityDetector.class);
-        return PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intent = new Intent(this, ActivityDetector.class);
+        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public void startTracking() {
         timer.setTimer(true);
         timer.updateTimer();
-        if(googleApiClientActivity.isConnected()) {
+        if (googleApiClientActivity.isConnected()) {
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
                     getActivityDetectionPendingIntent()).setResultCallback(this);
         }
@@ -273,52 +273,13 @@ LocationListener,ResultCallback<Status> {
     public void stopTracking() {
         timer.setTimer(false);
 
-        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity,getActivityDetectionPendingIntent())
+        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity, getActivityDetectionPendingIntent())
                 .setResultCallback(this);
 
         currentActivityText.setText("tracking not started");
     }
 
-    public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver {
-        protected static final String TAG = "receiver";
-
-        public void onReceive(Context context, Intent intent) {
-            List<Integer>confidenceLevels = new ArrayList<>();
-            List<String>activities = new ArrayList<>();
-            ArrayList<DetectedActivity> updatedActivities = intent.getParcelableArrayListExtra(Constants.ACTIVITY_EXTRA);
-            String status="";
-            for(DetectedActivity activity : updatedActivities) {
-
-                status += getActivityType(activity.getType()) + activity.getConfidence()+"%\n";
-                activities.add(getActivityType(activity.getType())+"");
-                confidenceLevels.add(activity.getConfidence());
-            }
-           currentActivityText.setText(Utilities.getHighestActivityConfidence(confidenceLevels, activities));
-        }
-
-        public String getActivityType(int detectedActivityType) {
-            Resources resources = MainActivity.this.getResources();
-            switch (detectedActivityType){
-                case DetectedActivity.IN_VEHICLE:
-                    return resources.getString(R.string.on_vehicle);
-                case DetectedActivity.ON_BICYCLE:
-                    return resources.getString(R.string.on_bicycle);
-                case DetectedActivity.ON_FOOT:
-                    return resources.getString(R.string.on_foot);
-                case DetectedActivity.RUNNING:
-                    return resources.getString(R.string.running);
-                case DetectedActivity.STILL:
-                    return resources.getString(R.string.standing_still);
-                case DetectedActivity.TILTING:
-                    return resources.getString(R.string.tilting);
-                case DetectedActivity.UNKNOWN:
-                    return resources.getString(R.string.unknown);
-                case DetectedActivity.WALKING:
-                    return resources.getString(R.string.walking);
-                default:
-                    return resources.getString(R.string.unidentifiable);
-            }
-        }
-    }
-
 }
+
+
+
