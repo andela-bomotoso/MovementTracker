@@ -62,8 +62,8 @@ LocationListener,ResultCallback<Status> {
     protected ActivityDetectionBroadcastReceiver activityDetectionBroadcastReceiver;
     private final String TAG = "LOCATION_FINDER";
     private TextView timeSpentText;
-    private Handler handler = new Handler();
-    private long startTime = 0;
+    private boolean startTimer = true;
+    private Thread thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,37 +171,6 @@ LocationListener,ResultCallback<Status> {
         }
     }
 
-    private Runnable updateTimeTask = new Runnable() {
-        @Override
-        public void run() {
-            final long start = startTime;
-            long millis = SystemClock.uptimeMillis() - start;
-            int seconds = (int) (millis/1000);
-            int minutes = seconds / 60;
-            seconds = seconds % 60;
-
-            if(seconds < 10) {
-                timeSpentText.setText(""+ minutes + ":0" +seconds);
-            }
-            else {
-                timeSpentText.setText(""+ minutes + ":" +seconds);
-            }
-            handler.postAtTime(this,start + (((minutes * 60) + seconds + 1) * 1000));
-        }
-    };
-
-    public void startTimer() {
-        if(startTime == 0L) {
-            startTime = System.currentTimeMillis();
-            handler.removeCallbacks(updateTimeTask);
-            handler.postDelayed(updateTimeTask,100);
-        }
-    }
-
-    private void stopTimer() {
-        handler.removeCallbacks(updateTimeTask);
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -250,6 +219,43 @@ LocationListener,ResultCallback<Status> {
 
     }
 
+    private void updateTimer() {
+
+        Thread t = new Thread() {
+            int count = 0;
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted() && startTimer) {
+                        Thread.sleep(1000);
+                        count++;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // update TextView here!
+                                timeSpentText.setText(formatTime(count));
+
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+
+        t.start();
+    }
+
+    public String formatTime(int seconds) {
+        int hr = seconds/3600;
+        int rem = seconds%3600;
+        int mn = rem/60;
+        int sec = rem%60;
+        String hrStr = (hr<10 ? "0" : "")+hr;
+        String mnStr = (mn<10 ? "0" : "")+mn;
+        String secStr = (sec<10 ? "0" : "")+sec;
+        return hrStr+":"+mnStr+":"+secStr;
+    }
     public void onLocationChanged(Location location) {
         longLatText.setText(location.getLongitude()+", "+location.getLatitude()+"");
         currentLocationText.setText(getStreetName());
@@ -300,7 +306,8 @@ LocationListener,ResultCallback<Status> {
         return PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
     }
     public void startTracking() {
-        startTimer();
+        startTimer = true;
+        updateTimer();
         if(googleApiClientActivity.isConnected()) {
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
                     getActivityDetectionPendingIntent()).setResultCallback(this);
@@ -308,7 +315,8 @@ LocationListener,ResultCallback<Status> {
     }
 
     public void stopTracking() {
-        stopTimer();
+        startTimer = false;
+
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity,getActivityDetectionPendingIntent())
                 .setResultCallback(this);
 
