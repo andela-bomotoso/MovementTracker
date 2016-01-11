@@ -99,6 +99,7 @@ LocationListener,ResultCallback<Status> {
         context = getApplicationContext();
     }
 
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -137,17 +138,9 @@ LocationListener,ResultCallback<Status> {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camara) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.tracked_location) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.tracked_time) {
 
         }
 
@@ -258,7 +251,6 @@ LocationListener,ResultCallback<Status> {
     public void startTracking() {
         timer.setTimer(true);
         timer.updateTimer();
-
         if (googleApiClientActivity.isConnected()) {
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
                     getActivityDetectionPendingIntent()).setResultCallback(this);
