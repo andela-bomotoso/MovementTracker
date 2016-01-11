@@ -9,9 +9,9 @@ import java.util.List;
 /**
  * Created by GRACE on 1/11/2016.
  */
-public class StreetName {
+public class StreetNameHandler {
 
-    public StreetName() {
+    public StreetNameHandler() {
 
     }
 

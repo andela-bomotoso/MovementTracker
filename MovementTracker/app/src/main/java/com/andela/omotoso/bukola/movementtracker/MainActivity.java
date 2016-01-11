@@ -1,14 +1,9 @@
 package com.andela.omotoso.bukola.movementtracker;
 
-import android.app.Activity;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 
 import com.google.android.gms.common.api.ResultCallback;
@@ -17,7 +12,6 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.LocationListener;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.location.DetectedActivity;
 
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -39,9 +33,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,
 LocationListener,ResultCallback<Status> {
@@ -60,8 +51,6 @@ LocationListener,ResultCallback<Status> {
     private final String TAG = "LOCATION_FINDER";
     private TextView timeSpentText;
     private Timer timer;
-    private boolean startTimer = true;
-    private Utilities utilities = new Utilities();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,7 +214,7 @@ LocationListener,ResultCallback<Status> {
         double lat = location.getLatitude();
 
         longLatText.setText(location.getLongitude() + ", " + location.getLatitude() + "");
-        currentLocationText.setText(StreetName.getStreetName(lng, lat, this));
+        currentLocationText.setText(StreetNameHandler.getStreetName(lng, lat, this));
         longitude = location.getLongitude();
         latitude = location.getLatitude();
     }
