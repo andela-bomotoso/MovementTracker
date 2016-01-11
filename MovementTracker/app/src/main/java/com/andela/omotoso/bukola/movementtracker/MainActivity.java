@@ -1,5 +1,6 @@
 package com.andela.omotoso.bukola.movementtracker;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,8 +20,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.DetectedActivity;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -57,13 +56,12 @@ LocationListener,ResultCallback<Status> {
     private double longitude = 0;
     private double latitude = 0;
     private TextView currentActivityText;
-    private Geocoder geocoder;
-    private String street;
     protected ActivityDetectionBroadcastReceiver activityDetectionBroadcastReceiver;
     private final String TAG = "LOCATION_FINDER";
     private TextView timeSpentText;
+    private Timer timer;
     private boolean startTimer = true;
-    private Thread thread;
+    private Utilities utilities = new Utilities();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +85,6 @@ LocationListener,ResultCallback<Status> {
     private void initializeActivity() {
         buildGoogleApiClient();
         activityDetectionBroadcastReceiver = new ActivityDetectionBroadcastReceiver();
-        geocoder = new Geocoder(MainActivity.this);
     }
 
     private void initializeComponents() {
@@ -99,6 +96,10 @@ LocationListener,ResultCallback<Status> {
         currentLocationText = (TextView)findViewById(R.id.current_locationText);
         currentActivityText = (TextView)findViewById(R.id.current_ActivityText);
         timeSpentText = (TextView)findViewById(R.id.time_spentText);
+
+        timer = new Timer();
+        timer.setTimeSpentText(timeSpentText);
+        timer.setActivity(MainActivity.this);
         context = getApplicationContext();
     }
 
@@ -219,63 +220,16 @@ LocationListener,ResultCallback<Status> {
 
     }
 
-    private void updateTimer() {
-
-        Thread t = new Thread() {
-            int count = 0;
-            @Override
-            public void run() {
-                try {
-                    while (!isInterrupted() && startTimer) {
-                        Thread.sleep(1000);
-                        count++;
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                // update TextView here!
-                                timeSpentText.setText(formatTime(count));
-
-                            }
-                        });
-                    }
-                } catch (InterruptedException e) {
-                }
-            }
-        };
-
-        t.start();
-    }
-
-    public String formatTime(int seconds) {
-        int hr = seconds/3600;
-        int rem = seconds%3600;
-        int mn = rem/60;
-        int sec = rem%60;
-        String hrStr = (hr<10 ? "0" : "")+hr;
-        String mnStr = (mn<10 ? "0" : "")+mn;
-        String secStr = (sec<10 ? "0" : "")+sec;
-        return hrStr+":"+mnStr+":"+secStr;
-    }
     public void onLocationChanged(Location location) {
+        double lng = location.getLongitude();
+        double lat = location.getLatitude();
+
         longLatText.setText(location.getLongitude()+", "+location.getLatitude()+"");
-        currentLocationText.setText(getStreetName());
+        currentLocationText.setText(Utilities.getStreetName(lng,lat,this));
         longitude = location.getLongitude();
         latitude =  location.getLatitude();
     }
 
-    public String getStreetName() {
-        List<Address> addresses = null;
-        try {
-            addresses = geocoder.getFromLocation(latitude, longitude, 1);
-        }
-        catch (Exception exception) {
-        }
-        if(addresses != null && addresses.size() > 0 ){
-            Address address = addresses.get(0);
-            street = address.getThoroughfare();
-        }
-            return street;
-    }
 
     protected synchronized void buildGoogleApiClient() {
         googleApiClientActivity = new GoogleApiClient.Builder(this)
@@ -305,17 +259,19 @@ LocationListener,ResultCallback<Status> {
         Intent intent = new Intent(this,ActivityDetector.class);
         return PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
     }
+
     public void startTracking() {
-        startTimer = true;
-        updateTimer();
+        timer.setTimer(true);
+        timer.updateTimer();
         if(googleApiClientActivity.isConnected()) {
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
                     getActivityDetectionPendingIntent()).setResultCallback(this);
         }
     }
 
+
     public void stopTracking() {
-        startTimer = false;
+        timer.setTimer(false);
 
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity,getActivityDetectionPendingIntent())
                 .setResultCallback(this);
@@ -337,7 +293,7 @@ LocationListener,ResultCallback<Status> {
                 activities.add(getActivityType(activity.getType())+"");
                 confidenceLevels.add(activity.getConfidence());
             }
-           currentActivityText.setText(getHighestActivityConfidence(confidenceLevels,activities));
+           currentActivityText.setText(Utilities.getHighestActivityConfidence(confidenceLevels, activities));
         }
 
         public String getActivityType(int detectedActivityType) {
@@ -365,17 +321,4 @@ LocationListener,ResultCallback<Status> {
         }
     }
 
-    public String getHighestActivityConfidence(List<Integer>confidenceLevels,List<String>activities) {
-        double max = confidenceLevels.get(0);
-        int count = 0;
-        String activity;
-        for(Integer value:confidenceLevels){
-            if(value > max){
-                max = value;
-                count++;
-            }
-        }
-        activity = activities.get(count);
-        return activity;
-    }
 }
