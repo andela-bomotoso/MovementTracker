@@ -1,12 +1,12 @@
-package com.andela.omotoso.bukola.movementtracker;
+package com.andela.omotoso.bukola.movementtracker.ActivityDetection;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.widget.TextView;
 
+import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
+import com.andela.omotoso.bukola.movementtracker.Utilities.Timer;
 import com.google.android.gms.location.DetectedActivity;
 
 import java.util.ArrayList;
@@ -19,6 +19,7 @@ import java.util.List;
     public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver {
         protected static final String TAG = "receiver";
         private TextView currentActivityText;
+
 
     public ActivityDetectionBroadcastReceiver(TextView currentActivityText) {
         this.currentActivityText = currentActivityText;
@@ -53,7 +54,7 @@ import java.util.List;
         return activity;
     }
 
-    public String getActivityType(int detectedActivityType) {
+    public static String getActivityType(int detectedActivityType) {
 
         switch (detectedActivityType){
             case DetectedActivity.IN_VEHICLE:

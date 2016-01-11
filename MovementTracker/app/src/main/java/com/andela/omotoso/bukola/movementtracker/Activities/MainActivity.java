@@ -1,4 +1,4 @@
-package com.andela.omotoso.bukola.movementtracker;
+package com.andela.omotoso.bukola.movementtracker.Activities;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -6,6 +6,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
 
+import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetectionBroadcastReceiver;
+import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetector;
+import com.andela.omotoso.bukola.movementtracker.R;
+import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
+import com.andela.omotoso.bukola.movementtracker.Utilities.StreetNameHandler;
+import com.andela.omotoso.bukola.movementtracker.Utilities.Timer;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.ActivityRecognition;
@@ -89,6 +95,7 @@ LocationListener,ResultCallback<Status> {
         timer = new Timer();
         timer.setTimeSpentText(timeSpentText);
         timer.setActivity(MainActivity.this);
+
         context = getApplicationContext();
     }
 

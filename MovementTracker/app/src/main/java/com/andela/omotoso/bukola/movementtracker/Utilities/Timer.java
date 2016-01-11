@@ -1,4 +1,4 @@
-package com.andela.omotoso.bukola.movementtracker;
+package com.andela.omotoso.bukola.movementtracker.Utilities;
 
 import android.app.Activity;
 import android.widget.TextView;

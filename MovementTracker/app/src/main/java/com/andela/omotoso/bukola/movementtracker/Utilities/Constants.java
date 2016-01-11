@@ -1,4 +1,4 @@
-package com.andela.omotoso.bukola.movementtracker;
+package com.andela.omotoso.bukola.movementtracker.Utilities;
 
 /**
  * Created by GRACE on 1/9/2016.
