@@ -99,7 +99,6 @@ LocationListener,ResultCallback<Status> {
         context = getApplicationContext();
     }
 
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -259,19 +258,18 @@ LocationListener,ResultCallback<Status> {
     public void startTracking() {
         timer.setTimer(true);
         timer.updateTimer();
+
         if (googleApiClientActivity.isConnected()) {
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
                     getActivityDetectionPendingIntent()).setResultCallback(this);
         }
     }
 
-
     public void stopTracking() {
         timer.setTimer(false);
 
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity, getActivityDetectionPendingIntent())
                 .setResultCallback(this);
-
         currentActivityText.setText("tracking not started");
     }
 
