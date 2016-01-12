@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
@@ -19,8 +20,10 @@ import com.andela.omotoso.bukola.movementtracker.R;
 public class SettingsActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
 
     private TextView delayText;
+    private Button setButton;
+    private Button cancelButton;
     private NumberPicker numberPicker;
-    private Dialog dialog;
+    static Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +32,8 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         delayText = (TextView) findViewById(R.id.delay_time);
-        dialog = new Dialog(this);
-        //dialog.setContentView(R.layout.activity_settings);
-        numberPicker = (NumberPicker)dialog.findViewById(R.id.number_picker);
+        setButton = (Button)findViewById(R.id.set_button);
+        cancelButton = (Button)findViewById(R.id.cancel_button);
     }
 
     @Override
@@ -40,14 +42,18 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
     }
 
     public void showNumberPickerDialog(View view) {
+        final Dialog dialog = new Dialog(this);
         dialog.setTitle("Set Delay Time");
+        dialog.setContentView(R.layout.number_picker);
+        final NumberPicker numberPicker = (NumberPicker)dialog.findViewById(R.id.number_picker);
         numberPicker.setMaxValue(60);
         numberPicker.setMinValue(0);
+        numberPicker.setWrapSelectorWheel(false);
+        numberPicker.setOnValueChangedListener(this);
+
         dialog.show();
         numberPicker.setOnValueChangedListener(this);
         delayText.setText(String.valueOf(numberPicker.getValue() + " minutes"));
     }
-
-
-
+    
 }
