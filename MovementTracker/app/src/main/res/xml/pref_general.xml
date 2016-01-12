@@ -4,6 +4,7 @@
     android:layout_height = "match_parent">
 
     <EditTextPreference
+        android:onClick="setDelayTime"
         android:key="delay_time"
         android:title="Delay Time"
         android:defaultValue="5">

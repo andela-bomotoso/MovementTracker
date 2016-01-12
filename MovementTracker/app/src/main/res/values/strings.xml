@@ -15,4 +15,5 @@
     <string name="walking">Walking </string>
     <string name="unidentifiable">Unidentifiable Activity </string>
     <string name="error_msg">Google Api not connected</string>
+    <string name="title_activity_settings">Settings</string>
 </resources>
