@@ -62,6 +62,7 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
         numberPicker.setMinValue(0);
         dialog.show();
         numberPicker.setOnValueChangedListener(this);
+
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

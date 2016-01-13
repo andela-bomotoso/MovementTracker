@@ -30,14 +30,13 @@ import java.util.List;
             List<String>activities = new ArrayList<>();
             ArrayList<DetectedActivity> updatedActivities = intent.getParcelableArrayListExtra(Constants.ACTIVITY_EXTRA);
             String status="";
-            for(DetectedActivity activity : updatedActivities) {
 
+            for(DetectedActivity activity : updatedActivities) {
                 status += getActivityType(activity.getType()) + activity.getConfidence()+"%\n";
                 activities.add(getActivityType(activity.getType())+"");
                 confidenceLevels.add(activity.getConfidence());
             }
             currentActivityText.setText(getHighestActivityConfidence(confidenceLevels, activities));
-
         }
 
     public static String getHighestActivityConfidence(List<Integer> confidenceLevels,List<String>activities) {

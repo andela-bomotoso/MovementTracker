@@ -201,7 +201,6 @@ LocationListener,ResultCallback<Status> {
 
         if (googleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-
         }
     }
 
@@ -221,6 +220,7 @@ LocationListener,ResultCallback<Status> {
 
         longLatText.setText(location.getLongitude() + ", " + location.getLatitude() + "");
         currentLocationText.setText(StreetNameHandler.getStreetName(lng, lat, this));
+
         longitude = location.getLongitude();
         latitude = location.getLatitude();
     }
@@ -241,7 +241,6 @@ LocationListener,ResultCallback<Status> {
                 .addOnConnectionFailedListener(this).build();
         return googleApiClient1;
     }
-
 
     public void onResult(Status status) {
         if (status.isSuccess()) {
