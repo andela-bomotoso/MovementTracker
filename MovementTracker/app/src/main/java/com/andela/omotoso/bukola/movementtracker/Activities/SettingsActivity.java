@@ -23,7 +23,7 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
     private Button setButton;
     private Button cancelButton;
     private NumberPicker numberPicker;
-    static Dialog dialog;
+    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,28 +32,38 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         delayText = (TextView) findViewById(R.id.delay_time);
-        setButton = (Button)findViewById(R.id.set_button);
-        cancelButton = (Button)findViewById(R.id.cancel_button);
+
+
     }
 
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-
+        delayText.setText(newVal+ " minutes");
     }
 
     public void showNumberPickerDialog(View view) {
-        final Dialog dialog = new Dialog(this);
+        dialog = new Dialog(this);
         dialog.setTitle("Set Delay Time");
         dialog.setContentView(R.layout.number_picker);
+        cancelButton = (Button)dialog.findViewById(R.id.cancel_button);
         final NumberPicker numberPicker = (NumberPicker)dialog.findViewById(R.id.number_picker);
         numberPicker.setMaxValue(60);
         numberPicker.setMinValue(0);
-        numberPicker.setWrapSelectorWheel(false);
-        numberPicker.setOnValueChangedListener(this);
-
         dialog.show();
         numberPicker.setOnValueChangedListener(this);
-        delayText.setText(String.valueOf(numberPicker.getValue() + " minutes"));
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
     }
-    
+
+    private void cancelDialog(View view) {
+        dialog.dismiss();
+    }
+
+
+
 }
