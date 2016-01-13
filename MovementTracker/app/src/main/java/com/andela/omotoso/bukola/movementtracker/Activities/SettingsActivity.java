@@ -1,6 +1,7 @@
 package com.andela.omotoso.bukola.movementtracker.Activities;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -24,6 +25,10 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
     private Button cancelButton;
     private NumberPicker numberPicker;
     private Dialog dialog;
+    private static String DELAY_KEY = "";
+    SharedPreferences sharedPref;
+    SharedPreferences.Editor editor;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,14 +36,18 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
         setContentView(R.layout.activity_settings);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
+
         delayText = (TextView) findViewById(R.id.delay_time);
-
-
+        editor.putString(DELAY_KEY, delayText.getText().toString());
     }
 
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
         delayText.setText(newVal+ " minutes");
+
     }
 
     public void showNumberPickerDialog(View view) {
@@ -62,6 +71,7 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
 
     private void cancelDialog(View view) {
         dialog.dismiss();
+
     }
 
 
