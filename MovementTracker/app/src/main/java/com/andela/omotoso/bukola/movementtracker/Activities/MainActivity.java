@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.location.Location;
 
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetectionBroadcastReceiver;
@@ -57,6 +58,8 @@ LocationListener,ResultCallback<Status> {
     private final String TAG = "LOCATION_FINDER";
     private TextView timeSpentText;
     private Timer timer;
+    SharedPreferences sharedPref;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +78,9 @@ LocationListener,ResultCallback<Status> {
         initializeComponents();
         initializeActivity();
         googleApiClient = initializeGoogleApiClient(googleApiClient);
+
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
     }
 
     private void initializeActivity() {
@@ -126,6 +132,7 @@ LocationListener,ResultCallback<Status> {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+           startActivity(new Intent(this,SettingsActivity.class));
             return true;
         }
 
@@ -194,7 +201,6 @@ LocationListener,ResultCallback<Status> {
 
         if (googleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-
         }
     }
 
@@ -214,6 +220,7 @@ LocationListener,ResultCallback<Status> {
 
         longLatText.setText(location.getLongitude() + ", " + location.getLatitude() + "");
         currentLocationText.setText(StreetNameHandler.getStreetName(lng, lat, this));
+
         longitude = location.getLongitude();
         latitude = location.getLatitude();
     }
@@ -234,7 +241,6 @@ LocationListener,ResultCallback<Status> {
                 .addOnConnectionFailedListener(this).build();
         return googleApiClient1;
     }
-
 
     public void onResult(Status status) {
         if (status.isSuccess()) {
@@ -263,6 +269,10 @@ LocationListener,ResultCallback<Status> {
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity, getActivityDetectionPendingIntent())
                 .setResultCallback(this);
         currentActivityText.setText("tracking not started");
+    }
+
+    public void saveDelay() {
+
     }
 
 }
