@@ -11,12 +11,14 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.andela.omotoso.bukola.movementtracker.R;
+import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
 
 public class SettingsActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
 
@@ -29,7 +31,6 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
     SharedPreferences sharedPref;
     SharedPreferences.Editor editor;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,17 +38,18 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         editor = sharedPref.edit();
 
         delayText = (TextView) findViewById(R.id.delay_time);
-        editor.putString(DELAY_KEY, delayText.getText().toString());
+        delayText.setText(sharedPref.getString("DELAY_KEY", Constants.DEFAULT_DELAY));
     }
 
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-        delayText.setText(newVal+ " minutes");
-
+        delayText.setText(newVal + " minutes");
+        editor.putString("DELAY_KEY", delayText.getText().toString());
+        editor.commit();
     }
 
     public void showNumberPickerDialog(View view) {
@@ -66,14 +68,6 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
                 dialog.dismiss();
             }
         });
-
     }
-
-    private void cancelDialog(View view) {
-        dialog.dismiss();
-
-    }
-
-
 
 }

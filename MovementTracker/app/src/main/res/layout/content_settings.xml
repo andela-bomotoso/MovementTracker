@@ -29,8 +29,7 @@
         android:onClick="showNumberPickerDialog"
         android:key="delay_time"
         android:title="Delay Time"
-        android:editable="false"
-        android:text="5 minutes">
+        android:editable="false">
 
     </EditText>
     </LinearLayout>

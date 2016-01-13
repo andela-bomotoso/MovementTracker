@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.location.Location;
 
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetectionBroadcastReceiver;
@@ -57,6 +58,8 @@ LocationListener,ResultCallback<Status> {
     private final String TAG = "LOCATION_FINDER";
     private TextView timeSpentText;
     private Timer timer;
+    SharedPreferences sharedPref;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +78,9 @@ LocationListener,ResultCallback<Status> {
         initializeComponents();
         initializeActivity();
         googleApiClient = initializeGoogleApiClient(googleApiClient);
+
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
     }
 
     private void initializeActivity() {
@@ -264,6 +270,10 @@ LocationListener,ResultCallback<Status> {
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity, getActivityDetectionPendingIntent())
                 .setResultCallback(this);
         currentActivityText.setText("tracking not started");
+    }
+
+    public void saveDelay() {
+
     }
 
 }

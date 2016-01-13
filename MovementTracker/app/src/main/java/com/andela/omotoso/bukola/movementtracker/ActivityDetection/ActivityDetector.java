@@ -25,6 +25,7 @@ public class ActivityDetector extends IntentService {
     public void onHandleIntent(Intent intent) {
         ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
         Intent localIntent = new Intent(Constants.BROADCAST_ACTION);
+        //DetectedActivity detectedActivity = result.getMostProbableActivity();
         ArrayList<DetectedActivity> detectedActivities = (ArrayList)result.getProbableActivities();
         Log.i(TAG, "activities detected");
         localIntent.putExtra(Constants.ACTIVITY_EXTRA, detectedActivities);
