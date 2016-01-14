@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity
 
         initializeComponents();
         initializeActivity();
-       // googleApiClient = initializeGoogleApiClient(googleApiClient);
+
         sharedPreferenceManager = new SharedPreferenceManager(this);
         notifier = new Notifier(context,MainActivity.this);
     }
@@ -194,7 +194,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onStop() {
-       // googleApiClient.disconnect();
         locationServicesManager.disconnect();
         googleApiClientActivity.disconnect();
         super.onStop();
@@ -217,10 +216,6 @@ public class MainActivity extends AppCompatActivity
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(1000);
-
-//        if (googleApiClient.isConnected()) {
-//            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-//        }
     }
 
     @Override
@@ -233,30 +228,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void onLocationChanged(Location location) {
-//        double lng = location.getLongitude();
-//        double lat = location.getLatitude();
-//
-//        longLatText.setText(location.getLongitude() + ", " + location.getLatitude() + "");
-//        currentLocationText.setText(StreetNameHandler.getStreetName(lng, lat, this));
-//
-//        longitude = location.getLongitude();
-//        latitude = location.getLatitude();
-    }
-
     public void loadLocationValues() {
-
-//            lo = new HomeCountryDetector(HomeActivity.this);
-//            HomeCountryDetectorListener listener = new HomeCountryDetectorListener() {
-//                @Override
-//                public void onCountryDetected(String name) {
-//                    country =  homeCountryDetector.getCountryName();
-//                    loadTravellersByCountry(country);
-//                    Log.d(TAG, country);
-//                    homeCountryDetector.disconnect();
-//                }
-//            };
-//            homeCountryDetector.setListener(listener);
 
         locationServicesManager = new LocationServicesManager(this);
         LocationServicesListener listener = new LocationServicesListener() {
@@ -280,14 +252,6 @@ public class MainActivity extends AppCompatActivity
                 .addApi(ActivityRecognition.API)
                 .build();
     }
-
-//    private GoogleApiClient initializeGoogleApiClient(GoogleApiClient googleApiClient1) {
-//        googleApiClient1 = new GoogleApiClient.Builder(this)
-//                .addApi(LocationServices.API)
-//                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this).build();
-//        return googleApiClient1;
-//    }
 
     public void onResult(Status status) {
         if (status.isSuccess()) {
@@ -332,9 +296,7 @@ public class MainActivity extends AppCompatActivity
                 notifier.sendNotification("Movement Tracker");
             }
         }.start();
-
     }
-
 }
 
 
