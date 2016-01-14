@@ -187,7 +187,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        //googleApiClient.connect();
         locationServicesManager.connect();
         googleApiClientActivity.connect();
     }
@@ -254,10 +253,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onResult(Status status) {
-        if (status.isSuccess()) {
-            Log.e(TAG, "Successfully added activity detection");
-        } else
-            Log.e(TAG, "Error adding activity detection");
+
     }
 
     private PendingIntent getActivityDetectionPendingIntent() {
