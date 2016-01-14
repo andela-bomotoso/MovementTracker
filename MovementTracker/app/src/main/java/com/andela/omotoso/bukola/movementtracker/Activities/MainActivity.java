@@ -1,5 +1,6 @@
 package com.andela.omotoso.bukola.movementtracker.Activities;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -15,6 +16,7 @@ import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetec
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetector;
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
+import com.andela.omotoso.bukola.movementtracker.Utilities.Notifier;
 import com.andela.omotoso.bukola.movementtracker.Utilities.SharedPreferenceManager;
 import com.andela.omotoso.bukola.movementtracker.Utilities.StreetNameHandler;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Timer;
@@ -69,6 +71,7 @@ LocationListener,ResultCallback<Status> {
     private Timer timer;
     private int mId;
     private SharedPreferenceManager sharedPreferenceManager;
+    private Notifier notifier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +91,7 @@ LocationListener,ResultCallback<Status> {
         initializeActivity();
         googleApiClient = initializeGoogleApiClient(googleApiClient);
         sharedPreferenceManager = new SharedPreferenceManager(this);
-
-        mId = 1;
+        notifier = new Notifier(context,MainActivity.this);
     }
 
     private void initializeActivity() {
@@ -266,6 +268,7 @@ LocationListener,ResultCallback<Status> {
     public void startTracking() {
         timer.setTimer(true);
         timer.updateTimer();
+        currentActivityText.setText("connecting ...");
         if (googleApiClientActivity.isConnected()) {
             countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
@@ -278,35 +281,7 @@ LocationListener,ResultCallback<Status> {
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity, getActivityDetectionPendingIntent())
                 .setResultCallback(this);
         currentActivityText.setText("tracking not started");
-        cancelNotification(this, 1);
-    }
-
-    private void sendNotification(String notification) {
-
-        Intent notificationIntent = new Intent(getApplicationContext(),MainActivity.class);
-        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(MainActivity.class);
-        stackBuilder.addNextIntent(notificationIntent);
-        PendingIntent notificationPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setContentIntent(notificationPendingIntent);
-        builder.setSmallIcon(R.drawable.ic_all_out_black_18dp)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_all_out_black_18dp));
-        builder.setColor(Color.RED)
-                .setContentTitle(notification)
-                .setContentText("Tracking in Progress")
-                .setContentIntent(notificationPendingIntent);
-        builder.setAutoCancel(false);
-        builder.setSound(alarmSound);
-        NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(mId, builder.build());
-    }
-
-    public static void cancelNotification(Context ctx, int notifyId) {
-        String ns = Context.NOTIFICATION_SERVICE;
-        NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
-        nMgr.cancel(notifyId);
+        notifier.cancelNotification(this, 1);
     }
 
     public void countDown(int delay) {
@@ -318,12 +293,11 @@ LocationListener,ResultCallback<Status> {
             }
 
             public void onFinish() {
-                sendNotification("Movement Tracker");
+                notifier.sendNotification("Movement Tracker");
             }
         }.start();
 
     }
-
 
 }
 
