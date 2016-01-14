@@ -5,19 +5,11 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.support.v7.app.NotificationCompat;
-import android.util.Log;
-
-import com.andela.omotoso.bukola.movementtracker.Activities.MainActivity;
 import com.andela.omotoso.bukola.movementtracker.R;
-import com.google.android.gms.location.GeofencingEvent;
 
 /**
  * Created by GRACE on 1/13/2016.
