@@ -26,6 +26,7 @@ public class LocationServicesManager implements GoogleApiClient.ConnectionCallba
     private double latitude;
     private String streetName;
     private Activity activity;
+    private LocationServicesListener locationServicesListener;
 
     public LocationServicesManager(Activity activity) {
         this.activity = activity;
@@ -38,6 +39,18 @@ public class LocationServicesManager implements GoogleApiClient.ConnectionCallba
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+    }
+
+    public String getStreet() {
+        return streetName;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
     }
 
     public void connect() {
@@ -69,9 +82,14 @@ public class LocationServicesManager implements GoogleApiClient.ConnectionCallba
     public void onLocationChanged(Location location) {
         longitude = location.getLongitude();
         latitude = location.getLatitude();
-        streetName = getStreetName();
+        streetName = fetchStreetName();
 
+        locationServicesListener.onLocationChanged(longitude,latitude);
         //listener.onCountryDetected(countryName);
+    }
+
+    public void setListener(LocationServicesListener listener) {
+        this.locationServicesListener = listener;
     }
 
 //    public String detectCountry() {
@@ -92,7 +110,7 @@ public class LocationServicesManager implements GoogleApiClient.ConnectionCallba
 //        return country;
 //    }
 
-    public String getStreetName() {
+    public String fetchStreetName() {
         String street = "";
         Geocoder geocoder = new Geocoder(activity);
         List<Address> addresses = null;
