@@ -52,8 +52,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,
-LocationListener,ResultCallback<Status> {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private Context context;
     private Button trackerButton;
