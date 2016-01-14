@@ -19,7 +19,7 @@ public class Notifier extends IntentService {
     private static final String TAG = "Notifier";
     private Context context;
     private Activity activity;
-    int notificationId;
+    private int notificationId;
 
     public Notifier(Context context,Activity activity) {
         super(TAG);
