@@ -1,6 +1,7 @@
 package com.andela.omotoso.bukola.movementtracker.Utilities;
 
 import android.app.Activity;
+import android.os.CountDownTimer;
 import android.widget.TextView;
 
 /**
@@ -71,5 +72,7 @@ public class Timer {
         String secStr = (sec<10 ? "0" : "")+sec;
         return hrStr+":"+mnStr+":"+secStr;
     }
+
+
 
 }

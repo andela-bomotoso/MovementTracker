@@ -24,7 +24,10 @@ import com.google.android.gms.location.LocationListener;
 
 import com.google.android.gms.common.ConnectionResult;
 
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
@@ -265,9 +268,8 @@ LocationListener,ResultCallback<Status> {
     public void startTracking() {
         timer.setTimer(true);
         timer.updateTimer();
-        //sendNotification("Movement Tracker");
         if (googleApiClientActivity.isConnected()) {
-            checkElapsedTime();
+            countDown(5000);
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
                     getActivityDetectionPendingIntent()).setResultCallback(this);
         }
@@ -278,12 +280,13 @@ LocationListener,ResultCallback<Status> {
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity, getActivityDetectionPendingIntent())
                 .setResultCallback(this);
         currentActivityText.setText("tracking not started");
-        cancelNotification(this,1);
+        cancelNotification(this, 1);
     }
 
     private void sendNotification(String notification) {
 
         Intent notificationIntent = new Intent(getApplicationContext(),MainActivity.class);
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(notificationIntent);
@@ -291,21 +294,15 @@ LocationListener,ResultCallback<Status> {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setContentIntent(notificationPendingIntent);
         builder.setSmallIcon(R.drawable.ic_all_out_black_18dp)
-        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_all_out_black_18dp));
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_all_out_black_18dp));
         builder.setColor(Color.RED)
                 .setContentTitle(notification)
                 .setContentText("Tracking in Progress")
                 .setContentIntent(notificationPendingIntent);
         builder.setAutoCancel(false);
+        builder.setSound(alarmSound);
         NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(mId, builder.build());
-    }
-
-    private void checkElapsedTime() {
-        long test = System.currentTimeMillis();
-        if(test >= (5000)) { //multiply by 1000 to get milliseconds
-            sendNotification("MovementTracker");
-        }
     }
 
     public static void cancelNotification(Context ctx, int notifyId) {
@@ -313,6 +310,21 @@ LocationListener,ResultCallback<Status> {
         NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
         nMgr.cancel(notifyId);
     }
+
+    public void countDown(int delay) {
+        new CountDownTimer(delay, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            public void onFinish() {
+                sendNotification("Movement Tracker");
+            }
+        }.start();
+
+    }
+
 
 }
 
