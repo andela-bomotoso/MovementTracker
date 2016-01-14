@@ -73,6 +73,8 @@ public class Timer {
         return hrStr+":"+mnStr+":"+secStr;
     }
 
-
+    public int formatTimeText(String delayText) {
+        return Integer.parseInt(delayText.split(" ")[0]);
+    }
 
 }

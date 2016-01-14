@@ -15,6 +15,7 @@ import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetec
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetector;
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
+import com.andela.omotoso.bukola.movementtracker.Utilities.SharedPreferenceManager;
 import com.andela.omotoso.bukola.movementtracker.Utilities.StreetNameHandler;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Timer;
 import com.google.android.gms.common.api.ResultCallback;
@@ -66,9 +67,8 @@ LocationListener,ResultCallback<Status> {
     private final String TAG = "LOCATION_FINDER";
     private TextView timeSpentText;
     private Timer timer;
-    SharedPreferences sharedPref;
-    SharedPreferences.Editor editor;
     private int mId;
+    private SharedPreferenceManager sharedPreferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,11 +87,9 @@ LocationListener,ResultCallback<Status> {
         initializeComponents();
         initializeActivity();
         googleApiClient = initializeGoogleApiClient(googleApiClient);
+        sharedPreferenceManager = new SharedPreferenceManager(this);
 
         mId = 1;
-
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
     }
 
     private void initializeActivity() {
@@ -269,7 +267,7 @@ LocationListener,ResultCallback<Status> {
         timer.setTimer(true);
         timer.updateTimer();
         if (googleApiClientActivity.isConnected()) {
-            countDown(5000);
+            countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
                     getActivityDetectionPendingIntent()).setResultCallback(this);
         }
@@ -312,7 +310,8 @@ LocationListener,ResultCallback<Status> {
     }
 
     public void countDown(int delay) {
-        new CountDownTimer(delay, 1000) {
+
+        new CountDownTimer(delay*Constants.MINUTES_TO_MILLISECONDS, Constants.TICK_IN_MILLISECONDS) {
 
             public void onTick(long millisUntilFinished) {
 
