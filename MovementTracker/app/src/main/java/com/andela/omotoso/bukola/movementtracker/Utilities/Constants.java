@@ -21,5 +21,7 @@ public class Constants {
     public static final String WALKING = "Walking";
     public static final String UNIDENTIFIABLE = "Unidentifiable Activity";
     public static final String DEFAULT_DELAY = "5 minutes";
+    public static final int TICK_IN_MILLISECONDS = 1000;
+    public static final int MINUTES_TO_MILLISECONDS = 5000;
 
 }

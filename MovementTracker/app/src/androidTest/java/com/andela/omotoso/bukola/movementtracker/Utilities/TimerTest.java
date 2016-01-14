@@ -34,4 +34,8 @@ public class TimerTest extends TestCase {
         assertEquals("01:03:20",timer.formatTime(3800));
     }
 
+    public void testFormTimeTest() {
+        assertEquals(5,timer.formatTimeText("5 minutes"));
+    }
+
 }

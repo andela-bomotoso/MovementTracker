@@ -1,16 +1,23 @@
 package com.andela.omotoso.bukola.movementtracker.Activities;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
 
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetectionBroadcastReceiver;
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetector;
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
+import com.andela.omotoso.bukola.movementtracker.Utilities.Notifier;
+import com.andela.omotoso.bukola.movementtracker.Utilities.SharedPreferenceManager;
 import com.andela.omotoso.bukola.movementtracker.Utilities.StreetNameHandler;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Timer;
 import com.google.android.gms.common.api.ResultCallback;
@@ -20,8 +27,12 @@ import com.google.android.gms.location.LocationListener;
 
 import com.google.android.gms.common.ConnectionResult;
 
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -58,8 +69,9 @@ LocationListener,ResultCallback<Status> {
     private final String TAG = "LOCATION_FINDER";
     private TextView timeSpentText;
     private Timer timer;
-    SharedPreferences sharedPref;
-    SharedPreferences.Editor editor;
+    private int mId;
+    private SharedPreferenceManager sharedPreferenceManager;
+    private Notifier notifier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +90,8 @@ LocationListener,ResultCallback<Status> {
         initializeComponents();
         initializeActivity();
         googleApiClient = initializeGoogleApiClient(googleApiClient);
-
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
+        sharedPreferenceManager = new SharedPreferenceManager(this);
+        notifier = new Notifier(context,MainActivity.this);
     }
 
     private void initializeActivity() {
@@ -257,7 +268,9 @@ LocationListener,ResultCallback<Status> {
     public void startTracking() {
         timer.setTimer(true);
         timer.updateTimer();
+        currentActivityText.setText("connecting ...");
         if (googleApiClientActivity.isConnected()) {
+            countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
                     getActivityDetectionPendingIntent()).setResultCallback(this);
         }
@@ -265,13 +278,24 @@ LocationListener,ResultCallback<Status> {
 
     public void stopTracking() {
         timer.setTimer(false);
-
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity, getActivityDetectionPendingIntent())
                 .setResultCallback(this);
         currentActivityText.setText("tracking not started");
+        notifier.cancelNotification(this, 1);
     }
 
-    public void saveDelay() {
+    public void countDown(int delay) {
+
+        new CountDownTimer(delay*Constants.MINUTES_TO_MILLISECONDS, Constants.TICK_IN_MILLISECONDS) {
+
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            public void onFinish() {
+                notifier.sendNotification("Movement Tracker");
+            }
+        }.start();
 
     }
 
