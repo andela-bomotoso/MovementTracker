@@ -16,6 +16,8 @@ import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetec
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetector;
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
+import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesListener;
+import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesManager;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Notifier;
 import com.andela.omotoso.bukola.movementtracker.Utilities.SharedPreferenceManager;
 import com.andela.omotoso.bukola.movementtracker.Utilities.StreetNameHandler;
@@ -52,8 +54,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,
-LocationListener,ResultCallback<Status> {
+        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,ResultCallback<Status> {
 
     private Context context;
     private Button trackerButton;
@@ -72,6 +73,8 @@ LocationListener,ResultCallback<Status> {
     private int mId;
     private SharedPreferenceManager sharedPreferenceManager;
     private Notifier notifier;
+    private LocationServicesManager locationServicesManager;
+    private String streetName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +92,7 @@ LocationListener,ResultCallback<Status> {
 
         initializeComponents();
         initializeActivity();
-        googleApiClient = initializeGoogleApiClient(googleApiClient);
+
         sharedPreferenceManager = new SharedPreferenceManager(this);
         notifier = new Notifier(context,MainActivity.this);
     }
@@ -104,6 +107,7 @@ LocationListener,ResultCallback<Status> {
         navigationView.setNavigationItemSelectedListener(this);
 
         trackerButton = (ToggleButton) findViewById(R.id.tracker_button);
+
         longLatText = (TextView) findViewById(R.id.current_longlatText);
         currentLocationText = (TextView) findViewById(R.id.current_locationText);
         currentActivityText = (TextView) findViewById(R.id.current_ActivityText);
@@ -114,6 +118,8 @@ LocationListener,ResultCallback<Status> {
         timer.setActivity(MainActivity.this);
 
         context = getApplicationContext();
+
+        loadLocationValues();
     }
 
 
@@ -181,13 +187,13 @@ LocationListener,ResultCallback<Status> {
     @Override
     protected void onStart() {
         super.onStart();
-        googleApiClient.connect();
+        locationServicesManager.connect();
         googleApiClientActivity.connect();
     }
 
     @Override
     protected void onStop() {
-        googleApiClient.disconnect();
+        locationServicesManager.disconnect();
         googleApiClientActivity.disconnect();
         super.onStop();
     }
@@ -209,10 +215,6 @@ LocationListener,ResultCallback<Status> {
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(1000);
-
-        if (googleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-        }
     }
 
     @Override
@@ -225,15 +227,20 @@ LocationListener,ResultCallback<Status> {
 
     }
 
-    public void onLocationChanged(Location location) {
-        double lng = location.getLongitude();
-        double lat = location.getLatitude();
+    public void loadLocationValues() {
 
-        longLatText.setText(location.getLongitude() + ", " + location.getLatitude() + "");
-        currentLocationText.setText(StreetNameHandler.getStreetName(lng, lat, this));
-
-        longitude = location.getLongitude();
-        latitude = location.getLatitude();
+        locationServicesManager = new LocationServicesManager(this);
+        LocationServicesListener listener = new LocationServicesListener() {
+            @Override
+            public void onLocationChanged(double longitude, double latitude) {
+                streetName = locationServicesManager.getStreet();
+                currentLocationText.setText(streetName);
+                longitude = locationServicesManager.getLongitude();
+                latitude = locationServicesManager.getLatitude();
+                longLatText.setText(longitude + ", " + latitude + "");
+            }
+        };
+        locationServicesManager.setListener(listener);
     }
 
 
@@ -245,19 +252,8 @@ LocationListener,ResultCallback<Status> {
                 .build();
     }
 
-    private GoogleApiClient initializeGoogleApiClient(GoogleApiClient googleApiClient1) {
-        googleApiClient1 = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this).build();
-        return googleApiClient1;
-    }
-
     public void onResult(Status status) {
-        if (status.isSuccess()) {
-            Log.e(TAG, "Successfully added activity detection");
-        } else
-            Log.e(TAG, "Error adding activity detection");
+
     }
 
     private PendingIntent getActivityDetectionPendingIntent() {
@@ -296,9 +292,7 @@ LocationListener,ResultCallback<Status> {
                 notifier.sendNotification("Movement Tracker");
             }
         }.start();
-
     }
-
 }
 
 
