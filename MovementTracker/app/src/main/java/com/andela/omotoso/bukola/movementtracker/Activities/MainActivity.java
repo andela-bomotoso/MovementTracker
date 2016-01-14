@@ -1,10 +1,14 @@
 package com.andela.omotoso.bukola.movementtracker.Activities;
 
+import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
 
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetectionBroadcastReceiver;
@@ -22,6 +26,7 @@ import com.google.android.gms.common.ConnectionResult;
 
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -60,6 +65,7 @@ LocationListener,ResultCallback<Status> {
     private Timer timer;
     SharedPreferences sharedPref;
     SharedPreferences.Editor editor;
+    private int mId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +84,8 @@ LocationListener,ResultCallback<Status> {
         initializeComponents();
         initializeActivity();
         googleApiClient = initializeGoogleApiClient(googleApiClient);
+
+        mId = 1;
 
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         editor = sharedPref.edit();
@@ -257,7 +265,9 @@ LocationListener,ResultCallback<Status> {
     public void startTracking() {
         timer.setTimer(true);
         timer.updateTimer();
+        //sendNotification("Movement Tracker");
         if (googleApiClientActivity.isConnected()) {
+            checkElapsedTime();
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
                     getActivityDetectionPendingIntent()).setResultCallback(this);
         }
@@ -265,14 +275,43 @@ LocationListener,ResultCallback<Status> {
 
     public void stopTracking() {
         timer.setTimer(false);
-
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity, getActivityDetectionPendingIntent())
                 .setResultCallback(this);
         currentActivityText.setText("tracking not started");
+        cancelNotification(this,1);
     }
 
-    public void saveDelay() {
+    private void sendNotification(String notification) {
 
+        Intent notificationIntent = new Intent(getApplicationContext(),MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(notificationIntent);
+        PendingIntent notificationPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setContentIntent(notificationPendingIntent);
+        builder.setSmallIcon(R.drawable.ic_all_out_black_18dp)
+        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_all_out_black_18dp));
+        builder.setColor(Color.RED)
+                .setContentTitle(notification)
+                .setContentText("Tracking in Progress")
+                .setContentIntent(notificationPendingIntent);
+        builder.setAutoCancel(false);
+        NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(mId, builder.build());
+    }
+
+    private void checkElapsedTime() {
+        long test = System.currentTimeMillis();
+        if(test >= (5000)) { //multiply by 1000 to get milliseconds
+            sendNotification("MovementTracker");
+        }
+    }
+
+    public static void cancelNotification(Context ctx, int notifyId) {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
+        nMgr.cancel(notifyId);
     }
 
 }
