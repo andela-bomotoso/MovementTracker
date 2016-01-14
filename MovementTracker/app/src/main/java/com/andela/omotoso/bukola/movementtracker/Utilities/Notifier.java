@@ -50,15 +50,14 @@ public class Notifier extends IntentService {
 
         Intent notificationIntent = new Intent(context,activity.getClass());
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        // NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), notificationIntent, 0);
         Notification myNotification  = new Notification.Builder(context)
                 .setContentTitle(notification)
                 .setContentText("Tracking in Progress")
                 .setSmallIcon(R.drawable.ic_all_out_black_18dp)
                 .setContentIntent(pendingIntent)
                 .setSound(alarmSound)
-                .setAutoCancel(true).build();
+                .setAutoCancel(false).build();
         NotificationManager mNotificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(notificationId, myNotification);
     }

@@ -18,9 +18,7 @@ import com.andela.omotoso.bukola.movementtracker.Utilities.SharedPreferenceManag
 public class SettingsActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
 
     private TextView delayText;
-    private Button setButton;
     private Button cancelButton;
-    private NumberPicker numberPicker;
     private Dialog dialog;
     SharedPreferences sharedPref;
     SharedPreferences.Editor editor;
