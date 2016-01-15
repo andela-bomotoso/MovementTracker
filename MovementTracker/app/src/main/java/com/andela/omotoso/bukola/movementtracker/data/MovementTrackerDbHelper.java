@@ -58,7 +58,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = getReadableDatabase();
         Cursor cursor = database.rawQuery(query, null);
         if (cursor.moveToFirst()) {
-            return cursor.getString(cursor.getColumnIndex("street"));
+            return cursor.getString(cursor.getColumnIndex("street_name"));
         } else {
             //return Utilities.retrieveSavedData(source,destination);
             return "";
@@ -87,13 +87,14 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         values.put(MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY,activity);
         values.put(MovementTrackerContract.MovementTracker.COLUMN_DURATION,activityDuration);
         SQLiteDatabase database = getWritableDatabase();
-        try {
+//        try {
             database.beginTransaction();
             database.insertOrThrow(MovementTrackerContract.MovementTracker.TABLE_NAME, null, values);
             database.setTransactionSuccessful();
-        } finally {
+//        } finally {
             database.endTransaction();
-        }
+            database.close();
+//        }
     }
 
     public String checkTableExistence() {
