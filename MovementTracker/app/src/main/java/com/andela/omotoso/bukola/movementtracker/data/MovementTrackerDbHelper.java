@@ -1,5 +1,6 @@
 package com.andela.omotoso.bukola.movementtracker.data;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -22,8 +23,8 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
-        final String SQL_CREATE_TRACKER_TABLE = "CREATE TABLE "+ MovementTrackerContract.MovementTracker.TABLE_NAME + " (" +
-                MovementTrackerContract.MovementTracker.COLUMN_DATE + " TEXT, "+
+        final String SQL_CREATE_TRACKER_TABLE = "CREATE TABLE " + MovementTrackerContract.MovementTracker.TABLE_NAME + " (" +
+                MovementTrackerContract.MovementTracker.COLUMN_DATE + " TEXT, " +
                 MovementTrackerContract.MovementTracker.COLUMN_STREET + " TEXT, " +
                 MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY + " TEXT, " +
                 MovementTrackerContract.MovementTracker.COLUMN_DURATION + " TEXT)";
@@ -42,7 +43,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         String query = "SELECT tracking_date,street_name,activity,activity_duration FROM tracker_trail where TRACKING_DATE ='" + tracking_date + "'";
         SQLiteDatabase database = getReadableDatabase();
         Cursor cursor = database.rawQuery(query, null);
-        if( cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             return cursor.getString(cursor.getColumnIndex("tracking_date"));
         } else {
             //return Utilities.retrieveSavedData(source,destination);
@@ -56,7 +57,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         String query = "SELECT tracking_date,street_name,activity,activity_duration FROM tracker_trail";
         SQLiteDatabase database = getReadableDatabase();
         Cursor cursor = database.rawQuery(query, null);
-        if( cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             return cursor.getString(cursor.getColumnIndex("street"));
         } else {
             //return Utilities.retrieveSavedData(source,destination);
@@ -64,10 +65,9 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void deleteTable()
-    {
+    public void deleteTable() {
         SQLiteDatabase database = getWritableDatabase();
-        database.delete(MovementTrackerContract.MovementTracker.TABLE_NAME, null, null) ;
+        database.delete(MovementTrackerContract.MovementTracker.TABLE_NAME, null, null);
     }
 
     public int tableRows() {
@@ -79,6 +79,16 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
         return rowNum;
     }
+
+    public void insertRows(String tableName, ContentValues values) {
+        //String query = "INSERT INTO tracker_trail VALUES(" +trackingDate+","+streetName+","+activity+","+activityDuration+")";
+        SQLiteDatabase database = getReadableDatabase();
+        long rowId = database.insert(tableName,null,values);
+        database.setTransactionSuccessful();
+        database.endTransaction();
+    }
+
+
 
 
 }
