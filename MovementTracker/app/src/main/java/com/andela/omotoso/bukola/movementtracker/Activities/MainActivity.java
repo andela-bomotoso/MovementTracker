@@ -58,7 +58,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,ResultCallback<Status> {
+        implements NavigationView.OnNavigationItemSelectedListener {
+        //GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,ResultCallback<Status> {
 
     private Context context;
     private Button trackerButton;
@@ -106,8 +107,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initializeActivity() {
-        buildGoogleApiClient();
-        activityDetectionBroadcastReceiver = new ActivityDetectionBroadcastReceiver(currentActivityText);
+        //buildGoogleApiClient();
+        activityDetectionBroadcastReceiver = new ActivityDetectionBroadcastReceiver(currentActivityText,this);
     }
 
     private void initializeComponents() {
@@ -219,22 +220,22 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
     }
 
-    @Override
-    public void onConnected(Bundle bundle) {
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(1000);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
+//    @Override
+//    public void onConnected(Bundle bundle) {
+//        locationRequest = LocationRequest.create();
+//        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//        locationRequest.setInterval(1000);
+//    }
+//
+//    @Override
+//    public void onConnectionSuspended(int i) {
+//
+//    }
+//
+//    @Override
+//    public void onConnectionFailed(ConnectionResult connectionResult) {
+//
+//    }
 
     public void loadLocationValues() {
 
@@ -253,17 +254,17 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    protected synchronized void buildGoogleApiClient() {
-        googleApiClientActivity = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(ActivityRecognition.API)
-                .build();
-    }
+//    protected synchronized void buildGoogleApiClient() {
+//        googleApiClientActivity = new GoogleApiClient.Builder(this)
+//                .addConnectionCallbacks(this)
+//                .addOnConnectionFailedListener(this)
+//                .addApi(ActivityRecognition.API)
+//                .build();
+//    }
 
-    public void onResult(Status status) {
-
-    }
+//    public void onResult(Status status) {
+//
+//    }
 
     private PendingIntent getActivityDetectionPendingIntent() {
         Intent intent = new Intent(this, ActivityDetector.class);
@@ -276,15 +277,15 @@ public class MainActivity extends AppCompatActivity
         currentActivityText.setText("connecting ...");
         if (googleApiClientActivity.isConnected()) {
             countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
-            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
-                    getActivityDetectionPendingIntent()).setResultCallback(this);
+//            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
+//                    getActivityDetectionPendingIntent()).setResultCallback(this);
         }
     }
 
     public void stopTracking() {
         timer.setTimer(false);
-        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity, getActivityDetectionPendingIntent())
-                .setResultCallback(this);
+//        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity, getActivityDetectionPendingIntent())
+//                .setResultCallback(this);
         currentActivityText.setText("tracking not started");
         notifier.cancelNotification(this, 1);
     }
