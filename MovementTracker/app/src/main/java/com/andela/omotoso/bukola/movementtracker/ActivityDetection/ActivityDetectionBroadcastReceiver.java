@@ -7,6 +7,9 @@ import android.widget.TextView;
 
 import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Timer;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.DetectedActivity;
 
 import java.util.ArrayList;
@@ -16,7 +19,8 @@ import java.util.List;
  * Created by GRACE on 1/11/2016.
  */
 
-    public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver {
+    public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,ResultCallback<Status> {
         protected static final String TAG = "receiver";
         private TextView currentActivityText;
 
