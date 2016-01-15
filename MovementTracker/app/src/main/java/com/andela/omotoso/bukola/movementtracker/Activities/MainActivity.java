@@ -16,12 +16,14 @@ import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetec
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetector;
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
+import com.andela.omotoso.bukola.movementtracker.Utilities.DateHandler;
 import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesListener;
 import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesManager;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Notifier;
 import com.andela.omotoso.bukola.movementtracker.Utilities.SharedPreferenceManager;
 import com.andela.omotoso.bukola.movementtracker.Utilities.StreetNameHandler;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Timer;
+import com.andela.omotoso.bukola.movementtracker.data.MovementTrackerDbHelper;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.ActivityRecognition;
@@ -35,6 +37,8 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -75,6 +79,8 @@ public class MainActivity extends AppCompatActivity
     private Notifier notifier;
     private LocationServicesManager locationServicesManager;
     private String streetName = "";
+    private MovementTrackerDbHelper movementTrackerDbHelper;
+    private DateHandler dateHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +100,9 @@ public class MainActivity extends AppCompatActivity
         initializeActivity();
 
         sharedPreferenceManager = new SharedPreferenceManager(this);
+        movementTrackerDbHelper = new MovementTrackerDbHelper(this);
         notifier = new Notifier(context,MainActivity.this);
+        dateHandler = new DateHandler();
     }
 
     private void initializeActivity() {
@@ -111,6 +119,7 @@ public class MainActivity extends AppCompatActivity
         longLatText = (TextView) findViewById(R.id.current_longlatText);
         currentLocationText = (TextView) findViewById(R.id.current_locationText);
         currentActivityText = (TextView) findViewById(R.id.current_ActivityText);
+        //textViewWatcher();
         timeSpentText = (TextView) findViewById(R.id.time_spentText);
 
         timer = new Timer();
@@ -292,6 +301,33 @@ public class MainActivity extends AppCompatActivity
                 notifier.sendNotification("Movement Tracker");
             }
         }.start();
+    }
+
+    private void textViewWatcher() {
+        currentActivityText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                timer.updateTimer();
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+
+                movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(), currentLocationText.getText().toString(),
+                        currentActivityText.getText().toString(), timeSpentText.getText().toString());
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+               // if(s.length() != 0)
+                    //Field2.setText("");
+
+            }
+        });
+
     }
 }
 

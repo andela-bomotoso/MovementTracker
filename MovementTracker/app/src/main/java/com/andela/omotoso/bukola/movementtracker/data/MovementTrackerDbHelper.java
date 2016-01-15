@@ -40,7 +40,8 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
     public String queryByDate(String tracking_date) {
 
-        String query = "SELECT tracking_date,street_name,activity,activity_duration FROM tracker_trail where TRACKING_DATE ='" + tracking_date + "'";
+        String query = "SELECT tracking_date,street_name,activity,activity_duration FROM tracker_trail" +
+                         " where TRACKING_DATE ='" + tracking_date + "'";
         SQLiteDatabase database = getReadableDatabase();
         Cursor cursor = database.rawQuery(query, null);
         if (cursor.moveToFirst()) {
@@ -87,14 +88,11 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         values.put(MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY,activity);
         values.put(MovementTrackerContract.MovementTracker.COLUMN_DURATION,activityDuration);
         SQLiteDatabase database = getWritableDatabase();
-//        try {
             database.beginTransaction();
             database.insertOrThrow(MovementTrackerContract.MovementTracker.TABLE_NAME, null, values);
             database.setTransactionSuccessful();
-//        } finally {
             database.endTransaction();
             database.close();
-//        }
     }
 
     public String checkTableExistence() {
