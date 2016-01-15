@@ -6,7 +6,7 @@ import android.provider.BaseColumns;
 /**
  * Created by GRACE on 1/15/2016.
  */
-public class TrackerContract {
+public class MovementTrackerContract {
 
     public static final String CONTENT_AUTHORITY = "com.andela.omotoso.bukola.movementtracker.data";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" +CONTENT_AUTHORITY);
