@@ -1,5 +1,6 @@
 package com.andela.omotoso.bukola.movementtracker.data;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
@@ -44,7 +45,7 @@ public class MovementTrackerDbHelperTest extends AndroidTestCase {
             tableNameHashSet.remove(c.getString(0));
         } while( c.moveToNext() );
 
-        assertTrue("Error: Database was created without the exchange_rate table",
+        assertTrue("Error: Database was created without the tracker_trail table",
                 tableNameHashSet.isEmpty());
 
         c = db.rawQuery("PRAGMA table_info(" + MovementTrackerContract.MovementTracker.TABLE_NAME + ")",
@@ -66,7 +67,7 @@ public class MovementTrackerDbHelperTest extends AndroidTestCase {
             TrackerColumnHashSet.remove(columnName);
         } while(c.moveToNext());
 
-        assertTrue("Error: The database doesn't contain all of the required location entry columns",
+        assertTrue("Error: The database doesn't contain all of the required tracker entry columns",
                 TrackerColumnHashSet.isEmpty());
         db.close();
     }
@@ -74,5 +75,21 @@ public class MovementTrackerDbHelperTest extends AndroidTestCase {
 
     public void testOnUpgrade() throws Exception {
 
+    }
+
+    public void testTableRows() {
+        MovementTrackerDbHelper movementTrackerDbHelper = new MovementTrackerDbHelper(getContext());
+        assertEquals(1,movementTrackerDbHelper.tableRows());
+    }
+
+    public void testInsertTableRows() {
+        MovementTrackerDbHelper movementTrackerDbHelper = new MovementTrackerDbHelper(getContext());
+        movementTrackerDbHelper.insertRows("15/01/16","Moleye Street","Standing Still","02:24");
+    }
+
+    public void testQueryByStreet() {
+        MovementTrackerDbHelper movementTrackerDbHelper = new MovementTrackerDbHelper(getContext());
+        assertEquals("Moleye Street",movementTrackerDbHelper.queryByStreet());
+        //assertEquals("tracker_trail",movementTrackerDbHelper.checkTableExistence());
     }
 }

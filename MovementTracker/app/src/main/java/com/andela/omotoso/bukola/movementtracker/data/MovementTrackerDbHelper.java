@@ -71,21 +71,40 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
     }
 
     public int tableRows() {
-        String query = "SELECT COUNT(*) FROM tracker_trail";
-        SQLiteDatabase database = getReadableDatabase();
+        String query = "SELECT * FROM " + MovementTrackerContract.MovementTracker.TABLE_NAME;
+        SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery(query, null);
-        cursor.moveToFirst();
-        int rowNum = cursor.getInt(0);
+        int rowNum = cursor.getCount();
+        cursor.close();
 
         return rowNum;
     }
 
-    public void insertRows(String tableName, ContentValues values) {
-        //String query = "INSERT INTO tracker_trail VALUES(" +trackingDate+","+streetName+","+activity+","+activityDuration+")";
+    public void insertRows(String trackingDate, String streetName, String activity, String activityDuration ) {
+        ContentValues values = new ContentValues();
+        values.put(MovementTrackerContract.MovementTracker.COLUMN_DATE,trackingDate);
+        values.put(MovementTrackerContract.MovementTracker.COLUMN_STREET,streetName);
+        values.put(MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY,activity);
+        values.put(MovementTrackerContract.MovementTracker.COLUMN_DURATION,activityDuration);
+        SQLiteDatabase database = getWritableDatabase();
+        try {
+            database.beginTransaction();
+            database.insertOrThrow(MovementTrackerContract.MovementTracker.TABLE_NAME, null, values);
+            database.setTransactionSuccessful();
+        } finally {
+            database.endTransaction();
+        }
+    }
+
+    public String checkTableExistence() {
+        String name = "";
         SQLiteDatabase database = getReadableDatabase();
-        long rowId = database.insert(tableName,null,values);
-        database.setTransactionSuccessful();
-        database.endTransaction();
+        String query = "SELECT name FROM sqlite_master WHERE type="+"'table'";
+        Cursor cursor = database.rawQuery(query, null);
+        if(cursor.moveToFirst()) {
+            name = cursor.getString(cursor.getColumnIndex("name"));
+        }
+        return name;
     }
 
 
