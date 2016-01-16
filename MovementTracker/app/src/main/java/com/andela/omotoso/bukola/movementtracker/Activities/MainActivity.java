@@ -24,6 +24,8 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -99,7 +101,9 @@ public class MainActivity extends AppCompatActivity
 
         longLatText = (TextView) findViewById(R.id.current_longlatText);
         currentLocationText = (TextView) findViewById(R.id.current_locationText);
+
         currentActivityText = (TextView) findViewById(R.id.current_ActivityText);
+        setActivityTextWatcher();
 
         timeSpentText = (TextView) findViewById(R.id.time_spentText);
 
@@ -248,18 +252,6 @@ public class MainActivity extends AppCompatActivity
         timer.setTimer(true);
         timer.updateTimer();
         detectActivity();
-        //currentActivityText.setText("connecting ...");
-
-//        if (googleApiClient.isConnected()) {
-//            countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
-//
-//            Intent service = new Intent(this, ActivityDetector.class);
-//            startService(service);
-//
-//            PendingIntent intent = PendingIntent.getService(this, 0, service, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClient, 0, intent);
-//        }
     }
 
     public void detectActivity() {
@@ -273,7 +265,6 @@ public class MainActivity extends AppCompatActivity
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClient, 0, intent);
             countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
         }
-
     }
 
     public void stopTracking() {
@@ -295,13 +286,33 @@ public class MainActivity extends AppCompatActivity
         }.start();
     }
 
+    private void setActivityTextWatcher() {
+        currentActivityText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),currentLocationText.getText().toString(),
+                        currentActivityText.getText().toString(),timer.timeInSeconds,);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                timer.resetTimer();
+            }
+        });
+    }
+
     public class Receiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             String activity = intent.getStringExtra(ActivityDetector.DETECTED_ACTIVITY);
             currentActivityText.setText(activity);
-            //MainActivity.this.currentActivityText.setText(activity);
         }
     }
 

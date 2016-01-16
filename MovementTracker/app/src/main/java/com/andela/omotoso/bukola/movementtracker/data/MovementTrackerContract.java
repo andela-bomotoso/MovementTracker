@@ -20,5 +20,6 @@ public class MovementTrackerContract {
         public static final String COLUMN_STREET = "street_name";
         public static final String COLUMN_ACTIVITY = "activity";
         public static final String COLUMN_DURATION = "activity_duration";
+        public static final String COLUMN_LOG_TIME = "log_time";
     }
 }

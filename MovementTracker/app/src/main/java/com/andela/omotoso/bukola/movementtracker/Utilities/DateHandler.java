@@ -17,4 +17,15 @@ public class DateHandler {
        return stringDate;
 
     }
+
+    public String getCurrentTime() {
+        String DATE_FORMAT_NOW = "hh:mm:ss AM";
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+        String stringDate = sdf.format(date );
+        return stringDate;
+
+    }
+
+
 }

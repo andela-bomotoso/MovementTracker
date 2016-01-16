@@ -5,6 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by GRACE on 1/15/2016.
@@ -27,7 +31,8 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
                 MovementTrackerContract.MovementTracker.COLUMN_DATE + " TEXT, " +
                 MovementTrackerContract.MovementTracker.COLUMN_STREET + " TEXT, " +
                 MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY + " TEXT, " +
-                MovementTrackerContract.MovementTracker.COLUMN_DURATION + " TEXT)";
+                MovementTrackerContract.MovementTracker.COLUMN_DURATION + " INT, " +
+                MovementTrackerContract.MovementTracker.COLUMN_LOG_TIME+ " TEXT)";
         sqLiteDatabase.execSQL(SQL_CREATE_TRACKER_TABLE);
     }
 
@@ -53,17 +58,27 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
     }
 
-    public String queryByStreet() {
-
-        String query = "SELECT tracking_date,street_name,activity,activity_duration FROM tracker_trail";
+    public List<String> queryByStreet() {
+        List<String>records = new ArrayList<>();
+        String streetName="";
+        String activity = "";
+        String timeSpent = "";
+        String currentDate = "";
+        String query = "SELECT tracking_date,street_name,activity,activity_duration FROM tracker_trail where tracking_date = "+"'2016-01-16'";
         SQLiteDatabase database = getReadableDatabase();
         Cursor cursor = database.rawQuery(query, null);
-        if (cursor.moveToFirst()) {
-            return cursor.getString(cursor.getColumnIndex("street_name"));
-        } else {
-            //return Utilities.retrieveSavedData(source,destination);
-            return "";
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            streetName = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_STREET));
+            activity = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY));
+            timeSpent = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_DURATION));
+            currentDate = cursor.getString(cursor.getColumnIndex("tracking_date"));
+            String currentRecord = streetName+" "+activity+" "+timeSpent+" "+currentDate;
+            records.add(currentRecord);
+            cursor.moveToNext();
         }
+        return records;
+
     }
 
     public void deleteTable() {
@@ -81,12 +96,13 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         return rowNum;
     }
 
-    public void insertRows(String trackingDate, String streetName, String activity, String activityDuration ) {
+    public void insertRows(String trackingDate, String streetName, String activity, int activityDuration, String log_time ) {
         ContentValues values = new ContentValues();
         values.put(MovementTrackerContract.MovementTracker.COLUMN_DATE,trackingDate);
         values.put(MovementTrackerContract.MovementTracker.COLUMN_STREET,streetName);
         values.put(MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY,activity);
         values.put(MovementTrackerContract.MovementTracker.COLUMN_DURATION,activityDuration);
+        values.put(MovementTrackerContract.MovementTracker.COLUMN_LOG_TIME,log_time);
         SQLiteDatabase database = getWritableDatabase();
             database.beginTransaction();
             database.insertOrThrow(MovementTrackerContract.MovementTracker.TABLE_NAME, null, values);
