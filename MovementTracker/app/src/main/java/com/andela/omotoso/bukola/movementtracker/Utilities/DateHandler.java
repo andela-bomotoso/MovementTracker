@@ -19,11 +19,11 @@ public class DateHandler {
     }
 
     public String getCurrentTime() {
-        String DATE_FORMAT_NOW = "hh:mm:ss AM";
+        String TIME_FORMAT_NOW = "hh:mm:ss a";
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-        String stringDate = sdf.format(date );
-        return stringDate;
+        SimpleDateFormat sdf = new SimpleDateFormat(TIME_FORMAT_NOW);
+        String stringTime = sdf.format(date );
+        return stringTime;
 
     }
 

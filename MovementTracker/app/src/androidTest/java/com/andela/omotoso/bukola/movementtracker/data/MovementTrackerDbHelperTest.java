@@ -21,7 +21,7 @@ public class MovementTrackerDbHelperTest extends AndroidTestCase {
     }
 
     public void setUp() {
-       // deleteTheDatabase();
+       deleteTheDatabase();
         movementTrackerDbHelper = new MovementTrackerDbHelper(getContext());
     }
 
@@ -79,16 +79,24 @@ public class MovementTrackerDbHelperTest extends AndroidTestCase {
     }
 
     public void testTableRows() {
-        MovementTrackerDbHelper movementTrackerDbHelper = new MovementTrackerDbHelper(getContext());
-        assertEquals(0,movementTrackerDbHelper.tableRows());
+        movementTrackerDbHelper = new MovementTrackerDbHelper(getContext());
+       //movementTrackerDbHelper.deleteTable();
+        assertEquals(1,movementTrackerDbHelper.tableRows());
         //movementTrackerDbHelper.deleteTable();
     }
-
+//    public void testDeleteRows() {
+//        movementTrackerDbHelper = new MovementTrackerDbHelper(getContext());
+//        // movementTrackerDbHelper.deleteTable();
+//        movementTrackerDbHelper.deleteTable();
+//        //movementTrackerDbHelper.deleteTable();
+//    }
+////
     public void testInsertTableRows() {
-        MovementTrackerDbHelper movementTrackerDbHelper = new MovementTrackerDbHelper(getContext());
-        //movementTrackerDbHelper.insertRows("15/01/16", "Moleye Street", "Standing Still", "02:24");
+         movementTrackerDbHelper = new MovementTrackerDbHelper(getContext());
+        movementTrackerDbHelper.insertRows("15/01/16", "Moleye Street", "Standing Still", 84, "2:27PM");
+        assertEquals(1,movementTrackerDbHelper.tableRows());
     }
-
+////
     public void testQueryByStreet() {
        //MovementTrackerDbHelper movementTrackerDbHelper = new MovementTrackerDbHelper(getContext());
       // movementTrackerDbHelper.insertRows("15/01/16","Moleye Street","Standing Still","02:24");

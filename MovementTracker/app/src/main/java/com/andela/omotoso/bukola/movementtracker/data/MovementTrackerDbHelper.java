@@ -83,7 +83,11 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
     public void deleteTable() {
         SQLiteDatabase database = getWritableDatabase();
+        database.beginTransaction();
         database.delete(MovementTrackerContract.MovementTracker.TABLE_NAME, null, null);
+        database.setTransactionSuccessful();
+        database.endTransaction();
+        //database.close();
     }
 
     public int tableRows() {
@@ -96,13 +100,13 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         return rowNum;
     }
 
-    public void insertRows(String trackingDate, String streetName, String activity, int activityDuration, String log_time ) {
+    public void insertRows(String trackingDate, String streetName, String activity, int activityDuration, String logTime ) {
         ContentValues values = new ContentValues();
         values.put(MovementTrackerContract.MovementTracker.COLUMN_DATE,trackingDate);
         values.put(MovementTrackerContract.MovementTracker.COLUMN_STREET,streetName);
         values.put(MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY,activity);
         values.put(MovementTrackerContract.MovementTracker.COLUMN_DURATION,activityDuration);
-        values.put(MovementTrackerContract.MovementTracker.COLUMN_LOG_TIME,log_time);
+        values.put(MovementTrackerContract.MovementTracker.COLUMN_LOG_TIME,logTime);
         SQLiteDatabase database = getWritableDatabase();
             database.beginTransaction();
             database.insertOrThrow(MovementTrackerContract.MovementTracker.TABLE_NAME, null, values);

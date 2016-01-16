@@ -42,7 +42,7 @@ public class Timer {
     }
 
     public void updateTimer() {
-
+        //resetTimer();
         Thread t = new Thread() {
             @Override
             public void run() {
@@ -53,7 +53,7 @@ public class Timer {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                timeInSeconds = count;
+                                //timeInSeconds = count;
                                 timeSpentText.setText(formatTime(count));
                             }
                         });

@@ -249,6 +249,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void startTracking() {
+        currentActivityText.setText("connecting..");
         timer.setTimer(true);
         timer.updateTimer();
         detectActivity();
@@ -256,18 +257,20 @@ public class MainActivity extends AppCompatActivity
 
     public void detectActivity() {
         if (googleApiClient.isConnected()) {
-
+            countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
             Intent service = new Intent(this, ActivityDetector.class);
             startService(service);
 
             PendingIntent intent = PendingIntent.getService(this, 0, service, PendingIntent.FLAG_UPDATE_CURRENT);
 
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClient, 0, intent);
-            countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
+
         }
     }
 
     public void stopTracking() {
+        currentActivityText.setText("Tracking not started");
+        timeSpentText.setText("00:00");
         timer.setTimer(false);
         notifier.cancelNotification(this, 1);
     }
@@ -296,12 +299,11 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),currentLocationText.getText().toString(),
-                        currentActivityText.getText().toString(),timer.timeInSeconds,);
+                        currentActivityText.getText().toString(),timer.timeInSeconds,dateHandler.getCurrentTime());
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
                 timer.resetTimer();
             }
         });
