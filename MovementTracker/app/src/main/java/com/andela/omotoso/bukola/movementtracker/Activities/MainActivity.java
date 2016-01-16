@@ -18,6 +18,7 @@ import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityRecog
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
 import com.andela.omotoso.bukola.movementtracker.Utilities.DateHandler;
+import com.andela.omotoso.bukola.movementtracker.Utilities.Launcher;
 import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesListener;
 import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesManager;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Notifier;
@@ -175,11 +176,12 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.tracked_location) {
+            Launcher.launchActivity(this,TrackerByLocation.class);
 
         } else if (id == R.id.app_help) {
 
         } else if (id ==R.id.app_info) {
-            
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
