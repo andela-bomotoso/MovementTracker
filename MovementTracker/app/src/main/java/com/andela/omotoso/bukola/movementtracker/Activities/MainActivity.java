@@ -4,14 +4,10 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
-import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetectionBroadcastReceiver;
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetector;
-import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityRecognitionListener;
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
 import com.andela.omotoso.bukola.movementtracker.Utilities.DateHandler;
-import com.andela.omotoso.bukola.movementtracker.Utilities.Launcher;
 import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesListener;
 import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesManager;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Notifier;
@@ -42,7 +38,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.ActivityRecognitionApi;
 import com.google.android.gms.location.LocationRequest;
 
 public class MainActivity extends AppCompatActivity
@@ -50,14 +45,12 @@ public class MainActivity extends AppCompatActivity
 
     private Context context;
     private Button trackerButton;
-    private GoogleApiClient googleApiClientActivity;
     private LocationRequest locationRequest;
     private TextView longLatText;
     private TextView currentLocationText;
     private double longitude = 0;
     private double latitude = 0;
     private TextView currentActivityText;
-    protected ActivityDetectionBroadcastReceiver activityDetectionBroadcastReceiver;
     private final String TAG = "LOCATION_FINDER";
     private TextView timeSpentText;
     private Timer timer;
@@ -68,7 +61,6 @@ public class MainActivity extends AppCompatActivity
     private String streetName = "";
     private MovementTrackerDbHelper movementTrackerDbHelper;
     private DateHandler dateHandler;
-    private ActivityRecognitionListener listener;
     private GoogleApiClient googleApiClient;
 
     @Override

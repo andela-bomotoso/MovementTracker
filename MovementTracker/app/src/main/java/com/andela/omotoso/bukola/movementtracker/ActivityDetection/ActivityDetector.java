@@ -17,11 +17,8 @@ import java.util.ArrayList;
 public class ActivityDetector extends IntentService {
     public static final String DETECTED_ACTIVITY = "detected_activity";
 
-    private static final String TAG = "detection_is";
-    private ActivityRecognitionListener listener;
-
     public ActivityDetector() {
-        super(TAG);
+        super(DETECTED_ACTIVITY);
     }
 
     public void onHandleIntent(Intent intent) {
@@ -59,9 +56,5 @@ public class ActivityDetector extends IntentService {
             default:
                 return Constants.UNIDENTIFIABLE;
         }
-    }
-
-    public void setListener(ActivityRecognitionListener listener) {
-        this.listener = listener;
     }
 }
