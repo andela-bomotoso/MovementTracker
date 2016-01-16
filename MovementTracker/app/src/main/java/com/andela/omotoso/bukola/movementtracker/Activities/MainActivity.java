@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity
         initializeComponents();
         initializeActivity();
 
+
         sharedPreferenceManager = new SharedPreferenceManager(this);
         movementTrackerDbHelper = new MovementTrackerDbHelper(this);
         notifier = new Notifier(context,MainActivity.this);
@@ -107,9 +108,9 @@ public class MainActivity extends AppCompatActivity
         timer.setActivity(MainActivity.this);
 
         context = getApplicationContext();
-
-        loadLocationValues();
         initializeActivityDetector();
+        loadLocationValues();
+
     }
 
 
@@ -246,10 +247,23 @@ public class MainActivity extends AppCompatActivity
     public void startTracking() {
         timer.setTimer(true);
         timer.updateTimer();
-        currentActivityText.setText("connecting ...");
+        detectActivity();
+        //currentActivityText.setText("connecting ...");
 
+//        if (googleApiClient.isConnected()) {
+//            countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
+//
+//            Intent service = new Intent(this, ActivityDetector.class);
+//            startService(service);
+//
+//            PendingIntent intent = PendingIntent.getService(this, 0, service, PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClient, 0, intent);
+//        }
+    }
+
+    public void detectActivity() {
         if (googleApiClient.isConnected()) {
-            countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
 
             Intent service = new Intent(this, ActivityDetector.class);
             startService(service);
@@ -257,7 +271,9 @@ public class MainActivity extends AppCompatActivity
             PendingIntent intent = PendingIntent.getService(this, 0, service, PendingIntent.FLAG_UPDATE_CURRENT);
 
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClient, 0, intent);
+            countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
         }
+
     }
 
     public void stopTracking() {
@@ -284,8 +300,8 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             String activity = intent.getStringExtra(ActivityDetector.DETECTED_ACTIVITY);
-
-            MainActivity.this.currentActivityText.setText(activity);
+            currentActivityText.setText(activity);
+            //MainActivity.this.currentActivityText.setText(activity);
         }
     }
 

@@ -75,7 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold|italic"
-                android:text="tracking not started"/>
+                android:text="connecting..."/>
             </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
