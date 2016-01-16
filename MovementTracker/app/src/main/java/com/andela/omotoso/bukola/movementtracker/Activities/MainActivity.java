@@ -176,8 +176,10 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.tracked_location) {
 
-        } else if (id == R.id.tracked_time) {
+        } else if (id == R.id.app_help) {
 
+        } else if (id ==R.id.app_info) {
+            
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
