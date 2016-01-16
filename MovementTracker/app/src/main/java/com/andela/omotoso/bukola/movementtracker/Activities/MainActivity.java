@@ -14,6 +14,7 @@ import android.location.Location;
 
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetectionBroadcastReceiver;
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetector;
+import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityRecognitionListener;
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
 import com.andela.omotoso.bukola.movementtracker.Utilities.DateHandler;
@@ -58,12 +59,10 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-        //GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,ResultCallback<Status> {
+        implements NavigationView.OnNavigationItemSelectedListener,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,ResultCallback<Status> {
 
     private Context context;
     private Button trackerButton;
-    private GoogleApiClient googleApiClient;
     private GoogleApiClient googleApiClientActivity;
     private LocationRequest locationRequest;
     private TextView longLatText;
@@ -82,6 +81,8 @@ public class MainActivity extends AppCompatActivity
     private String streetName = "";
     private MovementTrackerDbHelper movementTrackerDbHelper;
     private DateHandler dateHandler;
+    private ActivityRecognitionListener listener;
+    private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,8 +108,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initializeActivity() {
-        //buildGoogleApiClient();
-        activityDetectionBroadcastReceiver = new ActivityDetectionBroadcastReceiver(currentActivityText,this);
+        buildGoogleApiClient();
+       // activityDetectionBroadcastReceiver = new ActivityDetectionBroadcastReceiver(currentActivityText,this);
     }
 
     private void initializeComponents() {
@@ -120,7 +121,7 @@ public class MainActivity extends AppCompatActivity
         longLatText = (TextView) findViewById(R.id.current_longlatText);
         currentLocationText = (TextView) findViewById(R.id.current_locationText);
         currentActivityText = (TextView) findViewById(R.id.current_ActivityText);
-        //textViewWatcher();
+
         timeSpentText = (TextView) findViewById(R.id.time_spentText);
 
         timer = new Timer();
@@ -130,6 +131,7 @@ public class MainActivity extends AppCompatActivity
         context = getApplicationContext();
 
         loadLocationValues();
+        detectActivity();
     }
 
 
@@ -198,44 +200,44 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         locationServicesManager.connect();
-        googleApiClientActivity.connect();
+        googleApiClient.connect();
     }
 
     @Override
     protected void onStop() {
         locationServicesManager.disconnect();
-        googleApiClientActivity.disconnect();
+        googleApiClient.disconnect();
         super.onStop();
     }
 
+//    @Override
+//    protected void onPause() {
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(activityDetectionBroadcastReceiver);
+//        super.onPause();
+//    }
+//
+//    @Override
+//    protected void onResume() {
+//        LocalBroadcastManager.getInstance(this).registerReceiver(activityDetectionBroadcastReceiver, new IntentFilter(Constants.BROADCAST_ACTION));
+//        super.onResume();
+//    }
+
     @Override
-    protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(activityDetectionBroadcastReceiver);
-        super.onPause();
+    public void onConnected(Bundle bundle) {
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(1000);
     }
 
     @Override
-    protected void onResume() {
-        LocalBroadcastManager.getInstance(this).registerReceiver(activityDetectionBroadcastReceiver, new IntentFilter(Constants.BROADCAST_ACTION));
-        super.onResume();
+    public void onConnectionSuspended(int i) {
+
     }
 
-//    @Override
-//    public void onConnected(Bundle bundle) {
-//        locationRequest = LocationRequest.create();
-//        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-//        locationRequest.setInterval(1000);
-//    }
-//
-//    @Override
-//    public void onConnectionSuspended(int i) {
-//
-//    }
-//
-//    @Override
-//    public void onConnectionFailed(ConnectionResult connectionResult) {
-//
-//    }
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
 
     public void loadLocationValues() {
 
@@ -253,30 +255,42 @@ public class MainActivity extends AppCompatActivity
         locationServicesManager.setListener(listener);
     }
 
-
-//    protected synchronized void buildGoogleApiClient() {
-//        googleApiClientActivity = new GoogleApiClient.Builder(this)
-//                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this)
-//                .addApi(ActivityRecognition.API)
-//                .build();
-//    }
-
-//    public void onResult(Status status) {
-//
-//    }
-
-    private PendingIntent getActivityDetectionPendingIntent() {
-        Intent intent = new Intent(this, ActivityDetector.class);
-        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    public void detectActivity() {
+        ActivityDetector activityDetector = new ActivityDetector();
+        ActivityRecognitionListener listener = new ActivityRecognitionListener() {
+            @Override
+            public void onActivityDetected(String activityDetected) {
+                currentActivityText.setText(activityDetected);
+            }
+        };
+        activityDetector.setListener(listener);
     }
+
+
+    protected synchronized void buildGoogleApiClient() {
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(ActivityRecognition.API)
+                .build();
+    }
+
+    public void onResult(Status status) {
+
+    }
+
+//    private PendingIntent getActivityDetectionPendingIntent() {
+//        Intent intent = new Intent(this, ActivityDetector.class);
+//        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//    }
 
     public void startTracking() {
         timer.setTimer(true);
         timer.updateTimer();
         currentActivityText.setText("connecting ...");
-        if (googleApiClientActivity.isConnected()) {
+        if (googleApiClient.isConnected()) {
             countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
+            detectActivity();
 //            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
 //                    getActivityDetectionPendingIntent()).setResultCallback(this);
         }
@@ -304,32 +318,6 @@ public class MainActivity extends AppCompatActivity
         }.start();
     }
 
-    private void textViewWatcher() {
-        currentActivityText.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                timer.updateTimer();
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) {
-
-                movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(), currentLocationText.getText().toString(),
-                        currentActivityText.getText().toString(), timeSpentText.getText().toString());
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start,
-                                      int before, int count) {
-               // if(s.length() != 0)
-                    //Field2.setText("");
-
-            }
-        });
-
-    }
 }
 
 

@@ -1,6 +1,7 @@
 package com.andela.omotoso.bukola.movementtracker.ActivityDetection;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
+import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesListener;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Timer;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -30,11 +32,21 @@ import java.util.List;
         private GoogleApiClient googleApiClient;
         private Activity activity;
         private LocationRequest locationRequest;
+        private ActivityRecognitionListener activityRecognitionListener;
+        private String currentActivity;
 
+    public String getCurrentActivity() {
+        return currentActivity;
+    }
+
+    public void setCurrentActivity(String currentActivity) {
+        this.currentActivity = currentActivity;
+    }
 
     public ActivityDetectionBroadcastReceiver(TextView currentActivityText,Activity activity) {
         this.currentActivityText = currentActivityText;
         this.activity = activity;
+        currentActivity = "";
         googleApiClient = new GoogleApiClient.Builder(activity)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -47,6 +59,14 @@ import java.util.List;
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(1000);
+    }
+
+    public void connect() {
+        googleApiClient.connect();
+    }
+
+    public void disconnect() {
+        googleApiClient.disconnect();
     }
 
     @Override
@@ -63,6 +83,9 @@ import java.util.List;
 
     }
 
+    public void setListener(ActivityRecognitionListener listener) {
+        this.activityRecognitionListener = listener;
+    }
     public void onReceive(Context context, Intent intent) {
             List<Integer> confidenceLevels = new ArrayList<>();
             List<String>activities = new ArrayList<>();
@@ -74,7 +97,9 @@ import java.util.List;
                 activities.add(getActivityType(activity.getType())+"");
                 confidenceLevels.add(activity.getConfidence());
             }
-            currentActivityText.setText(getHighestActivityConfidence(confidenceLevels, activities));
+            currentActivity = getHighestActivityConfidence(confidenceLevels, activities);
+            //currentActivityText.setText(getHighestActivityConfidence(confidenceLevels, activities);
+            currentActivityText.setText(getHighestActivityConfidence(confidenceLevels,activities));
         }
 
     public static String getHighestActivityConfidence(List<Integer> confidenceLevels,List<String>activities) {
@@ -89,6 +114,20 @@ import java.util.List;
         }
         activity = activities.get(count);
         return activity;
+    }
+
+    private PendingIntent getActivityDetectionPendingIntent() {
+        Intent intent = new Intent(activity, ActivityDetector.class);
+        return PendingIntent.getService(activity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    public void detectActivity() {
+        if (googleApiClient.isConnected()) {
+            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClient, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
+                    getActivityDetectionPendingIntent()).setResultCallback(this);
+
+            activityRecognitionListener.onActivityDetected(currentActivity);
+        }
     }
 
     public static String getActivityType(int detectedActivityType) {
