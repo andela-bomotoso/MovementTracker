@@ -1,16 +1,9 @@
 package com.andela.omotoso.bukola.movementtracker.Activities;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.location.Location;
 
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetectionBroadcastReceiver;
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetector;
@@ -23,25 +16,18 @@ import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesListe
 import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesManager;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Notifier;
 import com.andela.omotoso.bukola.movementtracker.Utilities.SharedPreferenceManager;
-import com.andela.omotoso.bukola.movementtracker.Utilities.StreetNameHandler;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Timer;
 import com.andela.omotoso.bukola.movementtracker.data.MovementTrackerDbHelper;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.ActivityRecognition;
-import com.google.android.gms.location.LocationListener;
 
 import com.google.android.gms.common.ConnectionResult;
 
-import android.media.RingtoneManager;
-import android.net.Uri;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.NotificationCompat;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -56,8 +42,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognitionApi;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,ResultCallback<Status> {
@@ -110,7 +96,6 @@ public class MainActivity extends AppCompatActivity
 
     private void initializeActivity() {
         buildGoogleApiClient();
-       // activityDetectionBroadcastReceiver = new ActivityDetectionBroadcastReceiver(currentActivityText,this);
     }
 
     private void initializeComponents() {
@@ -132,7 +117,7 @@ public class MainActivity extends AppCompatActivity
         context = getApplicationContext();
 
         loadLocationValues();
-        detectActivity();
+        initializeActivityDetector();
     }
 
 
@@ -176,7 +161,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.tracked_location) {
-            Launcher.launchActivity(this,TrackerByLocation.class);
+            //Launcher.launchActivity(this,TrackerByLocation.class);
 
         } else if (id == R.id.app_help) {
 
@@ -214,23 +199,13 @@ public class MainActivity extends AppCompatActivity
         super.onStop();
     }
 
-//    @Override
-//    protected void onPause() {
-//        LocalBroadcastManager.getInstance(this).unregisterReceiver(activityDetectionBroadcastReceiver);
-//        super.onPause();
-//    }
-//
-//    @Override
-//    protected void onResume() {
-//        LocalBroadcastManager.getInstance(this).registerReceiver(activityDetectionBroadcastReceiver, new IntentFilter(Constants.BROADCAST_ACTION));
-//        super.onResume();
-//    }
-
     @Override
     public void onConnected(Bundle bundle) {
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(1000);
+
+        trackerButton.setEnabled(true);
     }
 
     @Override
@@ -259,17 +234,10 @@ public class MainActivity extends AppCompatActivity
         locationServicesManager.setListener(listener);
     }
 
-    public void detectActivity() {
-        ActivityDetector activityDetector = new ActivityDetector();
-        ActivityRecognitionListener listener = new ActivityRecognitionListener() {
-            @Override
-            public void onActivityDetected(String activityDetected) {
-                currentActivityText.setText(activityDetected);
-            }
-        };
-        activityDetector.setListener(listener);
+    public void initializeActivityDetector() {
+        trackerButton.setEnabled(false);
+        LocalBroadcastManager.getInstance(this).registerReceiver(new Receiver(), new IntentFilter(Constants.BROADCAST_ACTION));
     }
-
 
     protected synchronized void buildGoogleApiClient() {
         googleApiClient = new GoogleApiClient.Builder(this)
@@ -283,28 +251,25 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-//    private PendingIntent getActivityDetectionPendingIntent() {
-//        Intent intent = new Intent(this, ActivityDetector.class);
-//        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//    }
-
     public void startTracking() {
         timer.setTimer(true);
         timer.updateTimer();
         currentActivityText.setText("connecting ...");
+
         if (googleApiClient.isConnected()) {
             countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
-            detectActivity();
-//            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClientActivity, Constants.DETECTION_INTERVAL_IN_MILLISECONDS,
-//                    getActivityDetectionPendingIntent()).setResultCallback(this);
+
+            Intent service = new Intent(this, ActivityDetector.class);
+            startService(service);
+
+            PendingIntent intent = PendingIntent.getService(this, 0, service, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClient, 0, intent);
         }
     }
 
     public void stopTracking() {
         timer.setTimer(false);
-//        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(googleApiClientActivity, getActivityDetectionPendingIntent())
-//                .setResultCallback(this);
-        currentActivityText.setText("tracking not started");
         notifier.cancelNotification(this, 1);
     }
 
@@ -320,6 +285,16 @@ public class MainActivity extends AppCompatActivity
                 notifier.sendNotification("Movement Tracker");
             }
         }.start();
+    }
+
+    public class Receiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String activity = intent.getStringExtra(ActivityDetector.DETECTED_ACTIVITY);
+
+            MainActivity.this.currentActivityText.setText(activity);
+        }
     }
 
 }

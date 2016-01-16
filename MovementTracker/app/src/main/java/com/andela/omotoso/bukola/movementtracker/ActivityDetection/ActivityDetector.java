@@ -15,6 +15,7 @@ import java.util.ArrayList;
  * Created by GRACE on 1/9/2016.
  */
 public class ActivityDetector extends IntentService {
+    public static final String DETECTED_ACTIVITY = "detected_activity";
 
     private static final String TAG = "detection_is";
     private ActivityRecognitionListener listener;
@@ -25,13 +26,15 @@ public class ActivityDetector extends IntentService {
 
     public void onHandleIntent(Intent intent) {
         ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
-        Intent localIntent = new Intent(Constants.BROADCAST_ACTION);
-        //ArrayList<DetectedActivity> detectedActivities = (ArrayList)result.getProbableActivities();
-        DetectedActivity detectedActivity = result.getMostProbableActivity();
-        listener.onActivityDetected(getActivityType(detectedActivity));
-        //Log.i(TAG, "activities detected");
-        //localIntent.putExtra(Constants.ACTIVITY_EXTRA, detectedActivities);
-       // LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
+
+        if (result != null) {
+            DetectedActivity detectedActivity = result.getMostProbableActivity();
+
+            Intent broadcast = new Intent(Constants.BROADCAST_ACTION);
+            broadcast.putExtra(DETECTED_ACTIVITY, getActivityType(detectedActivity));
+
+            LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
+        }
     }
 
     public String getActivityType(DetectedActivity detectedActivity) {
