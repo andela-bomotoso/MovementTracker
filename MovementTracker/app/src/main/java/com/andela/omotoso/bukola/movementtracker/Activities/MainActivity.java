@@ -1,9 +1,11 @@
 package com.andela.omotoso.bukola.movementtracker.Activities;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetector;
 import com.andela.omotoso.bukola.movementtracker.R;
@@ -182,6 +184,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id ==R.id.app_info) {
                //Launcher.launchActivity(this,ApplicationInfo.class);
+            displayAppInfo();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -343,14 +346,26 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void displayAppInfo() {
-        Dialog dialog;
-        dialog = new Dialog(this);
-        dialog.setTitle("Application Info");
-        dialog.setContentView(R.layout.app_info);
-        appInfoText = (TextView)dialog.findViewById(R.id.app_info);
-        appInfoOkButton = (Button)dialog.findViewById(R.id.app_info_ok);
-        appInfoText.setText(Constants.APP_INFO);
-        dialog.show();
+//        Dialog dialog;
+//        dialog = new Dialog(this);
+//        dialog.setTitle("Application Info");
+//        dialog.setContentView(R.layout.app_info);
+//        appInfoText = (TextView)dialog.findViewById(R.id.app_info);
+//        appInfoOkButton = (Button)dialog.findViewById(R.id.app_info_ok);
+//        appInfoText.setText(Constants.APP_INFO);
+//        dialog.show();
+
+        new AlertDialog.Builder(MainActivity.this).setTitle("Application Info")
+                .setMessage(Constants.APP_INFO)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+//                        finish();
+//                        System.exit(0);
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
     public class Receiver extends BroadcastReceiver {
