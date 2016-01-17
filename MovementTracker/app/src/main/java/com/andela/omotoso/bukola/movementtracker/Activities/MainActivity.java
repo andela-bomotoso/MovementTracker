@@ -181,9 +181,9 @@ public class MainActivity extends AppCompatActivity
             //Launcher.launchActivity(this, TrackerByLocation.class);
 
         } else if (id == R.id.app_help) {
+            displayHelp();
 
         } else if (id ==R.id.app_info) {
-               //Launcher.launchActivity(this,ApplicationInfo.class);
             displayAppInfo();
         }
 
@@ -346,22 +346,23 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void displayAppInfo() {
-//        Dialog dialog;
-//        dialog = new Dialog(this);
-//        dialog.setTitle("Application Info");
-//        dialog.setContentView(R.layout.app_info);
-//        appInfoText = (TextView)dialog.findViewById(R.id.app_info);
-//        appInfoOkButton = (Button)dialog.findViewById(R.id.app_info_ok);
-//        appInfoText.setText(Constants.APP_INFO);
-//        dialog.show();
-
         new AlertDialog.Builder(MainActivity.this).setTitle("Application Info")
                 .setMessage(Constants.APP_INFO)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-//                        finish();
-//                        System.exit(0);
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    public void displayHelp() {
+        new AlertDialog.Builder(MainActivity.this).setTitle("Help")
+                .setMessage(Constants.HELP)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 })
