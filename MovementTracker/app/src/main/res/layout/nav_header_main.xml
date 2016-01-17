@@ -14,7 +14,8 @@
     <ImageView android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@android:drawable/sym_def_app_icon"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:src="@drawable/google_location_icon_launcher"
         android:id="@+id/imageView" />
 
 
