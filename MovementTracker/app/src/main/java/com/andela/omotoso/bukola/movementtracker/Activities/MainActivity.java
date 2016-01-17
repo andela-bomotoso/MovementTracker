@@ -1,5 +1,6 @@
 package com.andela.omotoso.bukola.movementtracker.Activities;
 
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,6 +9,7 @@ import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetec
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
 import com.andela.omotoso.bukola.movementtracker.Utilities.DateHandler;
+import com.andela.omotoso.bukola.movementtracker.Utilities.Launcher;
 import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesListener;
 import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesManager;
 import com.andela.omotoso.bukola.movementtracker.Utilities.Notifier;
@@ -70,6 +72,8 @@ public class MainActivity extends AppCompatActivity
     private String locationText = "";
     private int durationText = 0;
     private String logTimeText = "";
+    private TextView appInfoText;
+    private Button appInfoOkButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +88,8 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+       // appInfoText = (TextView)findViewById(R.id.app_info);
 
         initializeComponents();
         initializeActivity();
@@ -170,12 +176,12 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.tracked_location) {
-            //Launcher.launchActivity(this,TrackerByLocation.class);
+            //Launcher.launchActivity(this, TrackerByLocation.class);
 
         } else if (id == R.id.app_help) {
 
         } else if (id ==R.id.app_info) {
-
+               //Launcher.launchActivity(this,ApplicationInfo.class);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -334,6 +340,17 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    public void displayAppInfo() {
+        Dialog dialog;
+        dialog = new Dialog(this);
+        dialog.setTitle("Application Info");
+        dialog.setContentView(R.layout.app_info);
+        appInfoText = (TextView)dialog.findViewById(R.id.app_info);
+        appInfoOkButton = (Button)dialog.findViewById(R.id.app_info_ok);
+        appInfoText.setText(Constants.APP_INFO);
+        dialog.show();
     }
 
     public class Receiver extends BroadcastReceiver {
