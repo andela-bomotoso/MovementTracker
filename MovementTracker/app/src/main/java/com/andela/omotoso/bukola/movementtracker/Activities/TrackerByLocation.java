@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.Utilities.DateHandler;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class TrackerByLocation extends AppCompatActivity {
@@ -48,6 +49,7 @@ public class TrackerByLocation extends AppCompatActivity {
         cancelButton = (Button)dialog.findViewById(R.id.cancel_button);
         setButton = (Button)dialog.findViewById(R.id.set_button);
         final DatePicker datePicker = (DatePicker)dialog.findViewById(R.id.calendar_picker);
+        Calendar calendar = Calendar.getInstance();
         datePicker.setMaxDate(new Date().getTime());
         dialog.show();
         //datePicker.setOnClickListener(this);
