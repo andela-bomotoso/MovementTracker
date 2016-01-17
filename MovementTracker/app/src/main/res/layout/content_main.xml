@@ -109,6 +109,7 @@
         android:textOn="Stop Tracking"
         android:textOff="Start Tracking"
         android:text="Start Tracking"
+        android:enabled="false"
         android:onClick="onClickTrackerButton"/>
 </LinearLayout>
 

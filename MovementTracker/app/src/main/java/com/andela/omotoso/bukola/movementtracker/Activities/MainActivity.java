@@ -21,6 +21,8 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.common.ConnectionResult;
 
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
@@ -64,6 +66,10 @@ public class MainActivity extends AppCompatActivity
     private MovementTrackerDbHelper movementTrackerDbHelper;
     private DateHandler dateHandler;
     private GoogleApiClient googleApiClient;
+    private String activityText = "";
+    private String locationText = "";
+    private int durationText = 0;
+    private String logTimeText = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +88,6 @@ public class MainActivity extends AppCompatActivity
         initializeComponents();
         initializeActivity();
 
-
         sharedPreferenceManager = new SharedPreferenceManager(this);
         movementTrackerDbHelper = new MovementTrackerDbHelper(this);
         notifier = new Notifier(context,MainActivity.this);
@@ -98,6 +103,13 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         trackerButton = (ToggleButton) findViewById(R.id.tracker_button);
+
+        if(isOnline(this)) {
+            trackerButton.setEnabled(true);
+        }
+        else {
+            Toast.makeText(this,"No internet detected",Toast.LENGTH_SHORT).show();
+        }
 
         longLatText = (TextView) findViewById(R.id.current_longlatText);
         currentLocationText = (TextView) findViewById(R.id.current_locationText);
@@ -172,10 +184,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onClickTrackerButton(View view) {
+
         boolean on = ((ToggleButton) view).isChecked();
         if (on) {
-            Toast.makeText(context, "Tracking Started", Toast.LENGTH_SHORT).show();
-            startTracking();
+                Toast.makeText(context, "Tracking Started", Toast.LENGTH_SHORT).show();
+                startTracking();
+
         } else {
             Toast.makeText(context, "Tracking Stopped", Toast.LENGTH_SHORT).show();
             stopTracking();
@@ -201,8 +215,6 @@ public class MainActivity extends AppCompatActivity
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(1000);
-
-        trackerButton.setEnabled(true);
     }
 
     @Override
@@ -212,7 +224,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
+        Toast.makeText(this,"No internet connection",Toast.LENGTH_SHORT).show();
     }
 
     public void loadLocationValues() {
@@ -232,7 +244,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void initializeActivityDetector() {
-        trackerButton.setEnabled(false);
         LocalBroadcastManager.getInstance(this).registerReceiver(new Receiver(), new IntentFilter(Constants.BROADCAST_ACTION));
     }
 
@@ -256,7 +267,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void detectActivity() {
-        if (googleApiClient.isConnected()) {
+        if ( isOnline(this)) {
             countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
             Intent service = new Intent(this, ActivityDetector.class);
             startService(service);
@@ -264,13 +275,16 @@ public class MainActivity extends AppCompatActivity
             PendingIntent intent = PendingIntent.getService(this, 0, service, PendingIntent.FLAG_UPDATE_CURRENT);
 
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClient, 0, intent);
-
+        }
+        else  {
+            currentActivityText.setText("connecting...");
+            timeSpentText.setText("00:00");
+            Toast.makeText(this,"No internet connection",Toast.LENGTH_SHORT);
         }
     }
 
     public void stopTracking() {
-        currentActivityText.setText("Tracking not started");
-        timeSpentText.setText("00:00");
+        currentActivityText.setText("Tracking stopped");
         timer.setTimer(false);
         notifier.cancelNotification(this, 1);
     }
@@ -289,6 +303,15 @@ public class MainActivity extends AppCompatActivity
         }.start();
     }
 
+    public boolean isOnline(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
+
     private void setActivityTextWatcher() {
         currentActivityText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -298,13 +321,17 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),currentLocationText.getText().toString(),
-                        currentActivityText.getText().toString(),timer.timeInSeconds,dateHandler.getCurrentTime());
+                activityText = currentActivityText.getText().toString();
+                locationText = currentLocationText.getText().toString();
+                durationText = timer.timeInSeconds;
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                timer.resetTimer();
+                if (!currentActivityText.getText().toString().equals(activityText)) {
+                    movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),locationText,activityText, timer.timeInSeconds,dateHandler.getCurrentTime());
+                    timer.resetTimer();
+                }
             }
         });
     }
