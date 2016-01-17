@@ -18,6 +18,15 @@ public class DateHandler {
 
     }
 
+    public String formatDate() {
+        String DATE_FORMAT_NOW = "EEE, dd MMM yyyy";
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+        String stringDate = sdf.format(date );
+        return stringDate;
+
+    }
+
     public String getCurrentTime() {
         String TIME_FORMAT_NOW = "hh:mm:ss a";
         Date date = new Date();

@@ -77,4 +77,5 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_app__info">App_Info</string>
+    <string name="Cancel">cancel</string>
 </resources>

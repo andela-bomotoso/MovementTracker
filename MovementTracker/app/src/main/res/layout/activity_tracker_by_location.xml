@@ -18,7 +18,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="30dp"
-                android:src="@drawable/ic_date_range_white_24dp"/>
+                android:src="@drawable/ic_date_range_white_24dp"
+                android:onClick="showDatePickerDialog"/>
             </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>

@@ -9,5 +9,16 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_tracker_by_location2"
     tools:context="com.andela.omotoso.bukola.movementtracker.Activities.TrackerByLocation">
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/borders"
+    android:textStyle="bold|italic"
+    android:id="@+id/selected_date"/>
 
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </ListView>
 </RelativeLayout>
