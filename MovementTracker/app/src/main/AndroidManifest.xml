@@ -36,6 +36,15 @@
             android:label="@string/title_activity_settings"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
+        <activity
+            android:name=".Activities.TrackerByLocation"
+            android:label="@string/title_activity_tracker_by_location"
+            android:parentActivityName=".Activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.andela.omotoso.bukola.movementtracker.Activities.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.tracked_location) {
-            //Launcher.launchActivity(this, TrackerByLocation.class);
+            Launcher.launchActivity(this, TrackerByLocation.class);
 
         } else if (id == R.id.app_help) {
             displayHelp();
