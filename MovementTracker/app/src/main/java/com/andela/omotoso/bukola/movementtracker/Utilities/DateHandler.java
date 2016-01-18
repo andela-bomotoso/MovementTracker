@@ -36,5 +36,35 @@ public class DateHandler {
 
     }
 
+    public String convertLongDateToShortDate(String longDate){
+        String longDateFormat = "EEE, dd MMM yyyy";
+        String shortDateFormat = "dd-MM-yyyy";
+        SimpleDateFormat ldf = new SimpleDateFormat(longDateFormat);
+        SimpleDateFormat sdf = new SimpleDateFormat(shortDateFormat);
+        Date convertedDate = new Date();
+        try {
+            convertedDate = ldf.parse(longDate);
+        }
+        catch (Exception exception) {
+
+        }
+        return sdf.format(convertedDate);
+    }
+
+    public String convertShortDateToLongDate(String shortDate){
+        String longDateFormat = "EEE, dd MMM yyyy";
+        String shortDateFormat = "dd-MM-yyyy";
+        SimpleDateFormat ldf = new SimpleDateFormat(longDateFormat);
+        SimpleDateFormat sdf = new SimpleDateFormat(shortDateFormat);
+        Date convertedDate = new Date();
+        try {
+            convertedDate = sdf.parse(shortDate);
+        }
+        catch (Exception exception) {
+
+        }
+        return ldf.format(convertedDate);
+    }
+
 
 }

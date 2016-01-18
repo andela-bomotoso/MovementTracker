@@ -1,9 +1,9 @@
 package com.andela.omotoso.bukola.movementtracker.Activities;
 
 import android.app.Dialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
@@ -50,13 +50,7 @@ public class TrackerByLocation extends AppCompatActivity{
     }
 
     public void showDatePickerDialog() {
-
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager
-                .beginTransaction();
         DatePickerFragment datePickerFragment = new DatePickerFragment();
-        fragmentTransaction.replace(R.id.date_picker_container, datePickerFragment);
-        fragmentTransaction.commit();
 
         DatePickerListener datePickerListener = new DatePickerListener() {
             @Override
@@ -65,6 +59,8 @@ public class TrackerByLocation extends AppCompatActivity{
             }
         };
         datePickerFragment.setDatePickerListener(datePickerListener);
+
+        datePickerFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
     @Override

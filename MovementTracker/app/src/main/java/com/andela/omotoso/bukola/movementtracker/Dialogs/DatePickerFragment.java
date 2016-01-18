@@ -3,9 +3,8 @@ package com.andela.omotoso.bukola.movementtracker.Dialogs;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.andela.omotoso.bukola.movementtracker.R;
+import com.andela.omotoso.bukola.movementtracker.Utilities.DateHandler;
 
 import java.util.Calendar;
 
@@ -23,20 +23,22 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     private Calendar calendar;
     private DatePickerListener listener;
     private String selectedDate;
+    private DateHandler dateHandler;
 
 
     public DatePickerFragment() {
         // Required empty public constructor
+        dateHandler = new DateHandler();
     }
 
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        TextView textView = new TextView(getActivity());
-        textView.setText(R.string.hello_blank_fragment);
-        return textView;
-    }
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                             Bundle savedInstanceState) {
+//        TextView textView = new TextView(getActivity());
+//        textView.setText(R.string.hello_blank_fragment);
+//        return textView;
+//    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -52,8 +54,8 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
         // Do something with the date chosen by the user
-        selectedDate = day+"-"+month+"-"+year;
-        listener.onDatePicked(selectedDate);
+        selectedDate = day+"-"+month+1+"-"+year;
+        listener.onDatePicked(dateHandler.convertShortDateToLongDate(selectedDate));
 
     }
     public void setDatePickerListener(DatePickerListener listener) {
