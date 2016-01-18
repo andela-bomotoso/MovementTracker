@@ -10,4 +10,5 @@
     <color name="button_effect">#455A64</color>
     <color name="border_background">#F5F5F5</color>
     <color name="border_stroke">#BDBDBD</color>
+    <color name="black">#000000</color>
 </resources>

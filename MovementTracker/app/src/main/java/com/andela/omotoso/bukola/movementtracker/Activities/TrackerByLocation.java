@@ -12,8 +12,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.andela.omotoso.bukola.movementtracker.Dialogs.DatePickerFragment;
@@ -30,6 +32,7 @@ public class TrackerByLocation extends AppCompatActivity{
     private TextView selectedDateText;
     private DateHandler dateHandler;
     private FrameLayout fragementContainer;
+    private ListView dataList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,7 @@ public class TrackerByLocation extends AppCompatActivity{
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         fragementContainer = (FrameLayout)findViewById(R.id.date_picker_container);
+        dataList = (ListView)findViewById(R.id.data_list);
     }
 
     public void showDatePickerDialog() {
@@ -62,6 +66,12 @@ public class TrackerByLocation extends AppCompatActivity{
 
         datePickerFragment.show(getSupportFragmentManager(), "datePicker");
     }
+    public void displayData() {
+        String[] values = new String[]{"Moleye Street","Funsho Street","Adesina Street"};
+        ArrayAdapter<String>adapter = new ArrayAdapter<String>(this,R.layout.data_list_item,R.id.rowData,values);
+        dataList.setAdapter(adapter);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,10 +86,12 @@ public class TrackerByLocation extends AppCompatActivity{
         switch (item.getItemId()) {
             case R.id.date_picker:
                 showDatePickerDialog();
+                displayData();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+
     }
 
 }
