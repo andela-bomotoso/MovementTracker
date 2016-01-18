@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -23,7 +26,10 @@ import com.andela.omotoso.bukola.movementtracker.Dialogs.DatePickerListener;
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.Utilities.DateHandler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class TrackerByLocation extends AppCompatActivity{
     private Button cancelButton;
@@ -51,6 +57,8 @@ public class TrackerByLocation extends AppCompatActivity{
 
         fragementContainer = (FrameLayout)findViewById(R.id.date_picker_container);
         dataList = (ListView)findViewById(R.id.data_list);
+        setSelectedDateTextWatcher();
+
     }
 
     public void showDatePickerDialog() {
@@ -67,7 +75,8 @@ public class TrackerByLocation extends AppCompatActivity{
         datePickerFragment.show(getSupportFragmentManager(), "datePicker");
     }
     public void displayData() {
-        String[] values = new String[]{"Moleye Street","Funsho Street","Adesina Street"};
+        
+        List<String> values = new ArrayList<String>(Arrays.asList("Moleye Street","Funsho Street","Adesina Street"));
         ArrayAdapter<String>adapter = new ArrayAdapter<String>(this,R.layout.data_list_item,R.id.rowData,values);
         dataList.setAdapter(adapter);
     }
@@ -86,12 +95,30 @@ public class TrackerByLocation extends AppCompatActivity{
         switch (item.getItemId()) {
             case R.id.date_picker:
                 showDatePickerDialog();
-                displayData();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    private void setSelectedDateTextWatcher() {
+        selectedDateText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                displayData();
+            }
+        });
     }
 
 }
