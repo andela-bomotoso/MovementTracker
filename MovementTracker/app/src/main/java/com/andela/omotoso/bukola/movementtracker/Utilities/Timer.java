@@ -12,6 +12,8 @@ public class Timer {
     private Activity activity;
     private Boolean timer;
     private TextView timeSpentText;
+    private int count;
+    public static int timeInSeconds;
 
     public Activity getActivity() {
         return activity;
@@ -27,6 +29,8 @@ public class Timer {
 
     public void setTimer(Boolean timer) {
         this.timer = timer;
+        count = 0;
+        timeInSeconds = 0;
     }
 
     public TextView getTimeSpentText() {
@@ -38,9 +42,8 @@ public class Timer {
     }
 
     public void updateTimer() {
-
+        resetTimer();
         Thread t = new Thread() {
-            int count = 0;
             @Override
             public void run() {
                 try {
@@ -50,6 +53,7 @@ public class Timer {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                timeInSeconds = count;
                                 timeSpentText.setText(formatTime(count));
                             }
                         });
@@ -61,6 +65,11 @@ public class Timer {
 
         t.start();
     }
+
+    public void resetTimer() {
+        count = 0;
+    }
+
 
     public String formatTime(int seconds) {
         int hr = seconds/3600;

@@ -4,17 +4,11 @@
     <group android:checkableBehavior="single">
         <item android:id="@+id/tracked_location" android:icon="@drawable/ic_location_on_black_18dp"
             android:title="Tracker By Location" />
-        <item android:id="@+id/tracked_time" android:icon="@drawable/ic_date_range_black_18dp"
-            android:title="Tracker by Date" />
+        <item android:id="@+id/app_info" android:icon="@drawable/ic_info_black_18dp"
+            android:title="App Info" />
+        <item android:id="@+id/app_help" android:icon="@drawable/ic_help_black_18dp"
+            android:title="Help" />
+
     </group>
 
-    <item android:title="Others">
-        <menu>
-            <item android:id="@+id/nav_share" android:icon="@drawable/ic_help_black_18dp"
-                android:title="Help" />
-            <item android:id="@+id/nav_send" android:icon="@drawable/ic_info_black_18dp"
-                android:title="App Info" />
-        </menu>
-    </item>
-
-</menu>
+ </menu>
