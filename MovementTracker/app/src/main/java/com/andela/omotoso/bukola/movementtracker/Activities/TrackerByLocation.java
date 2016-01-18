@@ -32,9 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 public class TrackerByLocation extends AppCompatActivity{
-    private Button cancelButton;
-    private Button setButton;
-    private Dialog dialog;
+
     private TextView selectedDateText;
     private DateHandler dateHandler;
     private FrameLayout fragementContainer;
@@ -75,7 +73,7 @@ public class TrackerByLocation extends AppCompatActivity{
         datePickerFragment.show(getSupportFragmentManager(), "datePicker");
     }
     public void displayData() {
-        
+
         List<String> values = new ArrayList<String>(Arrays.asList("Moleye Street","Funsho Street","Adesina Street"));
         ArrayAdapter<String>adapter = new ArrayAdapter<String>(this,R.layout.data_list_item,R.id.rowData,values);
         dataList.setAdapter(adapter);
