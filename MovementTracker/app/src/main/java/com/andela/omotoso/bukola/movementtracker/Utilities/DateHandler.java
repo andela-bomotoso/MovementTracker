@@ -18,9 +18,9 @@ public class DateHandler {
 
     }
 
-    public String formatDate() {
+    public String formatDate(Date date) {
         String DATE_FORMAT_NOW = "EEE, dd MMM yyyy";
-        Date date = new Date();
+        //Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
         String stringDate = sdf.format(date );
         return stringDate;
