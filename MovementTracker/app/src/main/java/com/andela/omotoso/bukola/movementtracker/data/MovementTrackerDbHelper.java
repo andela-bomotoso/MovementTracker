@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.andela.omotoso.bukola.movementtracker.Utilities.Timer;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,11 +21,13 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "tracker.db";
     static final int DATABASE_VERSION = 2;
     private SQLiteDatabase database;
+    private Timer timer;
 
     public MovementTrackerDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
         database = getReadableDatabase();
+        timer = new Timer();
     }
 
     @Override
@@ -45,20 +49,6 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public String queryByDate(String tracking_date) {
-
-        String query = "SELECT tracking_date,street_name,activity,activity_duration FROM tracker_trail" +
-                         " where TRACKING_DATE ='" + tracking_date + "'";
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.rawQuery(query, null);
-        if (cursor.moveToFirst()) {
-            return cursor.getString(cursor.getColumnIndex("tracking_date"));
-        } else {
-            //return Utilities.retrieveSavedData(source,destination);
-            return "";
-        }
-
-    }
 
     public List<String> queryByStreet(String selectedDate) {
         List<String>records = new ArrayList<>();
@@ -67,6 +57,8 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         String duration = "";
         String previousStreet = "";
         String currentRecord = "";
+        String previousRecord = "";
+        String durationMinutes = "";
         String query = "SELECT street_name,activity,SUM(activity_duration) AS Total_Duration FROM tracker_trail " +
                 "where tracking_date = "+"\'"+selectedDate+"\'" + "GROUP BY street_name,activity order by street_name";
         Cursor cursor = database.rawQuery(query, null);
@@ -75,31 +67,36 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
             streetName = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_STREET));
             activity = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY));
             duration = cursor.getString(cursor.getColumnIndex("Total_Duration"));
-            //currentRecord = streetName+"\n"+"Activity "+activity+"\nDuration "+duration;
-            if(streetName.equals(previousStreet)) {
-                currentRecord+="\n"+activity+" Duration " +duration;
+            durationMinutes = timer.formatTime(Integer.parseInt(duration));
+            currentRecord += " \n"+activity+" "+durationMinutes;
+            if(! streetName.equals(previousStreet) && previousStreet != "") {
+                records.add(previousStreet+previousRecord);
+                previousRecord = "";
+                previousStreet = "";
+                currentRecord = "";
             }
             else {
-                //records.add(previousStreet+currentRecord);
-                currentRecord = "";
                 previousStreet = streetName;
+                previousRecord = currentRecord;
             }
-            currentRecord = streetName+" \n"+activity+" \n"+duration+"secs";
 
-            records.add(currentRecord);
             cursor.moveToNext();
         }
         return records;
-
     }
 
     public void deleteTable() {
-        SQLiteDatabase database = getWritableDatabase();
         database.beginTransaction();
         database.delete(MovementTrackerContract.MovementTracker.TABLE_NAME, null, null);
         database.setTransactionSuccessful();
         database.endTransaction();
-        //database.close();
+    }
+    public void deleteQuery(String selectedDate) {
+       String deleteQuery =  "Delete tracker_trail where tracking_date = "+"\'"+selectedDate+"\'";
+        database.beginTransaction();
+        Cursor cursor = database.rawQuery(deleteQuery, null);
+        database.setTransactionSuccessful();
+        database.endTransaction();
     }
 
     public int tableRows() {

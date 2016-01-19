@@ -2,6 +2,7 @@ package com.andela.omotoso.bukola.movementtracker.Activities;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -59,6 +60,14 @@ public class TrackerByLocation extends AppCompatActivity{
         dataList = (ListView)findViewById(R.id.data_list);
         setSelectedDateTextWatcher();
         displayData();
+
+        FloatingActionButton myFab = (FloatingActionButton)findViewById(R.id.fab);
+        myFab.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                movementTrackerDbHelper.deleteQuery(selectedDateText.getText().toString());
+            }
+        });
+
     }
 
     public void showDatePickerDialog() {
@@ -75,8 +84,15 @@ public class TrackerByLocation extends AppCompatActivity{
         datePickerFragment.show(getSupportFragmentManager(), "datePicker");
     }
     public void displayData() {
-        List<String> values = movementTrackerDbHelper.queryByStreet(dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString()));
-        ArrayAdapter<String>adapter = new ArrayAdapter<String>(this,R.layout.data_list_item,R.id.rowData,values);
+        String no_trail = "";
+        List<String> values  = movementTrackerDbHelper.queryByStreet(dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString()));
+        ArrayAdapter<String>adapter = null;
+        if(values.size() == 0 ) {
+            no_trail = "No Track trail found";
+            values.add(no_trail);
+        }
+        adapter = new ArrayAdapter<String>(this,R.layout.data_list_item,R.id.rowData,values);
+
         dataList.setAdapter(adapter);
     }
 
