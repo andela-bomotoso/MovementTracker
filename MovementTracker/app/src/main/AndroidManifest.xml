@@ -37,7 +37,7 @@
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
         <activity
-            android:name=".Activities.TrackerByLocation"
+            android:name=".Activities.TrackerByLocationActivity"
             android:label="@string/title_activity_tracker_by_location"
             android:parentActivityName=".Activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" >

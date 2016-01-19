@@ -38,7 +38,7 @@ public class DateHandler {
 
     public String convertLongDateToShortDate(String longDate){
         String longDateFormat = "EEE, dd MMM yyyy";
-        String shortDateFormat = "dd-MM-yyyy";
+        String shortDateFormat = "yyyy-MM-dd";
         SimpleDateFormat ldf = new SimpleDateFormat(longDateFormat);
         SimpleDateFormat sdf = new SimpleDateFormat(shortDateFormat);
         Date convertedDate = new Date();
