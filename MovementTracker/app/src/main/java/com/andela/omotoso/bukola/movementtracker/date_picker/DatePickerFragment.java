@@ -49,7 +49,8 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
         // Do something with the date chosen by the user
-        selectedDate = day+"-"+month+1+"-"+year;
+        //selectedDate = day+"-"+month+1+"-"+year;
+        selectedDate = year+"-"+month+1+"-"+day;
         listener.onDatePicked(dateHandler.convertShortDateToLongDate(selectedDate));
 
     }

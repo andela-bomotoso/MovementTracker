@@ -1,6 +1,7 @@
 package com.andela.omotoso.bukola.movementtracker.utilities;
 
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -8,62 +9,60 @@ import java.util.Date;
  */
 public class DateHandler {
 
-    public String getCurrentDate() {
-        String DATE_FORMAT_NOW = "yyyy-MM-dd";
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-        String stringDate = sdf.format(date );
-       return stringDate;
+    private String shortDateFormat;
+    private String longDateFormat;
+    private Date date;
+    private String time_format;
 
+    public DateHandler() {
+
+        date = new Date();
+        shortDateFormat =  Constants.SHORT_DATE_FORMAT;
+        longDateFormat = Constants.LONG_DATE_FORMAT;
+        time_format = Constants.TIME_FORMAT;
     }
 
-    public String formatDate(Date date) {
-        String DATE_FORMAT_NOW = "EEE, dd MMM yyyy";
-        //Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-        String stringDate = sdf.format(date );
-        return stringDate;
+    public String getCurrentDate() {
 
+        return new SimpleDateFormat(shortDateFormat).format(date);
     }
 
     public String getCurrentTime() {
-        String TIME_FORMAT_NOW = "hh:mm:ss a";
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(TIME_FORMAT_NOW);
-        String stringTime = sdf.format(date );
-        return stringTime;
 
+        return new SimpleDateFormat(time_format).format(date);
+    }
+
+    public String formatDate(Date dateToFormat) {
+
+        return new SimpleDateFormat(longDateFormat).format(dateToFormat);
     }
 
     public String convertLongDateToShortDate(String longDate){
-        String longDateFormat = "EEE, dd MMM yyyy";
-        String shortDateFormat = "yyyy-MM-dd";
-        SimpleDateFormat ldf = new SimpleDateFormat(longDateFormat);
-        SimpleDateFormat sdf = new SimpleDateFormat(shortDateFormat);
-        Date convertedDate = new Date();
+
+        Date convertedDate = date;
+
         try {
-            convertedDate = ldf.parse(longDate);
+            convertedDate = new SimpleDateFormat(longDateFormat).parse(longDate);
         }
         catch (Exception exception) {
 
         }
-        return sdf.format(convertedDate);
+
+        return new SimpleDateFormat(shortDateFormat).format(convertedDate);
     }
 
     public String convertShortDateToLongDate(String shortDate){
-        String longDateFormat = "EEE, dd MMM yyyy";
-        String shortDateFormat = "dd-MM-yyyy";
-        SimpleDateFormat ldf = new SimpleDateFormat(longDateFormat);
-        SimpleDateFormat sdf = new SimpleDateFormat(shortDateFormat);
+
         Date convertedDate = new Date();
+
         try {
-            convertedDate = sdf.parse(shortDate);
+            convertedDate = new SimpleDateFormat(shortDateFormat).parse(shortDate);
         }
         catch (Exception exception) {
 
         }
-        return ldf.format(convertedDate);
-    }
 
+        return new SimpleDateFormat(longDateFormat).format(convertedDate);
+    }
 
 }
