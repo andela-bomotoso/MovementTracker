@@ -53,6 +53,8 @@
     <string name="tracker_by_location">Tracker By Location</string>
     <string name="app_info">App Info</string>
     <string name="help">Help</string>
+    <string name="notification_title">Tracking in Progress</string>
+
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -23,9 +23,13 @@ public class Constants {
     public static final String DEFAULT_DELAY = "5 minutes";
     public static final int TICK_IN_MILLISECONDS = 1000;
     public static final int MINUTES_TO_MILLISECONDS = 60000;
+    public static final int NOTIFICATION_ID = 1;
     public static final String SHORT_DATE_FORMAT = "yyyy-MM-dd";
     public static final String LONG_DATE_FORMAT = "EEE, dd MMM yyyy";
     public static final String TIME_FORMAT = "hh:mm:ss a";
+    public static final String NOTIFIER_TAG = "Notifier";
+    public static final String NOTIFICATION_TITLE = "Tracking in Progress";
+
     public static final String APP_INFO =
             "This app serves as a tool that can be used to monitor where most of " +
             "one's daily activity is spent and what it is spent on\n\n." + " " +
@@ -47,6 +51,4 @@ public class Constants {
             " is automatically " +"displayed if there is an existing track trail, " +
             "Otherwise, the user should select a date on the calendar icon of the toolbar to see the "+
             "track history of the selected date.";
-
-
 }
