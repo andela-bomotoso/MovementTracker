@@ -17,6 +17,7 @@ import com.andela.omotoso.bukola.movementtracker.utilities.Notifier;
 import com.andela.omotoso.bukola.movementtracker.utilities.SharedPreferenceManager;
 import com.andela.omotoso.bukola.movementtracker.utilities.Timer;
 import com.andela.omotoso.bukola.movementtracker.data.MovementTrackerDbHelper;
+import com.andela.omotoso.bukola.movementtracker.utilities.TimerListener;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.ActivityRecognition;
@@ -71,10 +72,12 @@ public class MainActivity extends AppCompatActivity
     private GoogleApiClient googleApiClient;
     private String activityText = "";
     private String locationText = "";
+    private String timeSpent = "";
     private int durationText = 0;
     private String logTimeText = "";
     private TextView appInfoText;
     private Button appInfoOkButton;
+    private TimerListener timerListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,9 +129,16 @@ public class MainActivity extends AppCompatActivity
 
         timeSpentText = (TextView) findViewById(R.id.time_spentText);
 
-        timer = new Timer();
-        timer.setTimeSpentText(timeSpentText);
-        timer.setActivity(MainActivity.this);
+        timer = new Timer(this);
+
+        timerListener = new TimerListener() {
+            @Override
+            public void onTimeChanged(String timeSpent) {
+                timeSpentText.setText(timeSpent);
+            }
+        };
+        timer.setTimerListener(timerListener);
+
 
         context = getApplicationContext();
         initializeActivityDetector();
@@ -268,9 +278,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void startTracking() {
+
         currentActivityText.setText("connecting...");
-        timer.setTimer(true);
-        timer.updateTimer();
+        timer.turnOn();
         detectActivity();
     }
 
@@ -293,7 +303,8 @@ public class MainActivity extends AppCompatActivity
 
     public void stopTracking() {
         currentActivityText.setText("Tracking stopped");
-        timer.setTimer(false);
+        //timer.setTimer(false);
+        timer.turnOff();
         notifier.cancelNotification(this, 1);
     }
 
@@ -337,12 +348,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void afterTextChanged(Editable s) {
                 if(activityText.equals("connecting...")) {
-                    timer.resetTimer();
+                    timer.reset();
                 }
                 if (!currentActivityText.getText().toString().equals(activityText)
                         && !activityText.equals("connecting...") && !activityText.equals("Tracking stopped")) {
                     movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),locationText,activityText, timer.timeInSeconds,dateHandler.getCurrentTime());
-                    timer.resetTimer();
+                    timer.reset();
                 }
             }
         });

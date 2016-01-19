@@ -29,6 +29,7 @@ public class Constants {
     public static final String TIME_FORMAT = "hh:mm:ss a";
     public static final String NOTIFIER_TAG = "Notifier";
     public static final String NOTIFICATION_TITLE = "Tracking in Progress";
+    public static final String DELAY_KEY = "DELAY_KEY";
 
     public static final String APP_INFO =
             "This app serves as a tool that can be used to monitor where most of " +
