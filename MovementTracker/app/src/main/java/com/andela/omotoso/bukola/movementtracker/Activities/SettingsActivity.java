@@ -1,4 +1,4 @@
-package com.andela.omotoso.bukola.movementtracker.Activities;
+package com.andela.omotoso.bukola.movementtracker.activities;
 
 import android.app.Dialog;
 import android.content.SharedPreferences;
@@ -12,7 +12,6 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.andela.omotoso.bukola.movementtracker.R;
-import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
 import com.andela.omotoso.bukola.movementtracker.Utilities.SharedPreferenceManager;
 
 public class SettingsActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {

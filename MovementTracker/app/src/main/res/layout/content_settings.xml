@@ -9,7 +9,7 @@
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_settings"
-    tools:context="com.andela.omotoso.bukola.movementtracker.Activities.SettingsActivity">
+    tools:context="com.andela.omotoso.bukola.movementtracker.activities.SettingsActivity">
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

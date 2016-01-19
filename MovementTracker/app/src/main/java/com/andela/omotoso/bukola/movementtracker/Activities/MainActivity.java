@@ -1,4 +1,4 @@
-package com.andela.omotoso.bukola.movementtracker.Activities;
+package com.andela.omotoso.bukola.movementtracker.activities;
 
 import android.app.AlertDialog;
 import android.app.PendingIntent;
