@@ -59,7 +59,7 @@ public class Timer {
                             public void run() {
                                 timeInSeconds = count;
                                 timeSpent = formatTime(count);
-                                timerListener.onTimeChanged(timeSpent);
+                                timerListener.onTick(timeSpent);
                             }
                         });
                     }

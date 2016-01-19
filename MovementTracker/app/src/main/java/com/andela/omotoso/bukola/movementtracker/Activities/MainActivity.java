@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity
 
         timerListener = new TimerListener() {
             @Override
-            public void onTimeChanged(String timeSpent) {
+            public void onTick(String timeSpent) {
                 timeSpentText.setText(timeSpent);
             }
         };
