@@ -49,7 +49,6 @@ public class TrackerByLocation extends AppCompatActivity{
 
         dateHandler = new DateHandler();
 
-
         selectedDateText = (TextView)findViewById(R.id.selected_date);
         selectedDateText.setText(dateHandler.formatDate(new Date()));
         movementTrackerDbHelper = new MovementTrackerDbHelper(this);
@@ -59,7 +58,7 @@ public class TrackerByLocation extends AppCompatActivity{
         fragementContainer = (FrameLayout)findViewById(R.id.date_picker_container);
         dataList = (ListView)findViewById(R.id.data_list);
         setSelectedDateTextWatcher();
-
+        displayData();
     }
 
     public void showDatePickerDialog() {

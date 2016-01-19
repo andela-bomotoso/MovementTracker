@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void startTracking() {
-        currentActivityText.setText("connecting..");
+        currentActivityText.setText("connecting...");
         timer.setTimer(true);
         timer.updateTimer();
         detectActivity();
@@ -337,7 +337,8 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!currentActivityText.getText().toString().equals(activityText)) {
+                if (!currentActivityText.getText().toString().equals(activityText)
+                        && !activityText.equals("connecting...") && !activityText.equals("Tracking stopped")) {
                     movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),locationText,activityText, timer.timeInSeconds,dateHandler.getCurrentTime());
                     timer.resetTimer();
                 }

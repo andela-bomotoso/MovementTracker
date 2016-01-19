@@ -82,22 +82,23 @@ public class MovementTrackerDbHelperTest extends AndroidTestCase {
 
     public void testTableRows() {
         MovementTrackerDbHelper dbHelper = new MovementTrackerDbHelper(getContext());
-        assertEquals(2,dbHelper.tableRows());
+        //dbHelper.deleteTable();
+      assertEquals(0,dbHelper.tableRows());
     }
 
-    public void testInsert() {
-        MovementTrackerDbHelper dbHelper = new MovementTrackerDbHelper(getContext());
-        dbHelper.insertRows("2016-01-18","Moleye Street","Standing Still",90,"12:04AM");
-        dbHelper.insertRows("2016-01-18","Moleye Street","On foot",30,"12:04AM");
-        dbHelper.insertRows("2016-01-18","Moleye Street","Standing Still",50,"12:04AM");
-        dbHelper.insertRows("2016-01-18","Moleye Street","On foot",25,"12:04AM");
-        dbHelper.insertRows("2016-01-18","Funso Street","Standing Still",50,"12:04AM");
-        dbHelper.insertRows("2016-01-18","Funso Street","On foot",25,"12:04AM");
-        //assertEquals(1,dbHelper.tableRows());
-    }
+//    public void testInsert() {
+//        MovementTrackerDbHelper dbHelper = new MovementTrackerDbHelper(getContext());
+//        dbHelper.insertRows("2016-01-18","Moleye Street","Standing Still",90,"12:04AM");
+//        dbHelper.insertRows("2016-01-18","Moleye Street","On foot",30,"12:04AM");
+//        dbHelper.insertRows("2016-01-18","Moleye Street","Standing Still",50,"12:04AM");
+//        dbHelper.insertRows("2016-01-18","Moleye Street","On foot",25,"12:04AM");
+//        dbHelper.insertRows("2016-01-18","Funso Street","Standing Still",50,"12:04AM");
+//        dbHelper.insertRows("2016-01-18","Funso Street","On foot",25,"12:04AM");
+//        //assertEquals(1,dbHelper.tableRows());
+//    }
 
-    public void testQueryStreet() {
-        MovementTrackerDbHelper dbHelper = new MovementTrackerDbHelper(getContext());
-        //dbHelper.queryByStreet();
-    }
+//    public void testQueryStreet() {
+//        MovementTrackerDbHelper dbHelper = new MovementTrackerDbHelper(getContext());
+//        //dbHelper.queryByStreet();
+//    }
 }

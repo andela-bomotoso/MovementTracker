@@ -80,13 +80,13 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
                 currentRecord+="\n"+activity+" Duration " +duration;
             }
             else {
-                records.add(previousStreet+currentRecord);
+                //records.add(previousStreet+currentRecord);
                 currentRecord = "";
                 previousStreet = streetName;
             }
-            //currentRecord = streetName+" "+activity+" "+duration;
+            currentRecord = streetName+" \n"+activity+" \n"+duration+"secs";
 
-            //records.add(currentRecord);
+            records.add(currentRecord);
             cursor.moveToNext();
         }
         return records;
