@@ -12,7 +12,7 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.andela.omotoso.bukola.movementtracker.R;
-import com.andela.omotoso.bukola.movementtracker.Utilities.SharedPreferenceManager;
+import com.andela.omotoso.bukola.movementtracker.utilities.SharedPreferenceManager;
 
 public class SettingsActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
 

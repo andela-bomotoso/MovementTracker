@@ -18,10 +18,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.andela.omotoso.bukola.movementtracker.Dialogs.DatePickerFragment;
-import com.andela.omotoso.bukola.movementtracker.Dialogs.DatePickerListener;
+import com.andela.omotoso.bukola.movementtracker.date_picker.DatePickerFragment;
+import com.andela.omotoso.bukola.movementtracker.date_picker.DatePickerListener;
 import com.andela.omotoso.bukola.movementtracker.R;
-import com.andela.omotoso.bukola.movementtracker.Utilities.DateHandler;
+import com.andela.omotoso.bukola.movementtracker.utilities.DateHandler;
 import com.andela.omotoso.bukola.movementtracker.data.MovementTrackerDbHelper;
 
 import java.util.Date;

@@ -1,9 +1,8 @@
-package com.andela.omotoso.bukola.movementtracker.Utilities;
+package com.andela.omotoso.bukola.movementtracker.utilities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.widget.TextView;
 
 /**
  * Created by GRACE on 1/14/2016.

@@ -1,4 +1,4 @@
-package com.andela.omotoso.bukola.movementtracker.Dialogs;
+package com.andela.omotoso.bukola.movementtracker.date_picker;
 
 /**
  * Created by GRACE on 1/18/2016.

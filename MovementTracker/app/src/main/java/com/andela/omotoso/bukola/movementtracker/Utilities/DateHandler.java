@@ -1,6 +1,5 @@
-package com.andela.omotoso.bukola.movementtracker.Utilities;
+package com.andela.omotoso.bukola.movementtracker.utilities;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

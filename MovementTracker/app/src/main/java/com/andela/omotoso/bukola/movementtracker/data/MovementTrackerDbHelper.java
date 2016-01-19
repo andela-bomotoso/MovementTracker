@@ -5,9 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
-import com.andela.omotoso.bukola.movementtracker.Utilities.Timer;
+import com.andela.omotoso.bukola.movementtracker.utilities.Timer;
 
 import java.util.ArrayList;
 import java.util.List;

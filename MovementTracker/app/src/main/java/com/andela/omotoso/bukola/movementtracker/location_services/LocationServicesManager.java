@@ -1,4 +1,4 @@
-package com.andela.omotoso.bukola.movementtracker.LocationServices;
+package com.andela.omotoso.bukola.movementtracker.location_services;
 
 import android.app.Activity;
 import android.location.Address;

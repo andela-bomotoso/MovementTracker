@@ -1,18 +1,13 @@
-package com.andela.omotoso.bukola.movementtracker.Dialogs;
+package com.andela.omotoso.bukola.movementtracker.date_picker;
 
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.DatePicker;
-import android.widget.TextView;
 
-import com.andela.omotoso.bukola.movementtracker.R;
-import com.andela.omotoso.bukola.movementtracker.Utilities.DateHandler;
+import com.andela.omotoso.bukola.movementtracker.utilities.DateHandler;
 
 import java.util.Calendar;
 

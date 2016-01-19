@@ -28,7 +28,7 @@
             android:value="@integer/google_play_services_version" />
 
         <service
-            android:name=".ActivityDetection.ActivityDetector"
+            android:name=".activity_detection.ActivityDetector"
             android:exported="false" />
 
         <activity

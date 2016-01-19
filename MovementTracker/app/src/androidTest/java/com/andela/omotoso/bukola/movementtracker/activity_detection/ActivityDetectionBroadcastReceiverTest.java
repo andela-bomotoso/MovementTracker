@@ -1,4 +1,4 @@
-package com.andela.omotoso.bukola.movementtracker.ActivityDetection;
+package com.andela.omotoso.bukola.movementtracker.activity_detection;
 
 import junit.framework.TestCase;
 

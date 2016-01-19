@@ -1,15 +1,12 @@
-package com.andela.omotoso.bukola.movementtracker.ActivityDetection;
+package com.andela.omotoso.bukola.movementtracker.activity_detection;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
-import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
+import com.andela.omotoso.bukola.movementtracker.utilities.Constants;
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
-
-import java.util.ArrayList;
 
 /**
  * Created by GRACE on 1/9/2016.

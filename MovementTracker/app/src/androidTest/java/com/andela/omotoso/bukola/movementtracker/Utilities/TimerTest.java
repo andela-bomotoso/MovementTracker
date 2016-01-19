@@ -1,4 +1,4 @@
-package com.andela.omotoso.bukola.movementtracker.Utilities;
+package com.andela.omotoso.bukola.movementtracker.utilities;
 
 import junit.framework.TestCase;
 

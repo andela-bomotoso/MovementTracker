@@ -1,7 +1,6 @@
-package com.andela.omotoso.bukola.movementtracker.Utilities;
+package com.andela.omotoso.bukola.movementtracker.utilities;
 
 import android.app.Activity;
-import android.os.CountDownTimer;
 import android.widget.TextView;
 
 /**
