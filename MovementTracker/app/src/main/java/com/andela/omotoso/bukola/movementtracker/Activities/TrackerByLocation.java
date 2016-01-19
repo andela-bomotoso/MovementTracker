@@ -25,6 +25,7 @@ import com.andela.omotoso.bukola.movementtracker.Dialogs.DatePickerFragment;
 import com.andela.omotoso.bukola.movementtracker.Dialogs.DatePickerListener;
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.Utilities.DateHandler;
+import com.andela.omotoso.bukola.movementtracker.data.MovementTrackerDbHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +38,7 @@ public class TrackerByLocation extends AppCompatActivity{
     private DateHandler dateHandler;
     private FrameLayout fragementContainer;
     private ListView dataList;
+    private MovementTrackerDbHelper movementTrackerDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,7 @@ public class TrackerByLocation extends AppCompatActivity{
 
         selectedDateText = (TextView)findViewById(R.id.selected_date);
         selectedDateText.setText(dateHandler.formatDate(new Date()));
+        movementTrackerDbHelper = new MovementTrackerDbHelper(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -73,8 +76,7 @@ public class TrackerByLocation extends AppCompatActivity{
         datePickerFragment.show(getSupportFragmentManager(), "datePicker");
     }
     public void displayData() {
-
-        List<String> values = new ArrayList<String>(Arrays.asList("Moleye Street","Funsho Street","Adesina Street"));
+        List<String> values = movementTrackerDbHelper.queryByStreet(dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString()));
         ArrayAdapter<String>adapter = new ArrayAdapter<String>(this,R.layout.data_list_item,R.id.rowData,values);
         dataList.setAdapter(adapter);
     }

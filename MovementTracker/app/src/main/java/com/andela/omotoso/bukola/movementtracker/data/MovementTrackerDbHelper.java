@@ -18,10 +18,12 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
     private Context context;
     public static final String DATABASE_NAME = "tracker.db";
     static final int DATABASE_VERSION = 2;
+    private SQLiteDatabase database;
 
     public MovementTrackerDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
+        database = getReadableDatabase();
     }
 
     @Override
@@ -58,23 +60,33 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
     }
 
-    public List<String> queryByStreet() {
+    public List<String> queryByStreet(String selectedDate) {
         List<String>records = new ArrayList<>();
         String streetName="";
         String activity = "";
-        String timeSpent = "";
-        String currentDate = "";
-        String query = "SELECT tracking_date,street_name,activity,activity_duration FROM tracker_trail where tracking_date = "+"'2016-01-16'";
-        SQLiteDatabase database = getReadableDatabase();
+        String duration = "";
+        String previousStreet = "";
+        String currentRecord = "";
+        String query = "SELECT street_name,activity,SUM(activity_duration) AS Total_Duration FROM tracker_trail " +
+                "where tracking_date = "+"\'"+selectedDate+"\'" + "GROUP BY street_name,activity order by street_name";
         Cursor cursor = database.rawQuery(query, null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             streetName = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_STREET));
             activity = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY));
-            timeSpent = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_DURATION));
-            currentDate = cursor.getString(cursor.getColumnIndex("tracking_date"));
-            String currentRecord = streetName+" "+activity+" "+timeSpent+" "+currentDate;
-            records.add(currentRecord);
+            duration = cursor.getString(cursor.getColumnIndex("Total_Duration"));
+            //currentRecord = streetName+"\n"+"Activity "+activity+"\nDuration "+duration;
+            if(streetName.equals(previousStreet)) {
+                currentRecord+="\n"+activity+" Duration " +duration;
+            }
+            else {
+                records.add(previousStreet+currentRecord);
+                currentRecord = "";
+                previousStreet = streetName;
+            }
+            //currentRecord = streetName+" "+activity+" "+duration;
+
+            //records.add(currentRecord);
             cursor.moveToNext();
         }
         return records;
@@ -101,18 +113,22 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
     }
 
     public void insertRows(String trackingDate, String streetName, String activity, int activityDuration, String logTime ) {
+
         ContentValues values = new ContentValues();
-        values.put(MovementTrackerContract.MovementTracker.COLUMN_DATE,trackingDate);
-        values.put(MovementTrackerContract.MovementTracker.COLUMN_STREET,streetName);
-        values.put(MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY,activity);
-        values.put(MovementTrackerContract.MovementTracker.COLUMN_DURATION,activityDuration);
+        values.put(MovementTrackerContract.MovementTracker.COLUMN_DATE, trackingDate);
+        values.put(MovementTrackerContract.MovementTracker.COLUMN_STREET, streetName);
+        values.put(MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY, activity);
+        values.put(MovementTrackerContract.MovementTracker.COLUMN_DURATION, activityDuration);
         values.put(MovementTrackerContract.MovementTracker.COLUMN_LOG_TIME,logTime);
-        SQLiteDatabase database = getWritableDatabase();
-            database.beginTransaction();
-            database.insertOrThrow(MovementTrackerContract.MovementTracker.TABLE_NAME, null, values);
+        database.beginTransaction();
+        try {
+           database.insert(MovementTrackerContract.MovementTracker.TABLE_NAME, null, values);
             database.setTransactionSuccessful();
+        } finally {
             database.endTransaction();
-            database.close();
+        }
+
+
     }
 
     public String checkTableExistence() {
@@ -125,8 +141,5 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         }
         return name;
     }
-
-
-
 
 }
