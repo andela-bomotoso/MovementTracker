@@ -62,6 +62,8 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         String query = "SELECT street_name,activity,SUM(activity_duration) AS Total_Duration FROM tracker_trail " +
                 "where tracking_date = "+"\'"+selectedDate+"\'" + "GROUP BY street_name,activity order by street_name";
         Cursor cursor = database.rawQuery(query, null);
+        int recordCount = cursor.getCount();
+        int currentRow = 1;
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             streetName = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_STREET));
@@ -69,8 +71,13 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
             duration = cursor.getString(cursor.getColumnIndex("Total_Duration"));
             durationMinutes = timer.formatTime(Integer.parseInt(duration));
             currentRecord += " \n"+activity+" "+durationMinutes;
-            if(! streetName.equals(previousStreet) && previousStreet != "") {
-                records.add(previousStreet+previousRecord);
+            if((!streetName.equals(previousStreet) && previousStreet != "") || (currentRow == recordCount)) {
+                if(previousStreet == "") {
+                    records.add(streetName + previousRecord + "\n" + activity + " " + durationMinutes);
+                }
+                else {
+                    records.add(previousStreet + previousRecord + "\n" + activity + " " + durationMinutes);
+                }
                 previousRecord = "";
                 previousStreet = "";
                 currentRecord = "";
@@ -81,6 +88,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
             }
 
             cursor.moveToNext();
+            currentRow ++;
         }
         return records;
     }
@@ -92,16 +100,15 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         database.endTransaction();
     }
     public void deleteQuery(String selectedDate) {
-       String deleteQuery =  "Delete tracker_trail where tracking_date = "+"\'"+selectedDate+"\'";
+        String deleteQuery =  "delete from tracker_trail where tracking_date = "+"\'"+selectedDate+"\'";
         database.beginTransaction();
-        Cursor cursor = database.rawQuery(deleteQuery, null);
+        database.execSQL(deleteQuery);
         database.setTransactionSuccessful();
         database.endTransaction();
     }
 
     public int tableRows() {
         String query = "SELECT * FROM " + MovementTrackerContract.MovementTracker.TABLE_NAME;
-        SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery(query, null);
         int rowNum = cursor.getCount();
         cursor.close();
@@ -110,7 +117,6 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
     }
 
     public void insertRows(String trackingDate, String streetName, String activity, int activityDuration, String logTime ) {
-
         ContentValues values = new ContentValues();
         values.put(MovementTrackerContract.MovementTracker.COLUMN_DATE, trackingDate);
         values.put(MovementTrackerContract.MovementTracker.COLUMN_STREET, streetName);
@@ -125,18 +131,6 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
             database.endTransaction();
         }
 
-
-    }
-
-    public String checkTableExistence() {
-        String name = "";
-        SQLiteDatabase database = getReadableDatabase();
-        String query = "SELECT name FROM sqlite_master WHERE type="+"'table'";
-        Cursor cursor = database.rawQuery(query, null);
-        if(cursor.moveToFirst()) {
-            name = cursor.getString(cursor.getColumnIndex("name"));
-        }
-        return name;
     }
 
 }

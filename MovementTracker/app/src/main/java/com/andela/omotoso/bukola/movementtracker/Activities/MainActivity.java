@@ -1,7 +1,6 @@
 package com.andela.omotoso.bukola.movementtracker.Activities;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -178,7 +177,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.tracked_location) {
-            Launcher.launchActivity(this, TrackerByLocation.class);
+            Launcher.launchActivity(this, TrackerByLocationActivity.class);
 
         } else if (id == R.id.app_help) {
             displayHelp();
@@ -337,6 +336,9 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void afterTextChanged(Editable s) {
+                if(activityText.equals("connecting...")) {
+                    timer.resetTimer();
+                }
                 if (!currentActivityText.getText().toString().equals(activityText)
                         && !activityText.equals("connecting...") && !activityText.equals("Tracking stopped")) {
                     movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),locationText,activityText, timer.timeInSeconds,dateHandler.getCurrentTime());

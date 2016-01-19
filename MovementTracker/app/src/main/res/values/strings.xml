@@ -79,6 +79,9 @@
     <string name="title_activity_app__info">App_Info</string>
     <string name="Cancel">cancel</string>
     <string name="date_picker">Date Picker</string>
+    <string name="delete_trail">Delete tracker trail?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

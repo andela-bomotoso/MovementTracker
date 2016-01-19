@@ -68,6 +68,7 @@ public class Timer {
 
     public void resetTimer() {
         count = 0;
+        timeInSeconds = 0;
     }
 
 

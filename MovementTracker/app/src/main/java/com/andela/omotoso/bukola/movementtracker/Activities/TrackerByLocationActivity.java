@@ -1,8 +1,11 @@
 package com.andela.omotoso.bukola.movementtracker.Activities;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +24,7 @@ import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.andela.omotoso.bukola.movementtracker.Dialogs.DatePickerFragment;
 import com.andela.omotoso.bukola.movementtracker.Dialogs.DatePickerListener;
@@ -33,7 +37,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class TrackerByLocation extends AppCompatActivity{
+public class TrackerByLocationActivity extends AppCompatActivity{
 
     private TextView selectedDateText;
     private DateHandler dateHandler;
@@ -58,16 +62,33 @@ public class TrackerByLocation extends AppCompatActivity{
 
         fragementContainer = (FrameLayout)findViewById(R.id.date_picker_container);
         dataList = (ListView)findViewById(R.id.data_list);
-        setSelectedDateTextWatcher();
         displayData();
+        setSelectedDateTextWatcher();
 
         FloatingActionButton myFab = (FloatingActionButton)findViewById(R.id.fab);
         myFab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                movementTrackerDbHelper.deleteQuery(selectedDateText.getText().toString());
+                new AlertDialog.Builder(TrackerByLocationActivity.this).setTitle("Delete Logs")
+                        .setMessage(R.string.delete_trail)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                String selectedDate = dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString());
+                                if (movementTrackerDbHelper.tableRows() != 0) {
+                                    movementTrackerDbHelper.deleteQuery(selectedDate);
+                                    Toast.makeText(getApplicationContext(), "Logs deleted!", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "No track trail found!", Toast.LENGTH_LONG).show();
+                                }
+                                displayData();
+                            }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        })
+                        .show();
             }
         });
-
     }
 
     public void showDatePickerDialog() {
@@ -84,11 +105,11 @@ public class TrackerByLocation extends AppCompatActivity{
         datePickerFragment.show(getSupportFragmentManager(), "datePicker");
     }
     public void displayData() {
-        String no_trail = "";
-        List<String> values  = movementTrackerDbHelper.queryByStreet(dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString()));
-        ArrayAdapter<String>adapter = null;
+        String no_trail = "No track trail found";
+        String selectedDate =  dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString());
+        List<String> values  = movementTrackerDbHelper.queryByStreet(selectedDate);
+        ArrayAdapter<String>adapter;
         if(values.size() == 0 ) {
-            no_trail = "No Track trail found";
             values.add(no_trail);
         }
         adapter = new ArrayAdapter<String>(this,R.layout.data_list_item,R.id.rowData,values);
