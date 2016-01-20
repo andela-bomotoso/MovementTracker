@@ -7,10 +7,10 @@ import android.app.Activity;
  */
 public class Timer {
 
-    public static int timeInSeconds;
+    public  int timeInSeconds;
     private Activity activity;
-    private Boolean timer;
-    private int count;
+    public  Boolean timer;
+    public int count;
     private String timeSpent;
     private TimerListener timerListener;
 
@@ -39,11 +39,13 @@ public class Timer {
     }
 
     public void reset() {
+
         count = 0;
         timeInSeconds = 0;
     }
 
     public void updateTimer() {
+
         reset();
         Thread t = new Thread() {
 
@@ -84,7 +86,7 @@ public class Timer {
         return hrStr+":"+mnStr+":"+secStr;
     }
 
-    public int formatTimeText(String delayText) {
+    public int formatDelayText(String delayText) {
 
         return Integer.parseInt(delayText.split(" ")[0]);
     }

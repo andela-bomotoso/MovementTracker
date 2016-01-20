@@ -1,6 +1,5 @@
 package com.andela.omotoso.bukola.movementtracker.activities;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -26,7 +25,6 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.common.ConnectionResult;
 
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -299,7 +297,7 @@ public class MainActivity extends AppCompatActivity
 
         if ( isOnline(this)) {
 
-            countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
+            countDown(timer.formatDelayText(sharedPreferenceManager.retrieveDelayTime()));
             Intent service = new Intent(this, ActivityDetector.class);
             startService(service);
 
