@@ -47,6 +47,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,ResultCallback<Status> {
@@ -56,31 +57,26 @@ public class MainActivity extends AppCompatActivity
     private LocationRequest locationRequest;
     private TextView longLatText;
     private TextView currentLocationText;
-    private double longitude = 0;
-    private double latitude = 0;
     private TextView currentActivityText;
     private final String TAG = "LOCATION_FINDER";
     private TextView timeSpentText;
     private Timer timer;
-    private int mId;
     private SharedPreferenceManager sharedPreferenceManager;
     private Notifier notifier;
     private LocationServicesManager locationServicesManager;
-    private String streetName = "";
+    private String streetName;
     private MovementTrackerDbHelper movementTrackerDbHelper;
     private DateHandler dateHandler;
     private GoogleApiClient googleApiClient;
-    private String activityText = "";
-    private String locationText = "";
-    private String timeSpent = "";
-    private int durationText = 0;
-    private String logTimeText = "";
-    private TextView appInfoText;
-    private Button appInfoOkButton;
+    private String activityText;
+    private String locationText;
+    private int durationText;
     private TimerListener timerListener;
+    private boolean delayElapsed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -93,33 +89,26 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-       // appInfoText = (TextView)findViewById(R.id.app_info);
-
         initializeComponents();
-        initializeActivity();
-
-        sharedPreferenceManager = new SharedPreferenceManager(this);
-        movementTrackerDbHelper = new MovementTrackerDbHelper(this);
-        notifier = new Notifier(context,MainActivity.this);
-        dateHandler = new DateHandler();
-    }
-
-    private void initializeActivity() {
+        initializeVariables();
         buildGoogleApiClient();
     }
 
     private void initializeComponents() {
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        trackerButton = (ToggleButton) findViewById(R.id.tracker_button);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        if(isOnline(this)) {
-            trackerButton.setEnabled(true);
-        }
-        else {
-            Toast.makeText(this,"No internet detected",Toast.LENGTH_SHORT).show();
-        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        trackerButton = (ToggleButton) findViewById(R.id.tracker_button);
 
         longLatText = (TextView) findViewById(R.id.current_longlatText);
         currentLocationText = (TextView) findViewById(R.id.current_locationText);
@@ -128,6 +117,23 @@ public class MainActivity extends AppCompatActivity
         setActivityTextWatcher();
 
         timeSpentText = (TextView) findViewById(R.id.time_spentText);
+
+        context = getApplicationContext();
+        initializeActivityDetector();
+        loadLocationValues();
+    }
+
+    private void initializeVariables() {
+
+        activityText = "";
+        streetName = "";
+        locationText = "";
+        durationText = 0;
+
+        sharedPreferenceManager = new SharedPreferenceManager(this);
+        movementTrackerDbHelper = new MovementTrackerDbHelper(this);
+        notifier = new Notifier(context,MainActivity.this);
+        dateHandler = new DateHandler();
 
         timer = new Timer(this);
 
@@ -138,14 +144,7 @@ public class MainActivity extends AppCompatActivity
             }
         };
         timer.setTimerListener(timerListener);
-
-
-        context = getApplicationContext();
-        initializeActivityDetector();
-        loadLocationValues();
-
     }
-
 
     @Override
     public void onBackPressed() {
@@ -166,12 +165,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
            startActivity(new Intent(this,SettingsActivity.class));
             return true;
@@ -183,7 +179,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+
         int id = item.getItemId();
 
         if (id == R.id.tracked_location) {
@@ -198,6 +194,7 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
@@ -205,17 +202,20 @@ public class MainActivity extends AppCompatActivity
 
         boolean on = ((ToggleButton) view).isChecked();
         if (on) {
-                Toast.makeText(context, "Tracking Started", Toast.LENGTH_SHORT).show();
+
+                Toast.makeText(context, R.string.tracking_started, Toast.LENGTH_SHORT).show();
                 startTracking();
 
         } else {
-            Toast.makeText(context, "Tracking Stopped", Toast.LENGTH_SHORT).show();
+
+            Toast.makeText(context, R.string.tracking_stopped, Toast.LENGTH_SHORT).show();
             stopTracking();
         }
     }
 
     @Override
     protected void onStart() {
+
         super.onStart();
         locationServicesManager.connect();
         googleApiClient.connect();
@@ -223,6 +223,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onStop() {
+
         locationServicesManager.disconnect();
         googleApiClient.disconnect();
         super.onStop();
@@ -230,6 +231,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onConnected(Bundle bundle) {
+
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(1000);
@@ -242,7 +244,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Toast.makeText(this,"No internet connection",Toast.LENGTH_SHORT).show();
+
     }
 
     public void loadLocationValues() {
@@ -262,10 +264,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void initializeActivityDetector() {
+
         LocalBroadcastManager.getInstance(this).registerReceiver(new Receiver(), new IntentFilter(Constants.BROADCAST_ACTION));
     }
 
     protected synchronized void buildGoogleApiClient() {
+
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -279,13 +283,15 @@ public class MainActivity extends AppCompatActivity
 
     public void startTracking() {
 
-        currentActivityText.setText("connecting...");
+        currentActivityText.setText(R.string.connecting);
         timer.turnOn();
         detectActivity();
     }
 
     public void detectActivity() {
+
         if ( isOnline(this)) {
+
             countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
             Intent service = new Intent(this, ActivityDetector.class);
             startService(service);
@@ -295,17 +301,19 @@ public class MainActivity extends AppCompatActivity
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClient, 0, intent);
         }
         else  {
-            currentActivityText.setText("connecting...");
-            timeSpentText.setText("00:00");
-            Toast.makeText(this,"No internet connection",Toast.LENGTH_SHORT);
+
+            currentActivityText.setText(R.string.connecting);
+            timeSpentText.setText(R.string.time_zero);
+            Toast.makeText(this,R.string.no_internet,Toast.LENGTH_SHORT);
         }
     }
 
     public void stopTracking() {
-        currentActivityText.setText("Tracking stopped");
-        //timer.setTimer(false);
+
+        currentActivityText.setText(R.string.tracking_stopped);
         timer.turnOff();
         notifier.cancelNotification(this, 1);
+        delayElapsed = false;
     }
 
     public void countDown(int delay) {
@@ -318,20 +326,25 @@ public class MainActivity extends AppCompatActivity
 
             public void onFinish() {
                 notifier.sendNotification("Movement Tracker");
+                delayElapsed = true;
             }
         }.start();
     }
 
     public boolean isOnline(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+
         if (netInfo != null && netInfo.isConnected()) {
             return true;
         }
+
         return false;
     }
 
     private void setActivityTextWatcher() {
+
         currentActivityText.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -340,6 +353,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
                 activityText = currentActivityText.getText().toString();
                 locationText = currentLocationText.getText().toString();
                 durationText = timer.timeInSeconds;
@@ -347,22 +361,36 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(activityText.equals("connecting...")) {
+
+                if(activityText.equals(R.string.connecting)) {
                     timer.reset();
                 }
-                if (!currentActivityText.getText().toString().equals(activityText)
-                        && !activityText.equals("connecting...") && !activityText.equals("Tracking stopped")) {
-                    movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),locationText,activityText, timer.timeInSeconds,dateHandler.getCurrentTime());
+
+                if (readyForInsertion()) {
+
+                    movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),locationText,activityText,
+                            timer.timeInSeconds,dateHandler.getCurrentTime());
                     timer.reset();
                 }
             }
         });
     }
 
+    public boolean readyForInsertion() {
+
+        return !currentActivityText.getText().toString().equals(activityText)
+                && !activityText.equals(R.string.connecting) && !activityText.equals(R.string.tracking_stopped) && delayElapsed;
+    }
+
     public void displayAppInfo() {
-        new AlertDialog.Builder(MainActivity.this).setTitle("Application Info")
+
+        new AlertDialog.Builder(MainActivity.this)
+
+                .setTitle(R.string.application_info)
                 .setMessage(Constants.APP_INFO)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                .setIcon(R.drawable.ic_info_black_24dp)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -372,9 +400,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void displayHelp() {
-        new AlertDialog.Builder(MainActivity.this).setTitle("Help")
+
+        new AlertDialog.Builder(MainActivity.this)
+
+                .setTitle(R.string.help)
                 .setMessage(Constants.HELP)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                .setIcon(R.drawable.ic_help_black_18dp)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

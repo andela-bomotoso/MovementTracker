@@ -108,7 +108,7 @@
         android:textColor="@color/buttontextColor"
         android:textOn="@string/stop_tracking"
         android:textOff="@string/start_tracking"
-        android:enabled="false"
+        android:enabled="true"
         android:onClick="onClickTrackerButton"/>
 </LinearLayout>
 

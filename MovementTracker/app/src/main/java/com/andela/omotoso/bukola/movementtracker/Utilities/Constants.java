@@ -23,6 +23,8 @@ public class Constants {
     public static final String DEFAULT_DELAY = "5 minutes";
     public static final int TICK_IN_MILLISECONDS = 1000;
     public static final int MINUTES_TO_MILLISECONDS = 60000;
+    public static final int SECONDS_TO_MINUTES = 60;
+    public static final int SEXONDS_TO_HOUR = 3600;
     public static final int NOTIFICATION_ID = 1;
     public static final String SHORT_DATE_FORMAT = "yyyy-MM-dd";
     public static final String LONG_DATE_FORMAT = "EEE, dd MMM yyyy";
@@ -30,7 +32,7 @@ public class Constants {
     public static final String NOTIFIER_TAG = "Notifier";
     public static final String NOTIFICATION_TITLE = "Tracking in Progress";
     public static final String DELAY_KEY = "DELAY_KEY";
-    public static final String DATABASE_NAME = "tracker.db";
+
     public static final int DATABASE_VERSION = 2;
     public static final String MINUTES = " minutes";
     public static final String DIALOG_TITLE = "Set Delay Time";

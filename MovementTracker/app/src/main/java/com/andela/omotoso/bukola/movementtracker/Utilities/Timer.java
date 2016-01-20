@@ -73,9 +73,9 @@ public class Timer {
 
     public String formatTime(int seconds) {
 
-        int hr = seconds/3600;
-        int rem = seconds%3600;
-        int mn = rem/60;
+        int hr = seconds/Constants.SEXONDS_TO_HOUR;
+        int rem = seconds%Constants.SEXONDS_TO_HOUR;
+        int mn = rem/Constants.SECONDS_TO_MINUTES;
         int sec = rem%60;
         String hrStr = (hr<10 ? "0" : "")+hr;
         String mnStr = (mn<10 ? "0" : "")+mn;

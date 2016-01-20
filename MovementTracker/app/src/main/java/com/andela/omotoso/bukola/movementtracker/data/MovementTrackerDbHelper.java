@@ -18,12 +18,13 @@ import java.util.List;
 public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
     private Context context;
+    public static final String DATABASE_NAME = "tracker.db";
     private SQLiteDatabase database;
     private Timer timer;
 
     public MovementTrackerDbHelper(Context context) {
 
-        super(context, Constants.DATABASE_NAME, null, Constants.DATABASE_VERSION);
+        super(context, DATABASE_NAME, null, Constants.DATABASE_VERSION);
         this.context = context;
         database = getReadableDatabase();
         timer = new Timer();
@@ -105,7 +106,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
         return cursor;
     }
-    
+
     public void deleteQuery(String selectedDate) {
 
         String deleteQuery =  "delete from tracker_trail where tracking_date = "+"\'"+selectedDate+"\'";
