@@ -12,16 +12,20 @@ import com.google.android.gms.location.DetectedActivity;
  * Created by GRACE on 1/9/2016.
  */
 public class ActivityDetector extends IntentService {
-    public static final String DETECTED_ACTIVITY = "detected_activity";
+
+    public static final String DETECTED_ACTIVITY = Constants.DETECTED_ACTIVITY;
 
     public ActivityDetector() {
+
         super(DETECTED_ACTIVITY);
     }
 
     public void onHandleIntent(Intent intent) {
+
         ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
 
         if (result != null) {
+
             DetectedActivity detectedActivity = result.getMostProbableActivity();
 
             Intent broadcast = new Intent(Constants.BROADCAST_ACTION);

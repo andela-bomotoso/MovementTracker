@@ -113,7 +113,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         database.setTransactionSuccessful();
         database.endTransaction();
     }
-    
+
     public void deleteQuery(String selectedDate) {
 
         String deleteQuery =  "delete from tracker_trail where tracking_date = "+"\'"+selectedDate+"\'";
