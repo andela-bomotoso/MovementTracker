@@ -85,30 +85,11 @@ public class LocationServicesManager implements GoogleApiClient.ConnectionCallba
         streetName = fetchStreetName();
 
         locationServicesListener.onLocationChanged(longitude,latitude);
-        //listener.onCountryDetected(countryName);
     }
 
     public void setListener(LocationServicesListener listener) {
         this.locationServicesListener = listener;
     }
-
-//    public String detectCountry() {
-//        String country = "";
-//        Geocoder geocoder = new Geocoder(activity);
-//        List<Address> addresses = null;
-//        try {
-//            addresses = geocoder.getFromLocation(latitude, longitude, 1);
-//        }
-//        catch (Exception exception) {
-//        }
-//        if(addresses != null && addresses.size() > 0 ){
-//
-//            Address address = addresses.get(0);
-//            country = address.getCountryName();
-//        }
-//
-//        return country;
-//    }
 
     public String fetchStreetName() {
         String street = "";
