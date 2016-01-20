@@ -193,6 +193,7 @@ public class TrackerByLocationActivity extends AppCompatActivity{
     public void displayTrailDetails(String location ) {
 
         new AlertDialog.Builder(TrackerByLocationActivity.this)
+
                 .setTitle(location)
                 .setMessage(getMessageFromList(movementTrackerDbHelper.queryByLocation(location.trim(), selectedDate)))
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -204,6 +205,5 @@ public class TrackerByLocationActivity extends AppCompatActivity{
 
                 .show();
     }
-
 
 }
