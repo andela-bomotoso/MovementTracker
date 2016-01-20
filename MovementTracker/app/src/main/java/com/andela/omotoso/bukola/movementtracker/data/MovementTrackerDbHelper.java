@@ -49,7 +49,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public List<String> queryByStreet(String selectedDate) {
+    public List<String> queryByDate(String selectedDate) {
 
         List<String>records = new ArrayList<>();
         String streetName="";
@@ -97,11 +97,68 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         return records;
     }
 
-    public Cursor retrieveDBRows(String selectedDate) {
-        String deleteQuery = "SELECT street_name,activity,SUM(activity_duration) AS Total_Duration FROM tracker_trail " +
-                "where tracking_date = "+"\'"+selectedDate+"\'" + "GROUP BY street_name,activity order by street_name";
+    public List<String> queryByLocation(String selectedLocation, String selectedDate) {
 
-        Cursor cursor = database.rawQuery(deleteQuery, null);
+        List<String>records = new ArrayList<>();
+        String streetName="";
+        String activity = "";
+        String log_time = "";
+        String duration = "";
+        String previousStreet = "";
+        String currentRecord = "";
+        String previousRecord = "";
+        String durationMinutes = "";
+        int currentRow = 1;
+
+        Cursor cursor = retrieveDbRows(selectedDate,selectedLocation);
+        int recordCount = cursor.getCount();
+
+        while (!cursor.isAfterLast()) {
+
+            streetName = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_STREET));
+            activity = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY));
+            log_time = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_LOG_TIME));
+            duration = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_DURATION));
+            durationMinutes = timer.formatTime(Integer.parseInt(duration));
+
+            currentRecord += " \n"+activity+" "+ durationMinutes+" "+ log_time;
+
+            if((!streetName.equals(previousStreet) && previousStreet != "") || (currentRow == recordCount)) {
+                records.add(previousRecord + "\n" + activity + " " + durationMinutes + " "+log_time);
+
+                previousRecord = "";
+                previousStreet = "";
+                currentRecord = "";
+            }
+            else {
+                previousStreet = streetName;
+                previousRecord = currentRecord;
+            }
+
+            cursor.moveToNext();
+            currentRow ++;
+        }
+        return records;
+    }
+
+    public Cursor retrieveDBRows(String selectedDate) {
+        String selectQuery = "";
+
+        selectQuery = "SELECT street_name,activity,SUM(activity_duration) AS Total_Duration FROM tracker_trail " +
+                "where tracking_date = " + "\'" + selectedDate + "\'" + "GROUP BY street_name,activity order by street_name";
+
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+
+        return cursor;
+    }
+
+    public Cursor retrieveDbRows(String selectedDate,String selectedLocation) {
+
+        String selectQuery = "SELECT street_name,activity,activity_duration,log_time FROM tracker_trail " +
+                    "where rtrim(street_name) = " +"\'" +selectedLocation  + "\' " +" and tracking_date = " +"\'"+selectedDate +"\'"+" and activity_duration != "+0+" order by log_time";
+
+        Cursor cursor = database.rawQuery(selectQuery, null);
         cursor.moveToFirst();
 
         return cursor;

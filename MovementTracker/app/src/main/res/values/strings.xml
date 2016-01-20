@@ -58,7 +58,7 @@
     <string name="datepicker">datePicker</string>
     <string name="no_track">No track trail found</string>
     <string name="log_delete">Logs deleted!</string>
-    <string name="tracking_started">Tracking Startted</string>
+    <string name="tracking_started">Tracking Started</string>
     <string name="tracking_stopped">Tracking Stopped</string>
     <string name="no_internet">No Internet Connection</string>
     <string name="application_info">Application Info</string>

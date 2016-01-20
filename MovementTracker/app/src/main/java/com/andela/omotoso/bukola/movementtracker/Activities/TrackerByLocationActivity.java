@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ public class TrackerByLocationActivity extends AppCompatActivity{
     private TextView selectedDateText;
     private DateHandler dateHandler;
     private ListView dataList;
+    private String selectedDate;
     private MovementTrackerDbHelper movementTrackerDbHelper;
 
     @Override
@@ -51,8 +53,11 @@ public class TrackerByLocationActivity extends AppCompatActivity{
 
         dateHandler = new DateHandler();
 
+        selectedDate = "";
         selectedDateText = (TextView)findViewById(R.id.selected_date);
         selectedDateText.setText(dateHandler.formatDate(new Date()));
+        selectedDate = dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString());
+
         movementTrackerDbHelper = new MovementTrackerDbHelper(this);
 
         dataList = (ListView)findViewById(R.id.data_list);
@@ -74,8 +79,6 @@ public class TrackerByLocationActivity extends AppCompatActivity{
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 
                             public void onClick(DialogInterface dialog, int id) {
-
-                                String selectedDate = dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString());
 
                                 if (movementTrackerDbHelper.tableRows() != 0) {
 
@@ -118,7 +121,7 @@ public class TrackerByLocationActivity extends AppCompatActivity{
 
         String no_trail = getString(R.string.no_track);
         String selectedDate =  dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString());
-        List<String> values  = movementTrackerDbHelper.queryByStreet(selectedDate);
+        List<String> values  = movementTrackerDbHelper.queryByDate(selectedDate);
 
         if(values.size() == 0 ) {
             values.add(no_trail);
@@ -126,8 +129,23 @@ public class TrackerByLocationActivity extends AppCompatActivity{
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.data_list_item,R.id.rowData,values);
         dataList.setAdapter(adapter);
+        dataList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String itemValue = (String) dataList.getItemAtPosition(position);
+                String location = itemValue.split("\\r?\\n")[0];
+                displayTrailDetails(location);
+            }
+        });
     }
 
+    private String getMessageFromList(List<String>values) {
+        String message = "";
+        for(String s: values) {
+            message+=s;
+        }
+        return message;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -166,10 +184,26 @@ public class TrackerByLocationActivity extends AppCompatActivity{
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                selectedDate = dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString());
                 displayData();
             }
         });
     }
+
+    public void displayTrailDetails(String location ) {
+
+        new AlertDialog.Builder(TrackerByLocationActivity.this)
+                .setTitle(location)
+                .setMessage(getMessageFromList(movementTrackerDbHelper.queryByLocation(location.trim(), selectedDate)))
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                })
+
+                .show();
+    }
+
 
 }

@@ -1,11 +1,8 @@
 package com.andela.omotoso.bukola.movementtracker.data;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
-
-import junit.framework.TestCase;
 
 import java.util.HashSet;
 
@@ -100,7 +97,7 @@ public class MovementTrackerDbHelperTest extends AndroidTestCase {
     public void testQueryStreet() {
         MovementTrackerDbHelper dbHelper = new MovementTrackerDbHelper(getContext());
         //dbHelper.deleteQuery("2016-01-19");
-        dbHelper.queryByStreet("2016-01-19");
+        dbHelper.queryByDate("2016-01-19");
        // dbHelper.deleteTable();
     }
 }

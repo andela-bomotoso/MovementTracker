@@ -1,11 +1,13 @@
 package com.andela.omotoso.bukola.movementtracker.activities;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+
 import com.andela.omotoso.bukola.movementtracker.google_services.ActivityDetector;
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.google_services.LocationDetector;
@@ -24,6 +26,7 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.common.ConnectionResult;
 
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -45,13 +48,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,GoogleApiClient.ConnectionCallbacks,
+        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status> {
 
     private Context context;
@@ -122,7 +126,6 @@ public class MainActivity extends AppCompatActivity
 
         context = getApplicationContext();
         initializeActivityDetector();
-        //loadLocationValues();
     }
 
     private void initializeVariables() {
@@ -135,7 +138,7 @@ public class MainActivity extends AppCompatActivity
 
         sharedPreferenceManager = new SharedPreferenceManager(this);
         movementTrackerDbHelper = new MovementTrackerDbHelper(this);
-        notifier = new Notifier(context,MainActivity.this);
+        notifier = new Notifier(context, MainActivity.this);
         dateHandler = new DateHandler();
         locationDetector = new LocationDetector();
 
@@ -172,7 +175,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-           startActivity(new Intent(this, SettingsActivity.class));
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
@@ -191,7 +194,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.app_help) {
             displayHelp();
 
-        } else if (id ==R.id.app_info) {
+        } else if (id == R.id.app_info) {
             displayAppInfo();
         }
 
@@ -206,8 +209,8 @@ public class MainActivity extends AppCompatActivity
         boolean on = ((ToggleButton) view).isChecked();
         if (on) {
 
-                Toast.makeText(context, R.string.tracking_started, Toast.LENGTH_SHORT).show();
-                startTracking();
+            Toast.makeText(context, R.string.tracking_started, Toast.LENGTH_SHORT).show();
+            startTracking();
 
         } else {
 
@@ -236,7 +239,13 @@ public class MainActivity extends AppCompatActivity
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(1000);
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+
+        try {
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+
+        } catch (SecurityException exception){
+
+        }
     }
 
     @Override
