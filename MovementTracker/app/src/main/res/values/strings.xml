@@ -62,6 +62,7 @@
     <string name="tracking_stopped">Tracking Stopped</string>
     <string name="no_internet">No Internet Connection</string>
     <string name="application_info">Application Info</string>
+    <string name="app_label">Movement Tracker</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
