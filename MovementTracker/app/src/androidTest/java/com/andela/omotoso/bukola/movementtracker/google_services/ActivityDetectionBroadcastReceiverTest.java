@@ -1,4 +1,4 @@
-package com.andela.omotoso.bukola.movementtracker.activity_detection;
+package com.andela.omotoso.bukola.movementtracker.google_services;
 
 import junit.framework.TestCase;
 
