@@ -50,6 +50,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
 
     public List<String> queryByStreet(String selectedDate) {
+
         List<String>records = new ArrayList<>();
         String streetName="";
         String activity = "";
@@ -58,28 +59,34 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         String currentRecord = "";
         String previousRecord = "";
         String durationMinutes = "";
-        String query = "SELECT street_name,activity,SUM(activity_duration) AS Total_Duration FROM tracker_trail " +
+
+        String deleteQuery = "SELECT street_name,activity,SUM(activity_duration) AS Total_Duration FROM tracker_trail " +
                 "where tracking_date = "+"\'"+selectedDate+"\'" + "GROUP BY street_name,activity order by street_name";
-        Cursor cursor = database.rawQuery(query, null);
+
+        Cursor cursor = database.rawQuery(deleteQuery, null);
         int recordCount = cursor.getCount();
         int currentRow = 1;
         cursor.moveToFirst();
+
         while (!cursor.isAfterLast()) {
+
             streetName = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_STREET));
             activity = cursor.getString(cursor.getColumnIndex(MovementTrackerContract.MovementTracker.COLUMN_ACTIVITY));
             duration = cursor.getString(cursor.getColumnIndex("Total_Duration"));
             durationMinutes = timer.formatTime(Integer.parseInt(duration));
+
             currentRecord += " \n"+activity+" "+durationMinutes;
+
             if((!streetName.equals(previousStreet) && previousStreet != "") || (currentRow == recordCount)) {
+
                 if(previousStreet == "") {
                     records.add(streetName + previousRecord + "\n" + activity + " " + durationMinutes);
                 }
                 else {
                     records.add(previousStreet + previousRecord + "\n" + activity + " " + durationMinutes);
                 }
-                previousRecord = "";
-                previousStreet = "";
-                currentRecord = "";
+
+                clearBuffer(previousRecord,previousStreet,currentRecord);
             }
             else {
                 previousStreet = streetName;
@@ -129,6 +136,14 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         } finally {
             database.endTransaction();
         }
+
+    }
+
+    private void clearBuffer(String previousRecord,String previousStreet,String currentRecord) {
+
+        previousRecord = "";
+        previousStreet = "";
+        currentRecord = "";
 
     }
 
