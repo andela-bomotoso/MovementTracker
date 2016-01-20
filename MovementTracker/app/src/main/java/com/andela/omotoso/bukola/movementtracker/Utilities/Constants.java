@@ -32,7 +32,8 @@ public class Constants {
     public static final String DELAY_KEY = "DELAY_KEY";
     public static final String DATABASE_NAME = "tracker.db";
     public static final int DATABASE_VERSION = 2;
-    public static final String DETECTED_ACTIVITY = "detected_activity";
+    public static final String MINUTES = " minutes";
+    public static final String DIALOG_TITLE = "Set Delay Time";
 
     public static final String APP_INFO =
             "This app serves as a tool that can be used to monitor where most of " +

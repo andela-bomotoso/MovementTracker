@@ -13,7 +13,7 @@ import com.google.android.gms.location.DetectedActivity;
  */
 public class ActivityDetector extends IntentService {
 
-    public static final String DETECTED_ACTIVITY = Constants.DETECTED_ACTIVITY;
+    public static final String DETECTED_ACTIVITY = "DETECTED_ACTIVITY";
 
     public ActivityDetector() {
 

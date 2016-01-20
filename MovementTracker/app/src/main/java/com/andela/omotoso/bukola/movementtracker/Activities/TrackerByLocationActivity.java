@@ -13,7 +13,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,16 +30,24 @@ public class TrackerByLocationActivity extends AppCompatActivity{
 
     private TextView selectedDateText;
     private DateHandler dateHandler;
-    private FrameLayout fragementContainer;
     private ListView dataList;
     private MovementTrackerDbHelper movementTrackerDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracker_by_location);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        initializeComponents();
+        setFabAction();
+    }
+
+    public void initializeComponents() {
 
         dateHandler = new DateHandler();
 
@@ -48,31 +55,42 @@ public class TrackerByLocationActivity extends AppCompatActivity{
         selectedDateText.setText(dateHandler.formatDate(new Date()));
         movementTrackerDbHelper = new MovementTrackerDbHelper(this);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        fragementContainer = (FrameLayout)findViewById(R.id.date_picker_container);
         dataList = (ListView)findViewById(R.id.data_list);
+
         displayData();
         setSelectedDateTextWatcher();
+    }
 
+    public void setFabAction() {
+        
         FloatingActionButton myFab = (FloatingActionButton)findViewById(R.id.fab);
         myFab.setOnClickListener(new View.OnClickListener() {
+
             public void onClick(View v) {
-                new AlertDialog.Builder(TrackerByLocationActivity.this).setTitle("Delete Logs")
+
+                new AlertDialog.Builder(TrackerByLocationActivity.this)
+                        .setTitle(R.string.delete_logs)
                         .setMessage(R.string.delete_trail)
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+
                             public void onClick(DialogInterface dialog, int id) {
+
                                 String selectedDate = dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString());
+
                                 if (movementTrackerDbHelper.tableRows() != 0) {
+
                                     movementTrackerDbHelper.deleteQuery(selectedDate);
-                                    Toast.makeText(getApplicationContext(), "Logs deleted!", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), R.string.log_delete, Toast.LENGTH_LONG).show();
+
                                 } else {
-                                    Toast.makeText(getApplicationContext(), "No track trail found!", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), R.string.no_track, Toast.LENGTH_LONG).show();
                                 }
+
                                 displayData();
                             }
                         })
                         .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+
                             public void onClick(DialogInterface dialog, int id) {
                             }
                         })
@@ -82,34 +100,38 @@ public class TrackerByLocationActivity extends AppCompatActivity{
     }
 
     public void showDatePickerDialog() {
-        DatePickerFragment datePickerFragment = new DatePickerFragment();
 
+        DatePickerFragment datePickerFragment = new DatePickerFragment();
         DatePickerListener datePickerListener = new DatePickerListener() {
+
             @Override
             public void onDatePicked(String dateSelected) {
                 selectedDateText.setText(dateSelected);
             }
         };
-        datePickerFragment.setDatePickerListener(datePickerListener);
 
-        datePickerFragment.show(getSupportFragmentManager(), "datePicker");
+        datePickerFragment.setDatePickerListener(datePickerListener);
+        datePickerFragment.show(getSupportFragmentManager(), getString(R.string.datepicker));
     }
+
     public void displayData() {
-        String no_trail = "No track trail found";
+
+        String no_trail = getString(R.string.no_track);
         String selectedDate =  dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString());
         List<String> values  = movementTrackerDbHelper.queryByStreet(selectedDate);
-        ArrayAdapter<String>adapter;
+
         if(values.size() == 0 ) {
             values.add(no_trail);
         }
-        adapter = new ArrayAdapter<String>(this,R.layout.data_list_item,R.id.rowData,values);
 
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.data_list_item,R.id.rowData,values);
         dataList.setAdapter(adapter);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.toolbar_menu, menu);
         return true;
@@ -117,18 +139,20 @@ public class TrackerByLocationActivity extends AppCompatActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
+
         switch (item.getItemId()) {
+
             case R.id.date_picker:
                 showDatePickerDialog();
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
     private void setSelectedDateTextWatcher() {
+
         selectedDateText.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -142,6 +166,7 @@ public class TrackerByLocationActivity extends AppCompatActivity{
 
             @Override
             public void afterTextChanged(Editable s) {
+
                 displayData();
             }
         });
