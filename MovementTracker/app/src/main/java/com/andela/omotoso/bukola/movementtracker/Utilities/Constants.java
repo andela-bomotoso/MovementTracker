@@ -30,6 +30,8 @@ public class Constants {
     public static final String NOTIFIER_TAG = "Notifier";
     public static final String NOTIFICATION_TITLE = "Tracking in Progress";
     public static final String DELAY_KEY = "DELAY_KEY";
+    public static final String DATABASE_NAME = "tracker.db";
+    public static final int DATABASE_VERSION = 2;
 
     public static final String APP_INFO =
             "This app serves as a tool that can be used to monitor where most of " +

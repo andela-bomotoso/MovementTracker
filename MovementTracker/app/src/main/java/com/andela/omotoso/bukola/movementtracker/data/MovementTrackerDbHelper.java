@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.andela.omotoso.bukola.movementtracker.utilities.Constants;
 import com.andela.omotoso.bukola.movementtracker.utilities.Timer;
 
 import java.util.ArrayList;
@@ -17,13 +18,12 @@ import java.util.List;
 public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
     private Context context;
-    public static final String DATABASE_NAME = "tracker.db";
-    static final int DATABASE_VERSION = 2;
     private SQLiteDatabase database;
     private Timer timer;
 
     public MovementTrackerDbHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+
+        super(context, Constants.DATABASE_NAME, null, Constants.DATABASE_VERSION);
         this.context = context;
         database = getReadableDatabase();
         timer = new Timer();
@@ -48,7 +48,6 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-
     public List<String> queryByStreet(String selectedDate) {
 
         List<String>records = new ArrayList<>();
@@ -59,14 +58,10 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         String currentRecord = "";
         String previousRecord = "";
         String durationMinutes = "";
-
-        String deleteQuery = "SELECT street_name,activity,SUM(activity_duration) AS Total_Duration FROM tracker_trail " +
-                "where tracking_date = "+"\'"+selectedDate+"\'" + "GROUP BY street_name,activity order by street_name";
-
-        Cursor cursor = database.rawQuery(deleteQuery, null);
-        int recordCount = cursor.getCount();
         int currentRow = 1;
-        cursor.moveToFirst();
+
+        Cursor cursor = retrieveDBRows(selectedDate);
+        int recordCount = cursor.getCount();
 
         while (!cursor.isAfterLast()) {
 
@@ -86,7 +81,9 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
                     records.add(previousStreet + previousRecord + "\n" + activity + " " + durationMinutes);
                 }
 
-                clearBuffer(previousRecord,previousStreet,currentRecord);
+                previousRecord = "";
+                previousStreet = "";
+                currentRecord = "";
             }
             else {
                 previousStreet = streetName;
@@ -99,13 +96,26 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         return records;
     }
 
+    public Cursor retrieveDBRows(String selectedDate) {
+        String deleteQuery = "SELECT street_name,activity,SUM(activity_duration) AS Total_Duration FROM tracker_trail " +
+                "where tracking_date = "+"\'"+selectedDate+"\'" + "GROUP BY street_name,activity order by street_name";
+
+        Cursor cursor = database.rawQuery(deleteQuery, null);
+        cursor.moveToFirst();
+
+        return cursor;
+    }
+
     public void deleteTable() {
+
         database.beginTransaction();
         database.delete(MovementTrackerContract.MovementTracker.TABLE_NAME, null, null);
         database.setTransactionSuccessful();
         database.endTransaction();
     }
+    
     public void deleteQuery(String selectedDate) {
+
         String deleteQuery =  "delete from tracker_trail where tracking_date = "+"\'"+selectedDate+"\'";
         database.beginTransaction();
         database.execSQL(deleteQuery);
@@ -114,6 +124,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
     }
 
     public int tableRows() {
+
         String query = "SELECT * FROM " + MovementTrackerContract.MovementTracker.TABLE_NAME;
         Cursor cursor = database.rawQuery(query, null);
         int rowNum = cursor.getCount();
@@ -123,6 +134,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
     }
 
     public void insertRows(String trackingDate, String streetName, String activity, int activityDuration, String logTime ) {
+
         ContentValues values = new ContentValues();
         values.put(MovementTrackerContract.MovementTracker.COLUMN_DATE, trackingDate);
         values.put(MovementTrackerContract.MovementTracker.COLUMN_STREET, streetName);
@@ -130,21 +142,13 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         values.put(MovementTrackerContract.MovementTracker.COLUMN_DURATION, activityDuration);
         values.put(MovementTrackerContract.MovementTracker.COLUMN_LOG_TIME,logTime);
         database.beginTransaction();
+
         try {
            database.insert(MovementTrackerContract.MovementTracker.TABLE_NAME, null, values);
             database.setTransactionSuccessful();
         } finally {
             database.endTransaction();
         }
-
-    }
-
-    private void clearBuffer(String previousRecord,String previousStreet,String currentRecord) {
-
-        previousRecord = "";
-        previousStreet = "";
-        currentRecord = "";
-
     }
 
 }
