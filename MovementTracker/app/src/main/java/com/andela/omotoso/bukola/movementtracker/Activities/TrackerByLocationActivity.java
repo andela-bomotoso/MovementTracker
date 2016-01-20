@@ -62,7 +62,7 @@ public class TrackerByLocationActivity extends AppCompatActivity{
     }
 
     public void setFabAction() {
-        
+
         FloatingActionButton myFab = (FloatingActionButton)findViewById(R.id.fab);
         myFab.setOnClickListener(new View.OnClickListener() {
 

@@ -105,15 +105,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
         return cursor;
     }
-
-    public void deleteTable() {
-
-        database.beginTransaction();
-        database.delete(MovementTrackerContract.MovementTracker.TABLE_NAME, null, null);
-        database.setTransactionSuccessful();
-        database.endTransaction();
-    }
-
+    
     public void deleteQuery(String selectedDate) {
 
         String deleteQuery =  "delete from tracker_trail where tracking_date = "+"\'"+selectedDate+"\'";
