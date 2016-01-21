@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity
     private NetworkInfo netInfo;
     private String locationText;
     private String location;
+    private CountDownTimer countDownTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -248,7 +249,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
     @Override
     protected void onStart() {
 
@@ -352,6 +352,7 @@ public class MainActivity extends AppCompatActivity
 
         currentActivityText.setText(R.string.tracking_not_started);
         timer.turnOff();
+        countDownTimer.cancel();
         notifier.cancelNotification(this, 1);
         delayElapsed = false;
 
@@ -360,7 +361,7 @@ public class MainActivity extends AppCompatActivity
     public void countDown(int delay) {
 
         if(!activity.equals("connecting")) {
-            new CountDownTimer(delay * Constants.MINUTES_TO_MILLISECONDS, Constants.TICK_IN_MILLISECONDS) {
+          countDownTimer =  new CountDownTimer(delay * Constants.MINUTES_TO_MILLISECONDS, Constants.TICK_IN_MILLISECONDS) {
 
                 public void onTick(long millisUntilFinished) {
 
