@@ -40,7 +40,7 @@ public class Constants {
 
     public static final String APP_INFO =
             "This app serves as a tool that can be used to monitor where most of " +
-            "one's daily activity is spent and what it is spent on\n\n." + " " +
+            "one's daily activity is spent and what it is spent on.\n\n" + " " +
             "This is because it gives the users details" +
             " like the name of places visited, the logitude and latitude of such places, " +
             "the duration of the time spent doing things like (Walking, Standing still"+
