@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    tools:context="com.andela.omotoso.bukola.movementtracker.Activities.SettingsActivity">>
+    tools:context="com.andela.omotoso.bukola.movementtracker.activities.SettingsActivity">>
 
 
     <NumberPicker
@@ -12,6 +12,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5dp" />
+
 
     <Button
         android:id="@+id/cancel_button"

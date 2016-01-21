@@ -11,17 +11,17 @@
     tools:context=".MainActivity">
 
     <ImageView
-       android:layout_marginTop="20dp"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
+       android:layout_marginTop="10dp"
+       android:layout_width="100dp"
+       android:layout_height="150dp"
        android:layout_gravity="center"
-       android:src="@drawable/whitakergroup_google_location_icon"/>
+       android:src="@drawable/google_location_icon_launcher"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginBottom="50dp">
+        android:layout_marginBottom="30dp">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
             android:id="@+id/current_locationHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Current Location"
+            android:text="@string/current_location"
              android:layout_marginRight="10dp"/>
 
             <TextView
@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold|italic"
-                android:text="searching location ..."/>
+                android:text="@string/searching_location"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
@@ -50,14 +50,14 @@
             android:id="@+id/longLatHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LongitudeLatitude:"
+            android:text="@string/longitude_latitude"
             android:layout_marginRight="10dp"/>
             <TextView
                 android:id="@+id/current_longlatText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold|italic"
-                android:text="retrieving ..."/>
+                android:text="@string/retrieving"/>
             </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
@@ -68,14 +68,14 @@
             android:id="@+id/currentActivityHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Current Activity:"
+            android:text="@string/current_activity"
             android:layout_marginRight="10dp"/>
             <TextView
                 android:id="@+id/current_ActivityText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold|italic"
-                android:text="tracking not started"/>
+                android:text="@string/tracking_not_started"/>
             </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
@@ -86,17 +86,18 @@
             android:id="@+id/time_spentHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Time Spent:"
+            android:text="@string/time_spent"
             android:layout_marginRight="10dp"/>
             <TextView
                 android:id="@+id/time_spentText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold|italic"
-                android:text="00:00"
+                android:text="@string/time_zero"
                 />
             </LinearLayout>
     </LinearLayout>
+
     <ToggleButton
         android:id="@+id/tracker_button"
         android:layout_width="wrap_content"
@@ -106,9 +107,7 @@
         android:textStyle="bold"
         android:background="@drawable/button_style"
         android:textColor="@color/buttontextColor"
-        android:textOn="Stop Tracking"
-        android:textOff="Start Tracking"
-        android:text="Start Tracking"
-        android:onClick="onClickTrackerButton"/>
+        android:textOn="@string/stop_tracking"
+        android:textOff="@string/start_tracking"/>
 </LinearLayout>
 

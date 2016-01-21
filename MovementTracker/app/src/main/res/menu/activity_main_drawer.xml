@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+
     <group android:checkableBehavior="single">
+
+        <item android:id="@+id/app_display" android:icon="@drawable/google_location_icon_launcher"
+            android:title="@string/app_label" />
         <item android:id="@+id/tracked_location" android:icon="@drawable/ic_location_on_black_18dp"
-            android:title="Tracker By Location" />
-        <item android:id="@+id/tracked_time" android:icon="@drawable/ic_date_range_black_18dp"
-            android:title="Tracker by Date" />
+            android:title="@string/tracker_by_location" />
+        <item android:id="@+id/app_info" android:icon="@drawable/ic_info_black_18dp"
+            android:title="@string/app_info" />
+        <item android:id="@+id/app_help" android:icon="@drawable/ic_help_black_18dp"
+            android:title="@string/help" />
+
     </group>
 
-    <item android:title="Others">
-        <menu>
-            <item android:id="@+id/nav_share" android:icon="@drawable/ic_help_black_18dp"
-                android:title="Help" />
-            <item android:id="@+id/nav_send" android:icon="@drawable/ic_info_black_18dp"
-                android:title="App Info" />
-        </menu>
-    </item>
-
-</menu>
+ </menu>

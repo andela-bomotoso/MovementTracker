@@ -1,4 +1,4 @@
-package com.andela.omotoso.bukola.movementtracker.Utilities;
+package com.andela.omotoso.bukola.movementtracker.utilities;
 
 import junit.framework.TestCase;
 
@@ -9,6 +9,7 @@ public class TimerTest extends TestCase {
     Timer timer;
 
     public void setUp() throws Exception {
+
         super.setUp();
         timer = new Timer();
 
@@ -34,8 +35,28 @@ public class TimerTest extends TestCase {
         assertEquals("01:03:20",timer.formatTime(3800));
     }
 
-    public void testFormTimeTest() {
-        assertEquals(5,timer.formatTimeText("5 minutes"));
+    public void testFormatDelayText() {
+
+        assertEquals(5,timer.formatDelayText("5 minutes"));
+    }
+
+    public void testTimerTurnOn() {
+
+        timer.turnOn();
+        assertTrue(timer.timer);
+    }
+
+    public void testTimerTurnOff() {
+
+        timer.turnOff();
+        assertFalse(timer.timer);
+    }
+
+    public void testTimerReset() {
+
+        timer.reset();
+        assertEquals(0,timer.count);
+        assertEquals(0,timer.timeInSeconds);
     }
 
 }
