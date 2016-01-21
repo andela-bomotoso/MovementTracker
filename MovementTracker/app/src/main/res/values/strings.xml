@@ -45,7 +45,7 @@
     <string name="current_activity">Current Activity</string>
     <string name="connecting">connecting...</string>
     <string name="time_spent">Time Spent</string>
-    <string name="time_zero">00:00</string>
+    <string name="time_zero">00:00:00</string>
     <string name="stop_tracking">Stop Tracking</string>
     <string name="start_tracking">Start Tracking</string>
     <string name="delay_title">Delay Time</string>

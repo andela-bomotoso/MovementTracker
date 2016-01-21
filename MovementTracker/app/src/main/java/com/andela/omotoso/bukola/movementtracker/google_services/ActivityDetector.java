@@ -47,9 +47,8 @@ public class ActivityDetector extends IntentService {
             case DetectedActivity.RUNNING:
                 return Constants.RUNNING;
             case DetectedActivity.STILL:
-                return Constants.STANDING_STILL;
             case DetectedActivity.TILTING:
-                return Constants.TILTING;
+                return Constants.STANDING_STILL;
             case DetectedActivity.UNKNOWN:
                 return Constants.UNKNOWN;
             case DetectedActivity.WALKING:
