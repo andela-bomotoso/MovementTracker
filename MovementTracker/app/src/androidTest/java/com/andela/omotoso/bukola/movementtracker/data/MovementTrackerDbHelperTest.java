@@ -1,11 +1,8 @@
 package com.andela.omotoso.bukola.movementtracker.data;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
-
-import junit.framework.TestCase;
 
 import java.util.HashSet;
 
@@ -75,32 +72,4 @@ public class MovementTrackerDbHelperTest extends AndroidTestCase {
         db.close();
     }
 
-
-    public void testOnUpgrade() throws Exception {
-
-    }
-
-    public void testTableRows() {
-        MovementTrackerDbHelper dbHelper = new MovementTrackerDbHelper(getContext());
-        //dbHelper.deleteTable();
-      assertEquals(3,dbHelper.tableRows());
-    }
-
-    public void testInsert() {
-        MovementTrackerDbHelper dbHelper = new MovementTrackerDbHelper(getContext());
-        dbHelper.insertRows("2016-01-18","Moleye Street","Standing Still",90,"12:04AM");
-        dbHelper.insertRows("2016-01-18","Moleye Street","On foot",30,"12:04AM");
-        dbHelper.insertRows("2016-01-18","Moleye Street","Standing Still",50,"12:04AM");
-        dbHelper.insertRows("2016-01-18","Moleye Street","On foot",25,"12:04AM");
-        dbHelper.insertRows("2016-01-18","Funso Street","Standing Still",50,"12:04AM");
-        dbHelper.insertRows("2016-01-18","Funso Street","On foot",25,"12:04AM");
-        //assertEquals(1,dbHelper.tableRows());
-    }
-
-    public void testQueryStreet() {
-        MovementTrackerDbHelper dbHelper = new MovementTrackerDbHelper(getContext());
-        //dbHelper.deleteQuery("2016-01-19");
-        dbHelper.queryByStreet("2016-01-19");
-       // dbHelper.deleteTable();
-    }
 }

@@ -1,4 +1,4 @@
-package com.andela.omotoso.bukola.movementtracker.Activities;
+package com.andela.omotoso.bukola.movementtracker.activities;
 
 import android.app.Dialog;
 import android.content.SharedPreferences;
@@ -12,8 +12,8 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.andela.omotoso.bukola.movementtracker.R;
-import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
-import com.andela.omotoso.bukola.movementtracker.Utilities.SharedPreferenceManager;
+import com.andela.omotoso.bukola.movementtracker.utilities.Constants;
+import com.andela.omotoso.bukola.movementtracker.utilities.SharedPreferenceManager;
 
 public class SettingsActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
 
@@ -26,6 +26,7 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -40,24 +41,27 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
 
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-        delayText.setText(newVal + " minutes");
-        editor.putString("DELAY_KEY", delayText.getText().toString());
+
+        delayText.setText(newVal + Constants.MINUTES);
+        editor.putString(Constants.DELAY_KEY, delayText.getText().toString());
         editor.commit();
         sharedPreferenceManager.saveDelayTime(delayText.getText().toString());
     }
 
     public void showNumberPickerDialog(View view) {
+
         dialog = new Dialog(this);
-        dialog.setTitle("Set Delay Time");
+        dialog.setTitle(Constants.DIALOG_TITLE);
         dialog.setContentView(R.layout.number_picker);
         cancelButton = (Button)dialog.findViewById(R.id.cancel_button);
         final NumberPicker numberPicker = (NumberPicker)dialog.findViewById(R.id.number_picker);
         numberPicker.setMaxValue(60);
-        numberPicker.setMinValue(0);
+        numberPicker.setMinValue(1);
         dialog.show();
         numberPicker.setOnValueChangedListener(this);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 dialog.dismiss();

@@ -9,7 +9,7 @@
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_settings"
-    tools:context="com.andela.omotoso.bukola.movementtracker.Activities.SettingsActivity">
+    tools:context="com.andela.omotoso.bukola.movementtracker.activities.SettingsActivity">
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,9 +27,9 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:onClick="showNumberPickerDialog"
-        android:key="delay_time"
-        android:title="Delay Time"
-        android:text="5 minutes"
+        android:key="@string/delay_key"
+        android:title="@string/delay_title"
+        android:text="@string/delay_time"
         android:editable="false">
 
     </EditText>

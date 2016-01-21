@@ -3,7 +3,7 @@
     android:id="@+id/app_info_container"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    tools:context="com.andela.omotoso.bukola.movementtracker.Activities.SettingsActivity">>
+    tools:context="com.andela.omotoso.bukola.movementtracker.activities.SettingsActivity">>
 
 <ScrollView
     android:layout_width="wrap_content"
@@ -23,7 +23,7 @@
         android:layout_below="@+id/number_picker"
         android:layout_centerInParent="true"
         android:layout_marginTop="5dp"
-        android:text="OK" />
+        android:text="@string/ok" />
 </ScrollView>
 
 

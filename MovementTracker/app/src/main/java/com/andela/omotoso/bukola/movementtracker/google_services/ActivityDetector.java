@@ -1,30 +1,31 @@
-package com.andela.omotoso.bukola.movementtracker.ActivityDetection;
+package com.andela.omotoso.bukola.movementtracker.google_services;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
-import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
+import com.andela.omotoso.bukola.movementtracker.utilities.Constants;
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
-
-import java.util.ArrayList;
 
 /**
  * Created by GRACE on 1/9/2016.
  */
 public class ActivityDetector extends IntentService {
-    public static final String DETECTED_ACTIVITY = "detected_activity";
+
+    public static final String DETECTED_ACTIVITY = "DETECTED_ACTIVITY";
 
     public ActivityDetector() {
+
         super(DETECTED_ACTIVITY);
     }
 
     public void onHandleIntent(Intent intent) {
+
         ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
 
         if (result != null) {
+
             DetectedActivity detectedActivity = result.getMostProbableActivity();
 
             Intent broadcast = new Intent(Constants.BROADCAST_ACTION);
@@ -46,9 +47,8 @@ public class ActivityDetector extends IntentService {
             case DetectedActivity.RUNNING:
                 return Constants.RUNNING;
             case DetectedActivity.STILL:
-                return Constants.STANDING_STILL;
             case DetectedActivity.TILTING:
-                return Constants.TILTING;
+                return Constants.STANDING_STILL;
             case DetectedActivity.UNKNOWN:
                 return Constants.UNKNOWN;
             case DetectedActivity.WALKING:

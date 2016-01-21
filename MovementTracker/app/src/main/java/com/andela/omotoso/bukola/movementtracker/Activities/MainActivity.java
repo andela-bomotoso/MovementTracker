@@ -1,4 +1,4 @@
-package com.andela.omotoso.bukola.movementtracker.Activities;
+package com.andela.omotoso.bukola.movementtracker.activities;
 
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -6,17 +6,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import com.andela.omotoso.bukola.movementtracker.ActivityDetection.ActivityDetector;
+
+import com.andela.omotoso.bukola.movementtracker.google_services.ActivityDetector;
 import com.andela.omotoso.bukola.movementtracker.R;
-import com.andela.omotoso.bukola.movementtracker.Utilities.Constants;
-import com.andela.omotoso.bukola.movementtracker.Utilities.DateHandler;
-import com.andela.omotoso.bukola.movementtracker.Utilities.Launcher;
-import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesListener;
-import com.andela.omotoso.bukola.movementtracker.Utilities.LocationServicesManager;
-import com.andela.omotoso.bukola.movementtracker.Utilities.Notifier;
-import com.andela.omotoso.bukola.movementtracker.Utilities.SharedPreferenceManager;
-import com.andela.omotoso.bukola.movementtracker.Utilities.Timer;
+import com.andela.omotoso.bukola.movementtracker.google_services.LocationDetector;
+import com.andela.omotoso.bukola.movementtracker.utilities.Constants;
+import com.andela.omotoso.bukola.movementtracker.utilities.DateHandler;
+import com.andela.omotoso.bukola.movementtracker.utilities.Launcher;
+import com.andela.omotoso.bukola.movementtracker.utilities.Notifier;
+import com.andela.omotoso.bukola.movementtracker.utilities.SharedPreferenceManager;
+import com.andela.omotoso.bukola.movementtracker.utilities.Timer;
 import com.andela.omotoso.bukola.movementtracker.data.MovementTrackerDbHelper;
+import com.andela.omotoso.bukola.movementtracker.utilities.TimerListener;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.ActivityRecognition;
@@ -24,6 +25,7 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.common.ConnectionResult;
 
 import android.content.IntentFilter;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -44,42 +46,67 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,ResultCallback<Status> {
+        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status> {
 
     private Context context;
     private Button trackerButton;
     private LocationRequest locationRequest;
     private TextView longLatText;
     private TextView currentLocationText;
-    private double longitude = 0;
-    private double latitude = 0;
     private TextView currentActivityText;
-    private final String TAG = "LOCATION_FINDER";
+    private final String TAG = Constants.LOCATION_FINDER;
     private TextView timeSpentText;
     private Timer timer;
-    private int mId;
     private SharedPreferenceManager sharedPreferenceManager;
     private Notifier notifier;
-    private LocationServicesManager locationServicesManager;
-    private String streetName = "";
+    private String streetName;
     private MovementTrackerDbHelper movementTrackerDbHelper;
     private DateHandler dateHandler;
     private GoogleApiClient googleApiClient;
-    private String activityText = "";
-    private String locationText = "";
-    private int durationText = 0;
-    private String logTimeText = "";
-    private TextView appInfoText;
-    private Button appInfoOkButton;
+    private String activityText;
+    private int durationText;
+    private TimerListener timerListener;
+    private boolean delayElapsed;
+    private LocationDetector locationDetector;
+    private DrawerLayout drawer;
+    private String activity;
+    private ConnectivityManager connectivityManager;
+    private NetworkInfo netInfo;
+    private String locationText;
+    private String location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        initializeComponents();
+        initializeVariables();
+        buildGoogleApiClient();
+    }
+
+    private void initializeComponents() {
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -90,52 +117,75 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-       // appInfoText = (TextView)findViewById(R.id.app_info);
-
-        initializeComponents();
-        initializeActivity();
-
-        sharedPreferenceManager = new SharedPreferenceManager(this);
-        movementTrackerDbHelper = new MovementTrackerDbHelper(this);
-        notifier = new Notifier(context,MainActivity.this);
-        dateHandler = new DateHandler();
-    }
-
-    private void initializeActivity() {
-        buildGoogleApiClient();
-    }
-
-    private void initializeComponents() {
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
         trackerButton = (ToggleButton) findViewById(R.id.tracker_button);
+        trackerButton.setOnClickListener(new View.OnClickListener() {
 
-        if(isOnline(this)) {
-            trackerButton.setEnabled(true);
-        }
-        else {
-            Toast.makeText(this,"No internet detected",Toast.LENGTH_SHORT).show();
-        }
+            @Override
+            public void onClick(View view) {
+
+                boolean on = ((ToggleButton) view).isChecked();
+
+                if (!isOnline() && on) {
+
+                    Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show();
+                    ((ToggleButton) view).setChecked(false);
+                    return;
+                }
+
+                if (on) {
+
+                    Toast.makeText(context, R.string.tracking_started, Toast.LENGTH_SHORT).show();
+                    startTracking();
+
+                } else {
+                    stopTracking();
+                    Toast.makeText(context, R.string.tracking_stopped, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         longLatText = (TextView) findViewById(R.id.current_longlatText);
         currentLocationText = (TextView) findViewById(R.id.current_locationText);
 
         currentActivityText = (TextView) findViewById(R.id.current_ActivityText);
-        setActivityTextWatcher();
 
         timeSpentText = (TextView) findViewById(R.id.time_spentText);
 
-        timer = new Timer();
-        timer.setTimeSpentText(timeSpentText);
-        timer.setActivity(MainActivity.this);
+        setActivityTextWatcher();
 
         context = getApplicationContext();
         initializeActivityDetector();
-        loadLocationValues();
-
     }
 
+    private void initializeVariables() {
+
+        activityText = currentActivityText.getText().toString();
+        locationText = currentLocationText.getText().toString();
+        streetName = "";
+        activity = "";
+        durationText = 0;
+        delayElapsed = false;
+
+        sharedPreferenceManager = new SharedPreferenceManager(this);
+        movementTrackerDbHelper = new MovementTrackerDbHelper(this);
+        notifier = new Notifier(context, MainActivity.this);
+        dateHandler = new DateHandler();
+        locationDetector = new LocationDetector();
+
+        timer = new Timer(this);
+        timerListener = new TimerListener() {
+            @Override
+            public void onTick(String timeSpent) {
+                if(timer.timer) {
+                    timeSpentText.setText(timeSpent);
+                }
+                else {
+                    timeSpentText.setText(R.string.time_zero);
+                }
+            }
+        };
+        timer.setTimerListener(timerListener);
+    }
 
     @Override
     public void onBackPressed() {
@@ -156,14 +206,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-           startActivity(new Intent(this,SettingsActivity.class));
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
@@ -173,8 +220,12 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+
         int id = item.getItemId();
+
+        if(id == R.id.app_display) {
+
+        }
 
         if (id == R.id.tracked_location) {
             Launcher.launchActivity(this, TrackerByLocationActivity.class);
@@ -182,47 +233,48 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.app_help) {
             displayHelp();
 
-        } else if (id ==R.id.app_info) {
+        } else if (id == R.id.app_info) {
             displayAppInfo();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
-    public void onClickTrackerButton(View view) {
-
-        boolean on = ((ToggleButton) view).isChecked();
-        if (on) {
-                Toast.makeText(context, "Tracking Started", Toast.LENGTH_SHORT).show();
-                startTracking();
-
-        } else {
-            Toast.makeText(context, "Tracking Stopped", Toast.LENGTH_SHORT).show();
-            stopTracking();
-        }
-    }
 
     @Override
     protected void onStart() {
+
         super.onStart();
-        locationServicesManager.connect();
         googleApiClient.connect();
     }
 
     @Override
     protected void onStop() {
-        locationServicesManager.disconnect();
+
         googleApiClient.disconnect();
         super.onStop();
     }
 
+
     @Override
     public void onConnected(Bundle bundle) {
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(1000);
+
+        if (isOnline()) {
+
+            locationRequest = LocationRequest.create();
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            locationRequest.setInterval(1000);
+
+            try {
+                LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+
+            } catch (SecurityException exception){
+                System.out.println("security exception");
+            }
+        }
     }
 
     @Override
@@ -232,33 +284,26 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Toast.makeText(this,"No internet connection",Toast.LENGTH_SHORT).show();
+
     }
 
-    public void loadLocationValues() {
+    public void onLocationChanged(Location location) {
 
-        locationServicesManager = new LocationServicesManager(this);
-        LocationServicesListener listener = new LocationServicesListener() {
-            @Override
-            public void onLocationChanged(double longitude, double latitude) {
-                streetName = locationServicesManager.getStreet();
-                currentLocationText.setText(streetName);
-                longitude = locationServicesManager.getLongitude();
-                latitude = locationServicesManager.getLatitude();
-                longLatText.setText(longitude + ", " + latitude + "");
-            }
-        };
-        locationServicesManager.setListener(listener);
+       longLatText.setText(location.getLongitude()+","+location.getLatitude());
+       currentLocationText.setText(locationDetector.fetchStreetName(this, location.getLatitude(), location.getLongitude()));
     }
 
     public void initializeActivityDetector() {
+
         LocalBroadcastManager.getInstance(this).registerReceiver(new Receiver(), new IntentFilter(Constants.BROADCAST_ACTION));
     }
 
     protected synchronized void buildGoogleApiClient() {
+
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
                 .addApi(ActivityRecognition.API)
                 .build();
     }
@@ -267,60 +312,80 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void startTracking() {
-        currentActivityText.setText("connecting...");
-        timer.setTimer(true);
-        timer.updateTimer();
-        detectActivity();
-    }
-
     public void detectActivity() {
-        if ( isOnline(this)) {
-            countDown(timer.formatTimeText(sharedPreferenceManager.retrieveDelayTime()));
+
+        if (isOnline() ) {
+
             Intent service = new Intent(this, ActivityDetector.class);
             startService(service);
 
             PendingIntent intent = PendingIntent.getService(this, 0, service, PendingIntent.FLAG_UPDATE_CURRENT);
 
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClient, 0, intent);
+
+            if (!delayElapsed) {
+
+                countDown(timer.formatDelayText(sharedPreferenceManager.retrieveDelayTime()));
+            }
         }
-        else  {
-            currentActivityText.setText("connecting...");
-            timeSpentText.setText("00:00");
-            Toast.makeText(this,"No internet connection",Toast.LENGTH_SHORT);
+
+        else {
+
+            Toast.makeText(this,R.string.no_internet,Toast.LENGTH_SHORT).show();
+            stopTracking();
         }
     }
 
+    public void startTracking() {
+
+        currentActivityText.setText(R.string.connecting);
+        timer.turnOn();
+        detectActivity();
+    }
+
     public void stopTracking() {
-        currentActivityText.setText("Tracking stopped");
-        timer.setTimer(false);
+
+        currentActivityText.setText(R.string.tracking_not_started);
+        timer.turnOff();
         notifier.cancelNotification(this, 1);
+        delayElapsed = false;
+
     }
 
     public void countDown(int delay) {
 
-        new CountDownTimer(delay*Constants.MINUTES_TO_MILLISECONDS, Constants.TICK_IN_MILLISECONDS) {
+        if(!activity.equals("connecting")) {
+            new CountDownTimer(delay * Constants.MINUTES_TO_MILLISECONDS, Constants.TICK_IN_MILLISECONDS) {
 
-            public void onTick(long millisUntilFinished) {
+                public void onTick(long millisUntilFinished) {
 
-            }
+                }
 
-            public void onFinish() {
-                notifier.sendNotification("Movement Tracker");
-            }
-        }.start();
+                public void onFinish() {
+
+                    if ((!activity.equals("connecting ...") && (!activity.equals("tracking stopped")))) {
+                        delayElapsed = true;
+                        notifier.sendNotification("Movement Tracker");
+                    }
+                }
+            }.start();
+        }
     }
 
-    public boolean isOnline(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+    public boolean isOnline() {
+
+        connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        netInfo = connectivityManager.getActiveNetworkInfo();
+
         if (netInfo != null && netInfo.isConnected()) {
             return true;
         }
+
         return false;
     }
 
     private void setActivityTextWatcher() {
+
         currentActivityText.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -329,29 +394,46 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                activityText = currentActivityText.getText().toString();
+
                 locationText = currentLocationText.getText().toString();
+                activityText = currentActivityText.getText().toString();
                 durationText = timer.timeInSeconds;
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(activityText.equals("connecting...")) {
-                    timer.resetTimer();
+
+                activity = currentActivityText.getText().toString();
+                if(activityText.equals(R.string.connecting)) {
+                    timer.reset();
                 }
-                if (!currentActivityText.getText().toString().equals(activityText)
-                        && !activityText.equals("connecting...") && !activityText.equals("Tracking stopped")) {
-                    movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),locationText,activityText, timer.timeInSeconds,dateHandler.getCurrentTime());
-                    timer.resetTimer();
+
+                if (readyForInsertion()) {
+
+                    movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),locationText,activityText,
+                            timer.timeInSeconds,dateHandler.getCurrentTime());
+                    timer.reset();
                 }
             }
         });
     }
 
+
+    public boolean readyForInsertion() {
+
+        return (!currentActivityText.getText().toString().equals(activityText))
+                && !activityText.equals(R.string.connecting) && !activityText.equals(R.string.tracking_stopped) && delayElapsed;
+    }
+
     public void displayAppInfo() {
-        new AlertDialog.Builder(MainActivity.this).setTitle("Application Info")
+
+        new AlertDialog.Builder(MainActivity.this)
+
+                .setTitle(R.string.application_info)
                 .setMessage(Constants.APP_INFO)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                .setIcon(R.drawable.ic_info_black_24dp)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -361,9 +443,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void displayHelp() {
-        new AlertDialog.Builder(MainActivity.this).setTitle("Help")
+
+        new AlertDialog.Builder(MainActivity.this)
+
+                .setTitle(R.string.help)
                 .setMessage(Constants.HELP)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                .setIcon(R.drawable.ic_help_black_18dp)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
