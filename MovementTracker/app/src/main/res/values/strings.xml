@@ -39,9 +39,9 @@
     <string name="cancel">Cancel</string>
     <string name="set">Set</string>
     <string name="current_location">Current Location</string>
-    <string name="searching_location">searching location</string>
+    <string name="searching_location">searching location...</string>
     <string name="longitude_latitude">LongitudeLatitude</string>
-    <string name="retrieving">retrieving</string>
+    <string name="retrieving">retrieving...</string>
     <string name="current_activity">Current Activity</string>
     <string name="connecting">connecting...</string>
     <string name="time_spent">Time Spent</string>

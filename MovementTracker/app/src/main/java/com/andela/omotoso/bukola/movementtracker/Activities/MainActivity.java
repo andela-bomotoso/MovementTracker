@@ -72,12 +72,16 @@ public class MainActivity extends AppCompatActivity
     private DateHandler dateHandler;
     private GoogleApiClient googleApiClient;
     private String activityText;
-    private String locationText;
     private int durationText;
     private TimerListener timerListener;
     private boolean delayElapsed;
     private LocationDetector locationDetector;
     private DrawerLayout drawer;
+    private String activity;
+    private ConnectivityManager connectivityManager;
+    private NetworkInfo netInfo;
+    private String locationText;
+    private String location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,14 +118,41 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         trackerButton = (ToggleButton) findViewById(R.id.tracker_button);
+        trackerButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+
+                boolean on = ((ToggleButton) view).isChecked();
+
+                if (!isOnline() && on) {
+
+                    Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show();
+                    ((ToggleButton) view).setChecked(false);
+                    return;
+                }
+
+                if (on) {
+
+                    Toast.makeText(context, R.string.tracking_started, Toast.LENGTH_SHORT).show();
+                    startTracking();
+
+                } else {
+                    stopTracking();
+                    Toast.makeText(context, R.string.tracking_stopped, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         longLatText = (TextView) findViewById(R.id.current_longlatText);
         currentLocationText = (TextView) findViewById(R.id.current_locationText);
 
         currentActivityText = (TextView) findViewById(R.id.current_ActivityText);
-        setActivityTextWatcher();
 
         timeSpentText = (TextView) findViewById(R.id.time_spentText);
+
+        setActivityTextWatcher();
+        setLocationTextWatcher();
 
         context = getApplicationContext();
         initializeActivityDetector();
@@ -129,9 +160,11 @@ public class MainActivity extends AppCompatActivity
 
     private void initializeVariables() {
 
-        activityText = "";
+        activityText = currentActivityText.getText().toString();
+        locationText = currentLocationText.getText().toString();
+        location = "Unknown Location";
         streetName = "";
-        locationText = "";
+        activity = "";
         durationText = 0;
         delayElapsed = false;
 
@@ -212,20 +245,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void onClickTrackerButton(View view) {
-
-        boolean on = ((ToggleButton) view).isChecked();
-        if (on) {
-
-            Toast.makeText(context, R.string.tracking_started, Toast.LENGTH_SHORT).show();
-            startTracking();
-
-        } else {
-
-            Toast.makeText(context, R.string.tracking_stopped, Toast.LENGTH_SHORT).show();
-            stopTracking();
-        }
-    }
 
     @Override
     protected void onStart() {
@@ -241,18 +260,22 @@ public class MainActivity extends AppCompatActivity
         super.onStop();
     }
 
+
     @Override
     public void onConnected(Bundle bundle) {
 
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(1000);
+        if (isOnline()) {
 
-        try {
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+            locationRequest = LocationRequest.create();
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            locationRequest.setInterval(1000);
 
-        } catch (SecurityException exception){
+            try {
+                LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
 
+            } catch (SecurityException exception){
+                System.out.println("security exception");
+            }
         }
     }
 
@@ -291,23 +314,35 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void startTracking() {
-
-        currentActivityText.setText(R.string.connecting);
-        timer.turnOn();
-        detectActivity();
-    }
-
     public void detectActivity() {
 
-            countDown(timer.formatDelayText(sharedPreferenceManager.retrieveDelayTime()));
+        if (isOnline() ) {
+
             Intent service = new Intent(this, ActivityDetector.class);
             startService(service);
 
             PendingIntent intent = PendingIntent.getService(this, 0, service, PendingIntent.FLAG_UPDATE_CURRENT);
 
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClient, 0, intent);
-        
+
+            if (!delayElapsed) {
+
+                countDown(timer.formatDelayText(sharedPreferenceManager.retrieveDelayTime()));
+            }
+        }
+
+        else {
+
+            Toast.makeText(this,R.string.no_internet,Toast.LENGTH_SHORT).show();
+            stopTracking();
+        }
+    }
+
+    public void startTracking() {
+
+        currentActivityText.setText(R.string.connecting);
+        timer.turnOn();
+        detectActivity();
     }
 
     public void stopTracking() {
@@ -321,24 +356,28 @@ public class MainActivity extends AppCompatActivity
 
     public void countDown(int delay) {
 
-        new CountDownTimer(delay*Constants.MINUTES_TO_MILLISECONDS, Constants.TICK_IN_MILLISECONDS) {
+        if(!activity.equals("connecting")) {
+            new CountDownTimer(delay * Constants.MINUTES_TO_MILLISECONDS, Constants.TICK_IN_MILLISECONDS) {
 
-            public void onTick(long millisUntilFinished) {
+                public void onTick(long millisUntilFinished) {
 
-            }
+                }
 
-            public void onFinish() {
+                public void onFinish() {
 
-                notifier.sendNotification("Movement Tracker");
-                delayElapsed = true;
-            }
-        }.start();
+                    if ((!activity.equals("connecting ...") && (!activity.equals("tracking stopped")))) {
+                        delayElapsed = true;
+                        notifier.sendNotification("Movement Tracker");
+                    }
+                }
+            }.start();
+        }
     }
 
-    public boolean isOnline(Context context) {
+    public boolean isOnline() {
 
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+        connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        netInfo = connectivityManager.getActiveNetworkInfo();
 
         if (netInfo != null && netInfo.isConnected()) {
             return true;
@@ -358,23 +397,52 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+                locationText = "Unknown";
                 activityText = currentActivityText.getText().toString();
-                locationText = currentLocationText.getText().toString();
                 durationText = timer.timeInSeconds;
             }
 
             @Override
             public void afterTextChanged(Editable s) {
 
+                activity = currentActivityText.getText().toString();
                 if(activityText.equals(R.string.connecting)) {
                     timer.reset();
                 }
 
                 if (readyForInsertion()) {
 
-                    movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),locationText,activityText,
+                    movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),location,activityText,
                             timer.timeInSeconds,dateHandler.getCurrentTime());
                     timer.reset();
+                }
+            }
+        });
+    }
+
+    private void setLocationTextWatcher() {
+
+        currentLocationText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                if(currentLocationText.getText().toString().equals(R.string.searching_location)) {
+
+                    location = "Unknown Location";
+                }
+                else {
+
+                    location = currentLocationText.getText().toString();
                 }
             }
         });
