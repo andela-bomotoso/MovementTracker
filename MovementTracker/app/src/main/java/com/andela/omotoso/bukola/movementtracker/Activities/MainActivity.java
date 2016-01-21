@@ -152,7 +152,6 @@ public class MainActivity extends AppCompatActivity
         timeSpentText = (TextView) findViewById(R.id.time_spentText);
 
         setActivityTextWatcher();
-        setLocationTextWatcher();
 
         context = getApplicationContext();
         initializeActivityDetector();
@@ -162,7 +161,6 @@ public class MainActivity extends AppCompatActivity
 
         activityText = currentActivityText.getText().toString();
         locationText = currentLocationText.getText().toString();
-        location = "Unknown Location";
         streetName = "";
         activity = "";
         durationText = 0;
@@ -397,7 +395,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                locationText = "Unknown";
+                locationText = currentLocationText.getText().toString();
                 activityText = currentActivityText.getText().toString();
                 durationText = timer.timeInSeconds;
             }
@@ -412,7 +410,7 @@ public class MainActivity extends AppCompatActivity
 
                 if (readyForInsertion()) {
 
-                    movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),location,activityText,
+                    movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),locationText,activityText,
                             timer.timeInSeconds,dateHandler.getCurrentTime());
                     timer.reset();
                 }
@@ -420,37 +418,10 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void setLocationTextWatcher() {
-
-        currentLocationText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-                if(currentLocationText.getText().toString().equals(R.string.searching_location)) {
-
-                    location = "Unknown Location";
-                }
-                else {
-
-                    location = currentLocationText.getText().toString();
-                }
-            }
-        });
-    }
 
     public boolean readyForInsertion() {
 
-        return !currentActivityText.getText().toString().equals(activityText)
+        return (!currentActivityText.getText().toString().equals(activityText))
                 && !activityText.equals(R.string.connecting) && !activityText.equals(R.string.tracking_stopped) && delayElapsed;
     }
 
