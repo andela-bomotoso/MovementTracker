@@ -214,6 +214,16 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
+        if (id == R.id.app_info) {
+            displayAppInfo();
+            return true;
+        }
+
+        if (id == R.id.app_help) {
+            displayHelp();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

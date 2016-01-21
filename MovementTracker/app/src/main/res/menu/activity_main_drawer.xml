@@ -8,10 +8,6 @@
             android:title="@string/app_label" />
         <item android:id="@+id/tracked_location" android:icon="@drawable/ic_location_on_black_18dp"
             android:title="@string/tracker_by_location" />
-        <item android:id="@+id/app_info" android:icon="@drawable/ic_info_black_18dp"
-            android:title="@string/app_info" />
-        <item android:id="@+id/app_help" android:icon="@drawable/ic_help_black_18dp"
-            android:title="@string/help" />
 
     </group>
 
