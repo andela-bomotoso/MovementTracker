@@ -145,7 +145,12 @@ public class MainActivity extends AppCompatActivity
         timerListener = new TimerListener() {
             @Override
             public void onTick(String timeSpent) {
-                timeSpentText.setText(timeSpent);
+                if(timer.timer) {
+                    timeSpentText.setText(timeSpent);
+                }
+                else {
+                    timeSpentText.setText(R.string.time_zero);
+                }
             }
         };
         timer.setTimerListener(timerListener);
@@ -295,8 +300,6 @@ public class MainActivity extends AppCompatActivity
 
     public void detectActivity() {
 
-        if ( isOnline(this)) {
-
             countDown(timer.formatDelayText(sharedPreferenceManager.retrieveDelayTime()));
             Intent service = new Intent(this, ActivityDetector.class);
             startService(service);
@@ -304,21 +307,16 @@ public class MainActivity extends AppCompatActivity
             PendingIntent intent = PendingIntent.getService(this, 0, service, PendingIntent.FLAG_UPDATE_CURRENT);
 
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClient, 0, intent);
-        }
-        else  {
-
-            currentActivityText.setText(R.string.connecting);
-            timeSpentText.setText(R.string.time_zero);
-            Toast.makeText(this,R.string.no_internet,Toast.LENGTH_SHORT);
-        }
+        
     }
 
     public void stopTracking() {
 
-        currentActivityText.setText(R.string.tracking_stopped);
+        currentActivityText.setText(R.string.tracking_not_started);
         timer.turnOff();
         notifier.cancelNotification(this, 1);
         delayElapsed = false;
+
     }
 
     public void countDown(int delay) {
