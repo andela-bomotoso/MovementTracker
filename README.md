@@ -28,6 +28,6 @@ This app is easy to use. The user however needs to turn on the GPS and the inter
   
   To have a feel of this app, download it from play store.
   
-  ##Limitations
+##Limitations
   This app depends majorly on Google location services and activity recogition. To ensure this app works well, turn on the GPS 
   and internet of the phone this app will run on.
