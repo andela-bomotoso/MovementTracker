@@ -240,11 +240,6 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.tracked_location) {
             Launcher.launchActivity(this, TrackerByLocationActivity.class);
 
-        } else if (id == R.id.app_help) {
-            displayHelp();
-
-        } else if (id == R.id.app_info) {
-            displayAppInfo();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
