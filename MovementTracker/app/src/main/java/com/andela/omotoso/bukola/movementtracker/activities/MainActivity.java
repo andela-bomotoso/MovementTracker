@@ -410,13 +410,13 @@ public class MainActivity extends AppCompatActivity
             public void afterTextChanged(Editable s) {
 
                 activity = currentActivityText.getText().toString();
-                if(activityText.equals(R.string.connecting)) {
+                if(activityText.equals("connecting...")) {
                     timer.reset();
                 }
 
                 if (readyForInsertion()) {
 
-                    movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),locationText,activityText,
+                    movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),checkLocation(locationText),activityText,
                             timer.timeInSeconds,dateHandler.getCurrentTime());
                     timer.reset();
                 }
@@ -429,6 +429,16 @@ public class MainActivity extends AppCompatActivity
 
         return (!currentActivityText.getText().toString().equals(activityText))
                 && !activityText.equals(R.string.connecting) && !activityText.equals(R.string.tracking_stopped) && delayElapsed;
+    }
+
+    private String checkLocation(String locationText) {
+
+        if (locationText.equals("searching location...")) {
+            return "Unknown Location";
+        }
+        else {
+            return locationText;
+        }
     }
 
     public void displayAppInfo() {

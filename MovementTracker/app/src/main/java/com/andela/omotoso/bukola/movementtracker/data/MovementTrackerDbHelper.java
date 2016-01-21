@@ -145,7 +145,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         String selectQuery = "";
 
         selectQuery = "SELECT street_name,activity,SUM(activity_duration) AS Total_Duration FROM tracker_trail " +
-                "where tracking_date = " + "\'" + selectedDate + "\'" + "GROUP BY street_name,activity order by street_name";
+                "where tracking_date = " + "\'" + selectedDate + "\'" +" and activity_duration !=0  GROUP BY street_name,activity order by street_name";
 
         Cursor cursor = database.rawQuery(selectQuery, null);
         cursor.moveToFirst();
