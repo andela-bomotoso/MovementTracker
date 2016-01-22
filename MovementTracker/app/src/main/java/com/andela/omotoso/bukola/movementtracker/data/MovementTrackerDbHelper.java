@@ -123,13 +123,25 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
             currentRecord += " \n"+activity+" "+ durationMinutes+" "+ log_time;
 
-            if((!streetName.equals(previousStreet) && previousStreet != "") || (currentRow == recordCount)) {
-                records.add(previousRecord + "\n" + activity + " " + durationMinutes + " "+log_time);
+            if((!streetName.equals(previousStreet) && !previousStreet.isEmpty()) && currentRow != recordCount) {
+                records.add(previousStreet+"\n"+previousRecord);
 
                 previousRecord = "";
                 previousStreet = "";
                 currentRecord = "";
             }
+
+            else if((!streetName.equals(previousStreet) && !previousStreet.isEmpty()) && currentRow == recordCount) {
+
+                records.add(previousStreet+"\n"+previousRecord);
+                records.add(streetName+"\n"+currentRecord);
+            }
+
+            else if(previousStreet.isEmpty() && currentRow == recordCount) {
+
+                records.add(streetName+"\n"+currentRecord);
+            }
+
             else {
                 previousStreet = streetName;
                 previousRecord = currentRecord;
