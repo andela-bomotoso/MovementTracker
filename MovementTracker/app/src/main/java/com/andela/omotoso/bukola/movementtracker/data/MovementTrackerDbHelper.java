@@ -123,13 +123,25 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
             currentRecord += " \n"+activity+" "+ durationMinutes+" "+ log_time;
 
-            if((!streetName.equals(previousStreet) && previousStreet != "") || (currentRow == recordCount)) {
-                records.add(previousRecord + "\n" + activity + " " + durationMinutes + " "+log_time);
+            if((!streetName.equals(previousStreet) && !previousStreet.isEmpty()) && currentRow != recordCount) {
+                records.add(previousStreet+"\n"+previousRecord);
 
                 previousRecord = "";
                 previousStreet = "";
                 currentRecord = "";
             }
+
+            else if((!streetName.equals(previousStreet) && !previousStreet.isEmpty()) && currentRow == recordCount) {
+
+                records.add(previousStreet+"\n"+previousRecord);
+                records.add(streetName+"\n"+currentRecord);
+            }
+
+            else if(previousStreet.isEmpty() && currentRow == recordCount) {
+
+                records.add(streetName+"\n"+currentRecord);
+            }
+
             else {
                 previousStreet = streetName;
                 previousRecord = currentRecord;
@@ -145,7 +157,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         String selectQuery = "";
 
         selectQuery = "SELECT street_name,activity,SUM(activity_duration) AS Total_Duration FROM tracker_trail " +
-                "where tracking_date = " + "\'" + selectedDate + "\'" + "GROUP BY street_name,activity order by street_name";
+                "where tracking_date = " + "\'" + selectedDate + "\'" +" and activity_duration !=0  GROUP BY street_name,activity order by street_name";
 
         Cursor cursor = database.rawQuery(selectQuery, null);
         cursor.moveToFirst();

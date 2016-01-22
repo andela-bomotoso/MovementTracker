@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity
     private NetworkInfo netInfo;
     private String locationText;
     private String location;
+    private CountDownTimer countDownTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        navigationView.getMenu().getItem(0).setChecked(true);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -214,6 +215,16 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
+        if (id == R.id.app_info) {
+            displayAppInfo();
+            return true;
+        }
+
+        if (id == R.id.app_help) {
+            displayHelp();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -230,11 +241,6 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.tracked_location) {
             Launcher.launchActivity(this, TrackerByLocationActivity.class);
 
-        } else if (id == R.id.app_help) {
-            displayHelp();
-
-        } else if (id == R.id.app_info) {
-            displayAppInfo();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -242,7 +248,6 @@ public class MainActivity extends AppCompatActivity
 
         return true;
     }
-
 
     @Override
     protected void onStart() {
@@ -347,6 +352,7 @@ public class MainActivity extends AppCompatActivity
 
         currentActivityText.setText(R.string.tracking_not_started);
         timer.turnOff();
+        countDownTimer.cancel();
         notifier.cancelNotification(this, 1);
         delayElapsed = false;
 
@@ -355,7 +361,7 @@ public class MainActivity extends AppCompatActivity
     public void countDown(int delay) {
 
         if(!activity.equals("connecting")) {
-            new CountDownTimer(delay * Constants.MINUTES_TO_MILLISECONDS, Constants.TICK_IN_MILLISECONDS) {
+          countDownTimer =  new CountDownTimer(delay * Constants.MINUTES_TO_MILLISECONDS, Constants.TICK_IN_MILLISECONDS) {
 
                 public void onTick(long millisUntilFinished) {
 
@@ -404,13 +410,13 @@ public class MainActivity extends AppCompatActivity
             public void afterTextChanged(Editable s) {
 
                 activity = currentActivityText.getText().toString();
-                if(activityText.equals(R.string.connecting)) {
+                if(activityText.equals("connecting...")) {
                     timer.reset();
                 }
 
                 if (readyForInsertion()) {
 
-                    movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),locationText,activityText,
+                    movementTrackerDbHelper.insertRows(dateHandler.getCurrentDate(),checkLocation(locationText),activityText,
                             timer.timeInSeconds,dateHandler.getCurrentTime());
                     timer.reset();
                 }
@@ -418,11 +424,21 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-
     public boolean readyForInsertion() {
 
         return (!currentActivityText.getText().toString().equals(activityText))
                 && !activityText.equals(R.string.connecting) && !activityText.equals(R.string.tracking_stopped) && delayElapsed;
+    }
+
+    public String checkLocation(String locationText) {
+
+        if (locationText.equals("searching location...") || locationText.isEmpty()) {
+
+            return "Unknown Location";
+        }
+        else {
+            return locationText;
+        }
     }
 
     public void displayAppInfo() {
