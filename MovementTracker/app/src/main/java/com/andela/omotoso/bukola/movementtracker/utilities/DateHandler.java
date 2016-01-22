@@ -53,7 +53,7 @@ public class DateHandler {
 
     public String convertShortDateToLongDate(String shortDate){
 
-        Date convertedDate = new Date();
+        Date convertedDate = date;
 
         try {
             convertedDate = new SimpleDateFormat(shortDateFormat).parse(shortDate);

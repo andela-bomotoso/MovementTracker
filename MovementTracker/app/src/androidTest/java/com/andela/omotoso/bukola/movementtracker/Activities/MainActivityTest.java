@@ -48,7 +48,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         String timeSpent =  timeSpentText.getText().toString();
         String currentActivity =  currentActivityText.getText().toString();
 
-        assertEquals(timeSpent,"00:00:00");
+        assertEquals(timeSpent, "00:00:00");
         assertEquals(currentActivity,"tracking not started");
 
         TouchUtils.clickView(this, trackerButton);
@@ -61,7 +61,19 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 
     }
 
-    public void testStopTracking() throws Exception {
-
+    public void testCheckLocationWhenLocationIsValid() throws Exception {
+            String locationText = "Adesina Street, Lagos";
+        assertEquals("Adesina Street, Lagos",activity.checkLocation(locationText));
     }
+
+    public void testCheckLocationWhenLocationIsRetrieving() throws Exception {
+        String locationText = "searching location...";
+        assertEquals("Unknown Location",activity.checkLocation(locationText));
+    }
+
+    public void testCheckLocationWhenLocationIsEmpty() throws Exception {
+        String locationText = "";
+        assertEquals("Unknown Location",activity.checkLocation(locationText));
+    }
+
 }
