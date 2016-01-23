@@ -31,6 +31,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.view.ContextThemeWrapper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity
     private String locationText;
     private String location;
     private CountDownTimer countDownTimer;
+    ContextThemeWrapper ctw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +100,8 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        ctw = new ContextThemeWrapper(this, R.style.Theme_Tracker);
 
         initializeComponents();
         initializeVariables();
@@ -443,11 +447,10 @@ public class MainActivity extends AppCompatActivity
 
     public void displayAppInfo() {
 
-        new AlertDialog.Builder(MainActivity.this)
+      AlertDialog dialog =  new AlertDialog.Builder(ctw)
 
                 .setTitle(R.string.application_info)
                 .setMessage(Constants.APP_INFO)
-                .setIcon(R.drawable.ic_info_black_24dp)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 
                     @Override
@@ -456,6 +459,10 @@ public class MainActivity extends AppCompatActivity
                     }
                 })
                 .show();
+        int titleDividerId = getResources().getIdentifier("titleDivider", "id", "android");
+        View titleDivider = dialog.findViewById(titleDividerId);
+        if (titleDivider != null)
+            titleDivider.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
     }
 
     public void displayHelp() {

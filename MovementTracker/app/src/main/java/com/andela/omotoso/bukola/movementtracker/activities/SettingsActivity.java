@@ -5,7 +5,9 @@ import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +32,7 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
     private SharedPreferences.Editor editor;
     private SharedPreferenceManager sharedPreferenceManager;
     private int delay;
+    private ContextThemeWrapper ctw;
 
     @TargetApi(17)
     @Override
@@ -42,6 +45,9 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_18dp);
         setSupportActionBar(toolbar);
+
+
+        ctw = new ContextThemeWrapper(this, R.style.Theme_Tracker);
 
         timer = new Timer();
 
@@ -75,7 +81,6 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
     }
 
     public void showNumberPickerDialog(View view) {
-
 
         dialog = new Dialog(this);
         dialog.setTitle(Constants.DIALOG_TITLE);

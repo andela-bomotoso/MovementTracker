@@ -1,0 +1,58 @@
+<?xml version= "1.0" encoding ="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="Widget.Tracker.ActionBar.Solid" parent="@android:style/Widget.Holo.ActionBar.Solid">
+        <item name="android:background">@color/toolbar_background</item>
+    </style>
+
+    <!-- Local copy of android:Theme.Holo.Dialog.Alert -->
+    <style name="Theme_Holo_Dialog_Alert" parent="@android:style/Theme.Holo.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowTitleStyle">@style/DialogWindowTitle_Holo</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
+        <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
+    </style>
+
+    <!-- Local copy of android:DialogWindowTitle.Holo -->
+    <style name="DialogWindowTitle_Holo">
+        <item name="android:maxLines">1</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.Holo.DialogWindowTitle</item>
+    </style>
+
+    <style name="DialogWindowTitle.Tracker" parent="@style/DialogWindowTitle_Holo">
+        <item name="android:textAppearance">@style/TextAppearance.Tracker.DialogWindowTitle</item>
+
+    </style>
+
+    <style name="TextAppearance.Tracker.DialogWindowTitle" parent="@android:style/TextAppearance.Holo.DialogWindowTitle">
+        <item name="android:textColor">@color/border_stroke</item>
+        <item name="android:fontFamily">sans-serif</item>
+
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="TextAppearance.Tracker.Medium" parent="@android:style/TextAppearance.Holo.Medium">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Widget.Tracker.Button.Borderless" parent="@android:style/Widget.Holo.Button.Borderless">
+        <item name="android:textColor">@color/whiteColor</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAppearance">@style/TextAppearance.Tracker.DialogButton</item>
+    </style>
+
+    <style name="TextAppearance.Tracker.DialogButton" parent="@android:style/TextAppearance.Holo.Medium"></style>
+
+    <style name="Tracker.ButtonBar.AlertDialog" parent="@android:style/Holo.ButtonBar.AlertDialog">
+        <item name="android:background">@color/toolbar_background</item>
+    </style>
+
+    <style name="AlertDialog_Tracker">
+        <item name="android:topDark">@color/toolbar_background</item>
+
+    </style>
+
+</resources>
