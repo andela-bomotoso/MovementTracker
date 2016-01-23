@@ -86,7 +86,7 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
 
     public void showNumberPickerDialog(View view) {
 
-        dialog = new Dialog(ctw);
+        dialog = new Dialog(this);
         dialog.setTitle(Constants.DIALOG_TITLE);
         dialog.setContentView(R.layout.number_picker);
         cancelButton = (Button)dialog.findViewById(R.id.cancel_button);

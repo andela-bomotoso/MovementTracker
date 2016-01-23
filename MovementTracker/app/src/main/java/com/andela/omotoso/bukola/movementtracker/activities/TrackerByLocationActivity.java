@@ -1,6 +1,7 @@
 package com.andela.omotoso.bukola.movementtracker.activities;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,6 +25,7 @@ import com.andela.omotoso.bukola.movementtracker.date_picker.DatePickerListener;
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.utilities.DateHandler;
 import com.andela.omotoso.bukola.movementtracker.data.MovementTrackerDbHelper;
+import com.andela.omotoso.bukola.movementtracker.utilities.DialogDivider;
 
 import java.util.Date;
 import java.util.List;
@@ -34,6 +37,9 @@ public class TrackerByLocationActivity extends AppCompatActivity{
     private ListView dataList;
     private String selectedDate;
     private MovementTrackerDbHelper movementTrackerDbHelper;
+    private DialogDivider dialogDivider;
+    private Dialog dialog;
+    private ContextThemeWrapper ctw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,10 @@ public class TrackerByLocationActivity extends AppCompatActivity{
         selectedDate = dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString());
 
         movementTrackerDbHelper = new MovementTrackerDbHelper(this);
+
+        ctw = new ContextThemeWrapper(this,R.style.Theme_Tracker);
+
+        dialogDivider = new DialogDivider(this,dialog);
 
         dataList = (ListView)findViewById(R.id.data_list);
 
@@ -192,7 +202,7 @@ public class TrackerByLocationActivity extends AppCompatActivity{
 
     public void displayTrailDetails(String location ) {
 
-        new AlertDialog.Builder(TrackerByLocationActivity.this)
+       dialog =  new AlertDialog.Builder(ctw)
 
                 .setTitle(location)
                 .setMessage(getMessageFromList(movementTrackerDbHelper.queryByLocation(location.trim(), selectedDate)))
@@ -204,6 +214,8 @@ public class TrackerByLocationActivity extends AppCompatActivity{
                 })
 
                 .show();
+        dialogDivider.setDialog(dialog);
+        dialogDivider.setDivider();
     }
 
 }
