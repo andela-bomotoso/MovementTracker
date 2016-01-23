@@ -29,11 +29,13 @@ public class Timer {
     }
 
     public void turnOn() {
+
         this.timer = true;
         updateTimer();
     }
 
     public void turnOff() {
+
         reset();
         this.timer = false;
     }

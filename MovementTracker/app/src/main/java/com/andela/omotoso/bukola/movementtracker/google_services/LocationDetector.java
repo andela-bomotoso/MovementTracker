@@ -16,6 +16,7 @@ public class LocationDetector {
     }
 
     public String fetchStreetName(Context context, double latitude, double longitude) {
+
         String street = "";
         Geocoder geocoder = new Geocoder(context);
         List<Address> addresses = null;
