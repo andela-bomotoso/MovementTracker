@@ -65,6 +65,7 @@
     <string name="application_info">Application Info</string>
     <string name="app_label">Movement Tracker</string>
     <string name="tracking_not_started">tracking not started</string>
+    <string name="back_arrow">back</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

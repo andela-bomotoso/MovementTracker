@@ -1,11 +1,15 @@
 package com.andela.omotoso.bukola.movementtracker.activities;
 
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
@@ -27,12 +31,16 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
     private SharedPreferenceManager sharedPreferenceManager;
     private int delay;
 
+    @TargetApi(17)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_18dp);
         setSupportActionBar(toolbar);
 
         timer = new Timer();
@@ -43,6 +51,18 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
         sharedPreferenceManager= new SharedPreferenceManager(this);
         delayText.setText(sharedPreferenceManager.retrieveDelayTime());
         delay = timer.formatDelayText(sharedPreferenceManager.retrieveDelayTime());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // TODO Auto-generated method stub
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
