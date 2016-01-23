@@ -1,6 +1,7 @@
 package com.andela.omotoso.bukola.movementtracker.activities;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +13,7 @@ import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.google_services.LocationDetector;
 import com.andela.omotoso.bukola.movementtracker.utilities.Constants;
 import com.andela.omotoso.bukola.movementtracker.utilities.DateHandler;
+import com.andela.omotoso.bukola.movementtracker.utilities.DialogDivider;
 import com.andela.omotoso.bukola.movementtracker.utilities.Launcher;
 import com.andela.omotoso.bukola.movementtracker.utilities.Notifier;
 import com.andela.omotoso.bukola.movementtracker.utilities.SharedPreferenceManager;
@@ -84,7 +86,9 @@ public class MainActivity extends AppCompatActivity
     private String locationText;
     private String location;
     private CountDownTimer countDownTimer;
-    ContextThemeWrapper ctw;
+    private ContextThemeWrapper ctw;
+    private DialogDivider dialogDivider;
+    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +125,8 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        dialogDivider = new DialogDivider(this,dialog);
 
         trackerButton = (ToggleButton) findViewById(R.id.tracker_button);
         trackerButton.setOnClickListener(new View.OnClickListener() {
@@ -447,8 +453,7 @@ public class MainActivity extends AppCompatActivity
 
     public void displayAppInfo() {
 
-      AlertDialog dialog =  new AlertDialog.Builder(ctw)
-
+          dialog =  new AlertDialog.Builder(ctw)
                 .setTitle(R.string.application_info)
                 .setMessage(Constants.APP_INFO)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -459,19 +464,17 @@ public class MainActivity extends AppCompatActivity
                     }
                 })
                 .show();
-        int titleDividerId = getResources().getIdentifier("titleDivider", "id", "android");
-        View titleDivider = dialog.findViewById(titleDividerId);
-        if (titleDivider != null)
-            titleDivider.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+            dialogDivider.setDialog(dialog);
+            dialogDivider.setDivider();
+
     }
 
     public void displayHelp() {
 
-        new AlertDialog.Builder(MainActivity.this)
+       dialog = new AlertDialog.Builder(ctw)
 
                 .setTitle(R.string.help)
                 .setMessage(Constants.HELP)
-                .setIcon(R.drawable.ic_help_black_18dp)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 
                     @Override
@@ -480,6 +483,8 @@ public class MainActivity extends AppCompatActivity
                     }
                 })
                 .show();
+        dialogDivider.setDialog(dialog);
+        dialogDivider.setDivider();
     }
 
     public class Receiver extends BroadcastReceiver {

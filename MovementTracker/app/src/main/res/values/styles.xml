@@ -21,5 +21,9 @@
         <item name="android:background">#E0F2F1</item>
     </style>
 
+    <style name="dialog_title_style" parent="android:Widget.TextView">
+        <item name="android:background">@color/toolbar_background</item>
+        <item name="android:padding">10dp</item>
+    </style>
 
 </resources>

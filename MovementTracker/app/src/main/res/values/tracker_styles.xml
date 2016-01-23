@@ -23,14 +23,13 @@
 
     <style name="DialogWindowTitle.Tracker" parent="@style/DialogWindowTitle_Holo">
         <item name="android:textAppearance">@style/TextAppearance.Tracker.DialogWindowTitle</item>
-
     </style>
 
     <style name="TextAppearance.Tracker.DialogWindowTitle" parent="@android:style/TextAppearance.Holo.DialogWindowTitle">
         <item name="android:textColor">@color/border_stroke</item>
         <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
 
-        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="TextAppearance.Tracker.Medium" parent="@android:style/TextAppearance.Holo.Medium">

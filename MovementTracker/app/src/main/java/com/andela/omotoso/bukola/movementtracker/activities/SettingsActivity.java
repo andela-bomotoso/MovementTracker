@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.utilities.Constants;
+import com.andela.omotoso.bukola.movementtracker.utilities.DialogDivider;
 import com.andela.omotoso.bukola.movementtracker.utilities.SharedPreferenceManager;
 import com.andela.omotoso.bukola.movementtracker.utilities.Timer;
 
@@ -33,6 +34,7 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
     private SharedPreferenceManager sharedPreferenceManager;
     private int delay;
     private ContextThemeWrapper ctw;
+    private DialogDivider dialogDivider;
 
     @TargetApi(17)
     @Override
@@ -50,6 +52,8 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
         ctw = new ContextThemeWrapper(this, R.style.Theme_Tracker);
 
         timer = new Timer();
+
+        dialogDivider = new DialogDivider(this,dialog);
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         editor = sharedPref.edit();
@@ -82,7 +86,7 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
 
     public void showNumberPickerDialog(View view) {
 
-        dialog = new Dialog(this);
+        dialog = new Dialog(ctw);
         dialog.setTitle(Constants.DIALOG_TITLE);
         dialog.setContentView(R.layout.number_picker);
         cancelButton = (Button)dialog.findViewById(R.id.cancel_button);
@@ -92,6 +96,8 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
         numberPicker.setValue(delay);
         dialog.show();
         numberPicker.setOnValueChangedListener(this);
+        dialogDivider.setDialog(dialog);
+        dialogDivider.setDivider();
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
 
