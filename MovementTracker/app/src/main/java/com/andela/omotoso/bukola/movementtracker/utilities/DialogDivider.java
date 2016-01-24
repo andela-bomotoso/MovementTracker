@@ -7,20 +7,26 @@ import android.view.View;
 /**
  * Created by GRACE on 1/23/2016.
  */
+
+
 public class DialogDivider {
-    Context context;
-    Dialog dialog;
+
+    private Context context;
+    private Dialog dialog;
 
     public DialogDivider(Context context, Dialog dialog) {
+
         this.context = context;
         this.dialog = dialog;
     }
 
     public void setDialog(Dialog dialog) {
+
         this.dialog = dialog;
     }
 
     public void setDivider() {
+
         int titleDividerId = context.getResources().getIdentifier("titleDivider", "id", "android");
         View titleDivider = dialog.findViewById(titleDividerId);
         if (titleDivider != null)

@@ -73,7 +73,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
             currentRecord += " \n"+activity+" "+durationMinutes;
 
-            if((!streetName.equals(previousStreet) && previousStreet != "") || (currentRow == recordCount)) {
+            if(((!streetName.equals(previousStreet)) && (previousStreet != "")) || (currentRow == recordCount)) {
 
                 if(previousStreet == "") {
                     records.add(streetName + previousRecord + "\n" + activity + " " + durationMinutes);

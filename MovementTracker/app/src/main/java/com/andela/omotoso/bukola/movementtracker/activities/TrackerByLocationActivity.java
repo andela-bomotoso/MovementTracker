@@ -30,7 +30,7 @@ import com.andela.omotoso.bukola.movementtracker.utilities.DialogDivider;
 import java.util.Date;
 import java.util.List;
 
-public class TrackerByLocationActivity extends AppCompatActivity{
+public class TrackerByLocationActivity extends AppCompatActivity  {
 
     private TextView selectedDateText;
     private DateHandler dateHandler;
@@ -134,6 +134,7 @@ public class TrackerByLocationActivity extends AppCompatActivity{
         List<String> values  = movementTrackerDbHelper.queryByDate(selectedDate);
 
         if(values.size() == 0 ) {
+
             values.add(no_trail);
         }
 
@@ -150,6 +151,7 @@ public class TrackerByLocationActivity extends AppCompatActivity{
     }
 
     private String getMessageFromList(List<String>values) {
+
         String message = "";
         for(String s: values) {
             message+=s;
