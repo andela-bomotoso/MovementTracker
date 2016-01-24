@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity
         initializeComponents();
         initializeVariables();
         buildGoogleApiClient();
+
         if(!checkGPS()) {
 
             getToastMessage(getString(R.string.gps_not_detected));
@@ -204,9 +205,11 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onTick(String timeSpent) {
                 if(timer.timer) {
+
                     timeSpentText.setText(timeSpent);
                 }
                 else {
+
                     timeSpentText.setText(R.string.time_zero);
                 }
             }
@@ -218,9 +221,12 @@ public class MainActivity extends AppCompatActivity
     public void onBackPressed() {
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
+
             drawer.closeDrawer(GravityCompat.START);
         } else {
+
             super.onBackPressed();
         }
     }
@@ -264,11 +270,11 @@ public class MainActivity extends AppCompatActivity
 
         if(id == R.id.app_display) {
 
-        }
+    }
 
         if (id == R.id.tracked_location) {
-            Launcher.launchActivity(this, TrackerByLocationActivity.class);
 
+            Launcher.launchActivity(this, TrackerByLocationActivity.class);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -305,6 +311,7 @@ public class MainActivity extends AppCompatActivity
                 LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
 
             } catch (SecurityException exception){
+
                 System.out.println("security exception");
             }
         }
@@ -375,7 +382,6 @@ public class MainActivity extends AppCompatActivity
         detectActivity();
     }
 
-
     public void stopTracking() {
 
         currentActivityText.setText(R.string.tracking_not_started);
@@ -383,7 +389,6 @@ public class MainActivity extends AppCompatActivity
         notifier.cancelNotification(this, 1);
         delayElapsed = false;
         sendNotification = false;
-
     }
 
     public void countDown(int delay) {
@@ -412,6 +417,7 @@ public class MainActivity extends AppCompatActivity
         netInfo = connectivityManager.getActiveNetworkInfo();
 
         if (netInfo != null && netInfo.isConnected()) {
+
             return true;
         }
 
@@ -438,7 +444,9 @@ public class MainActivity extends AppCompatActivity
             public void afterTextChanged(Editable s) {
 
                 activity = currentActivityText.getText().toString();
+
                 if(activityText.equals("connecting...")) {
+
                     timer.reset();
                 }
 
@@ -465,6 +473,7 @@ public class MainActivity extends AppCompatActivity
             return "Unknown Location";
         }
         else {
+
             return locationText;
         }
     }
@@ -482,6 +491,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 })
                 .show();
+
             dialogDivider.setDialog(dialog);
             dialogDivider.setDivider();
 
@@ -501,6 +511,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 })
                 .show();
+
         dialogDivider.setDialog(dialog);
         dialogDivider.setDivider();
     }
@@ -524,8 +535,7 @@ public class MainActivity extends AppCompatActivity
             currentActivityText.setText(activity);
         }
     }
-
-
+    
 }
 
 
