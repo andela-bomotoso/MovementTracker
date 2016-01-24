@@ -42,7 +42,7 @@
     <string name="searching_location">searching location...</string>
     <string name="longitude_latitude">LongitudeLatitude</string>
     <string name="retrieving">retrieving...</string>
-    <string name="current_activity">Current Activity</string>
+    <string name="current_activity">Status</string>
     <string name="connecting">connecting...</string>
     <string name="time_spent">Time Spent</string>
     <string name="time_zero">00:00:00</string>

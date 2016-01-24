@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity
     private Context context;
     private Button trackerButton;
     private LocationRequest locationRequest;
-    private TextView longLatText;
     private TextView currentLocationText;
     private TextView currentActivityText;
     private final String TAG = Constants.LOCATION_FINDER;
@@ -155,7 +154,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        longLatText = (TextView) findViewById(R.id.current_longlatText);
         currentLocationText = (TextView) findViewById(R.id.current_locationText);
 
         currentActivityText = (TextView) findViewById(R.id.current_ActivityText);
@@ -304,7 +302,6 @@ public class MainActivity extends AppCompatActivity
 
     public void onLocationChanged(Location location) {
 
-       longLatText.setText(location.getLongitude()+","+location.getLatitude());
        currentLocationText.setText(locationDetector.fetchStreetName(this, location.getLatitude(), location.getLongitude()));
     }
 
