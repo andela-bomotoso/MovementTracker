@@ -150,6 +150,7 @@ public class TrackerByLocationActivity extends AppCompatActivity  {
     }
 
     private String getMessageFromList(List<String>values) {
+
         String message = "";
         for(String s: values) {
             message+=s;
@@ -214,6 +215,7 @@ public class TrackerByLocationActivity extends AppCompatActivity  {
                 })
 
                 .show();
+
         dialogDivider.setDialog(dialog);
         dialogDivider.setDivider();
     }

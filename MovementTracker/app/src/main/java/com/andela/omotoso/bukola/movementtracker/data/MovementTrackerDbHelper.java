@@ -80,7 +80,9 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         String streetName = "";
         String activity = "";
         List<String>mappedStreetNames = new ArrayList<>();
+
         if(trackTrail.size()>0) {
+
             String previousStreet = trackTrail.get(0).split("\\r?\\n")[0];
             String previousActivity = trackTrail.get(0).split("\\r?\\n")[1];
             String previousRecord = "\n"+previousActivity;
@@ -101,6 +103,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
             }
         }
+
         return mappedStreetNames;
     }
 
@@ -131,6 +134,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
             currentRecord += " \n"+activity+" "+ durationMinutes+" "+ log_time;
 
             if((!streetName.equals(previousStreet) && previousStreet != "") || (currentRow == recordCount)) {
+
                 records.add(previousRecord + "\n" + activity + " " + durationMinutes + " "+log_time);
 
                 previousRecord = "";
@@ -138,6 +142,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
                 currentRecord = "";
             }
             else {
+
                 previousStreet = streetName;
                 previousRecord = currentRecord;
             }
@@ -145,10 +150,12 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
             cursor.moveToNext();
             currentRow ++;
         }
+
         return records;
     }
 
     public Cursor retrieveDBRows(String selectedDate) {
+
         String selectQuery = "";
 
         selectQuery = "SELECT street_name,activity,SUM(activity_duration) AS Total_Duration FROM tracker_trail " +
@@ -201,9 +208,11 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         database.beginTransaction();
 
         try {
+
            database.insert(MovementTrackerContract.MovementTracker.TABLE_NAME, null, values);
             database.setTransactionSuccessful();
         } finally {
+
             database.endTransaction();
         }
     }

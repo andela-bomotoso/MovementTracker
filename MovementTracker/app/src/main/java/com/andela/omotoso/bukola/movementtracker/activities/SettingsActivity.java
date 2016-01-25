@@ -96,6 +96,7 @@ public class SettingsActivity extends AppCompatActivity implements NumberPicker.
         numberPicker.setValue(delay);
         dialog.show();
         numberPicker.setOnValueChangedListener(this);
+
         dialogDivider.setDialog(dialog);
         dialogDivider.setDivider();
 

@@ -71,11 +71,6 @@ public class MovementTrackerDbHelperTest extends AndroidTestCase {
                 TrackerColumnHashSet.isEmpty());
         db.close();
     }
-
-    public void testInsertRows() {
-        movementTrackerDbHelper = new MovementTrackerDbHelper(getContext());
-        assertEquals(90,movementTrackerDbHelper.tableRows());
-       // movementTrackerDbHelper.queryByDate("2016-01-24");
-    }
+    
 
 }

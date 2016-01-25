@@ -172,12 +172,12 @@ public class MainActivity extends AppCompatActivity
         });
 
         currentLocationText = (TextView) findViewById(R.id.current_locationText);
+        setLocationTextWatcher();
 
         currentActivityText = (TextView) findViewById(R.id.current_ActivityText);
+        setActivityTextWatcher();
 
         timeSpentText = (TextView) findViewById(R.id.time_spentText);
-
-        setActivityTextWatcher();
 
         context = getApplicationContext();
         initializeActivityDetector();
@@ -373,12 +373,13 @@ public class MainActivity extends AppCompatActivity
 
         currentActivityText.setText(R.string.connecting);
         sendNotification = true;
+        timer.turnOn();
 
         if (!delayElapsed) {
 
             countDown(timer.formatDelayText(sharedPreferenceManager.retrieveDelayTime()));
         }
-        timer.turnOn();
+
         detectActivity();
     }
 
@@ -460,10 +461,34 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+
+    private void setLocationTextWatcher() {
+
+        currentLocationText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                if(currentLocationText.getText().toString().isEmpty()) {
+                    currentLocationText.setText("Unknown Location");
+                }
+            }
+        });
+    }
+
     public boolean readyForInsertion() {
 
         return (!currentActivityText.getText().toString().equals(activityText))
-                && !activityText.equals(R.string.connecting) && !activityText.equals(R.string.tracking_stopped) && delayElapsed;
+                && !activityText.equals(R.string.connecting) && !activityText.equals(R.string.tracking_stopped);
     }
 
     public String checkLocation(String locationText) {
@@ -535,7 +560,7 @@ public class MainActivity extends AppCompatActivity
             currentActivityText.setText(activity);
         }
     }
-    
+
 }
 
 

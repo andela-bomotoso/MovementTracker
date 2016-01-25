@@ -74,6 +74,7 @@
         android:paddingRight="10dp"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textAllCaps="true"
         android:background="@drawable/button_style"
         android:textColor="@color/buttontextColor"
         android:textOn="@string/stop_tracking"
