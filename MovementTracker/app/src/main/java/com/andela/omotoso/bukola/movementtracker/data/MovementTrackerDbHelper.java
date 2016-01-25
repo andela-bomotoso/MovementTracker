@@ -102,6 +102,10 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
                 previousRecord += "\n" + activity;
 
             }
+            if(!previousRecord.isEmpty()) {
+
+                mappedStreetNames.add(previousStreet+previousRecord);
+            }
         }
 
         return mappedStreetNames;
