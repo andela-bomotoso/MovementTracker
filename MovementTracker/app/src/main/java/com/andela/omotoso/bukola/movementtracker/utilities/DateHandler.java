@@ -42,8 +42,10 @@ public class DateHandler {
         Date convertedDate = date;
 
         try {
+
             convertedDate = new SimpleDateFormat(longDateFormat).parse(longDate);
         }
+
         catch (Exception exception) {
 
         }
@@ -56,8 +58,10 @@ public class DateHandler {
         Date convertedDate = date;
 
         try {
+
             convertedDate = new SimpleDateFormat(shortDateFormat).parse(shortDate);
         }
+
         catch (Exception exception) {
 
         }

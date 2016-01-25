@@ -1,17 +1,18 @@
 package com.andela.omotoso.bukola.movementtracker.activities;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-
 import com.andela.omotoso.bukola.movementtracker.google_services.ActivityDetector;
 import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.google_services.LocationDetector;
 import com.andela.omotoso.bukola.movementtracker.utilities.Constants;
 import com.andela.omotoso.bukola.movementtracker.utilities.DateHandler;
+import com.andela.omotoso.bukola.movementtracker.utilities.DialogDivider;
 import com.andela.omotoso.bukola.movementtracker.utilities.Launcher;
 import com.andela.omotoso.bukola.movementtracker.utilities.Notifier;
 import com.andela.omotoso.bukola.movementtracker.utilities.SharedPreferenceManager;
@@ -21,16 +22,16 @@ import com.andela.omotoso.bukola.movementtracker.utilities.TimerListener;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.ActivityRecognition;
-
 import com.google.android.gms.common.ConnectionResult;
-
 import android.content.IntentFilter;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.view.ContextThemeWrapper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -46,7 +47,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity
     private Context context;
     private Button trackerButton;
     private LocationRequest locationRequest;
-    private TextView longLatText;
     private TextView currentLocationText;
     private TextView currentActivityText;
     private final String TAG = Constants.LOCATION_FINDER;
@@ -83,6 +82,11 @@ public class MainActivity extends AppCompatActivity
     private String locationText;
     private String location;
     private CountDownTimer countDownTimer;
+    private ContextThemeWrapper ctw;
+    private DialogDivider dialogDivider;
+    private Dialog dialog;
+    private boolean sendNotification;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,9 +103,16 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        ctw = new ContextThemeWrapper(this, R.style.Theme_Tracker);
+
         initializeComponents();
         initializeVariables();
         buildGoogleApiClient();
+
+        if(!checkGPS()) {
+
+            getToastMessage(getString(R.string.gps_not_detected));
+        }
     }
 
     private void initializeComponents() {
@@ -118,6 +129,8 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        dialogDivider = new DialogDivider(this,dialog);
+
         trackerButton = (ToggleButton) findViewById(R.id.tracker_button);
         trackerButton.setOnClickListener(new View.OnClickListener() {
 
@@ -126,33 +139,45 @@ public class MainActivity extends AppCompatActivity
 
                 boolean on = ((ToggleButton) view).isChecked();
 
-                if (!isOnline() && on) {
+                if (!isOnline() && (!checkGPS()) && on) {
 
-                    Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show();
+                    getToastMessage(getString(R.string.gps_internet_not_detected));
                     ((ToggleButton) view).setChecked(false);
                     return;
                 }
 
-                if (on) {
+                else if (!isOnline() && (checkGPS()) && on) {
 
-                    Toast.makeText(context, R.string.tracking_started, Toast.LENGTH_SHORT).show();
+                    getToastMessage(getString(R.string.no_internet));
+                    ((ToggleButton) view).setChecked(false);
+                    return;
+                }
+
+                else if (isOnline() && (!checkGPS()) && on) {
+
+                    getToastMessage(getString(R.string.gps_not_detected));
+                }
+
+                else if (on) {
+
+                    getToastMessage(getString(R.string.tracking_started));
                     startTracking();
 
                 } else {
+
                     stopTracking();
-                    Toast.makeText(context, R.string.tracking_stopped, Toast.LENGTH_SHORT).show();
+                    getToastMessage(getString(R.string.tracking_stopped));
                 }
             }
         });
 
-        longLatText = (TextView) findViewById(R.id.current_longlatText);
         currentLocationText = (TextView) findViewById(R.id.current_locationText);
+        setLocationTextWatcher();
 
         currentActivityText = (TextView) findViewById(R.id.current_ActivityText);
+        setActivityTextWatcher();
 
         timeSpentText = (TextView) findViewById(R.id.time_spentText);
-
-        setActivityTextWatcher();
 
         context = getApplicationContext();
         initializeActivityDetector();
@@ -166,21 +191,25 @@ public class MainActivity extends AppCompatActivity
         activity = "";
         durationText = 0;
         delayElapsed = false;
+        sendNotification = true;
 
         sharedPreferenceManager = new SharedPreferenceManager(this);
         movementTrackerDbHelper = new MovementTrackerDbHelper(this);
         notifier = new Notifier(context, MainActivity.this);
         dateHandler = new DateHandler();
         locationDetector = new LocationDetector();
+        locationManager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
 
         timer = new Timer(this);
         timerListener = new TimerListener() {
             @Override
             public void onTick(String timeSpent) {
                 if(timer.timer) {
+
                     timeSpentText.setText(timeSpent);
                 }
                 else {
+
                     timeSpentText.setText(R.string.time_zero);
                 }
             }
@@ -190,16 +219,21 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
+
             drawer.closeDrawer(GravityCompat.START);
         } else {
+
             super.onBackPressed();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
@@ -236,11 +270,11 @@ public class MainActivity extends AppCompatActivity
 
         if(id == R.id.app_display) {
 
-        }
+    }
 
         if (id == R.id.tracked_location) {
-            Launcher.launchActivity(this, TrackerByLocationActivity.class);
 
+            Launcher.launchActivity(this, TrackerByLocationActivity.class);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -277,6 +311,7 @@ public class MainActivity extends AppCompatActivity
                 LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
 
             } catch (SecurityException exception){
+
                 System.out.println("security exception");
             }
         }
@@ -294,7 +329,6 @@ public class MainActivity extends AppCompatActivity
 
     public void onLocationChanged(Location location) {
 
-       longLatText.setText(location.getLongitude()+","+location.getLatitude());
        currentLocationText.setText(locationDetector.fetchStreetName(this, location.getLatitude(), location.getLongitude()));
     }
 
@@ -327,24 +361,25 @@ public class MainActivity extends AppCompatActivity
             PendingIntent intent = PendingIntent.getService(this, 0, service, PendingIntent.FLAG_UPDATE_CURRENT);
 
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(googleApiClient, 0, intent);
-
-            if (!delayElapsed) {
-
-                countDown(timer.formatDelayText(sharedPreferenceManager.retrieveDelayTime()));
-            }
         }
 
         else {
 
-            Toast.makeText(this,R.string.no_internet,Toast.LENGTH_SHORT).show();
-            stopTracking();
+            getToastMessage(getString(R.string.no_internet));
         }
     }
 
     public void startTracking() {
 
         currentActivityText.setText(R.string.connecting);
+        sendNotification = true;
         timer.turnOn();
+
+        if (!delayElapsed) {
+
+            countDown(timer.formatDelayText(sharedPreferenceManager.retrieveDelayTime()));
+        }
+
         detectActivity();
     }
 
@@ -352,15 +387,14 @@ public class MainActivity extends AppCompatActivity
 
         currentActivityText.setText(R.string.tracking_not_started);
         timer.turnOff();
-        countDownTimer.cancel();
         notifier.cancelNotification(this, 1);
         delayElapsed = false;
-
+        sendNotification = false;
     }
 
     public void countDown(int delay) {
 
-        if(!activity.equals("connecting")) {
+        if(!activity.equals("connecting") && sendNotification) {
           countDownTimer =  new CountDownTimer(delay * Constants.MINUTES_TO_MILLISECONDS, Constants.TICK_IN_MILLISECONDS) {
 
                 public void onTick(long millisUntilFinished) {
@@ -369,7 +403,7 @@ public class MainActivity extends AppCompatActivity
 
                 public void onFinish() {
 
-                    if ((!activity.equals("connecting ...") && (!activity.equals("tracking stopped")))) {
+                    if ((!activity.equals("connecting ...") && (!activity.equals("tracking stopped")))&& sendNotification) {
                         delayElapsed = true;
                         notifier.sendNotification("Movement Tracker");
                     }
@@ -384,6 +418,7 @@ public class MainActivity extends AppCompatActivity
         netInfo = connectivityManager.getActiveNetworkInfo();
 
         if (netInfo != null && netInfo.isConnected()) {
+
             return true;
         }
 
@@ -410,7 +445,9 @@ public class MainActivity extends AppCompatActivity
             public void afterTextChanged(Editable s) {
 
                 activity = currentActivityText.getText().toString();
+
                 if(activityText.equals("connecting...")) {
+
                     timer.reset();
                 }
 
@@ -424,30 +461,54 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+
+    private void setLocationTextWatcher() {
+
+        currentLocationText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                if(currentLocationText.getText().toString().isEmpty()) {
+                    currentLocationText.setText("Unknown Location");
+                }
+            }
+        });
+    }
+
     public boolean readyForInsertion() {
 
         return (!currentActivityText.getText().toString().equals(activityText))
-                && !activityText.equals(R.string.connecting) && !activityText.equals(R.string.tracking_stopped) && delayElapsed;
+                && (!activityText.equals(R.string.connecting)) && (!activityText.equals(R.string.tracking_stopped))
+                && (!activityText.equals(R.string.tracking_not_started)) && (delayElapsed);
     }
 
     public String checkLocation(String locationText) {
 
-        if (locationText.equals("searching location...") || locationText.isEmpty()) {
+        if (locationText.equals("Searching Location...") || locationText.isEmpty()) {
 
             return "Unknown Location";
         }
         else {
+
             return locationText;
         }
     }
 
     public void displayAppInfo() {
 
-        new AlertDialog.Builder(MainActivity.this)
-
+          dialog =  new AlertDialog.Builder(ctw)
                 .setTitle(R.string.application_info)
                 .setMessage(Constants.APP_INFO)
-                .setIcon(R.drawable.ic_info_black_24dp)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 
                     @Override
@@ -456,15 +517,18 @@ public class MainActivity extends AppCompatActivity
                     }
                 })
                 .show();
+
+            dialogDivider.setDialog(dialog);
+            dialogDivider.setDivider();
+
     }
 
     public void displayHelp() {
 
-        new AlertDialog.Builder(MainActivity.this)
+       dialog = new AlertDialog.Builder(ctw)
 
                 .setTitle(R.string.help)
                 .setMessage(Constants.HELP)
-                .setIcon(R.drawable.ic_help_black_18dp)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 
                     @Override
@@ -473,7 +537,21 @@ public class MainActivity extends AppCompatActivity
                     }
                 })
                 .show();
+
+        dialogDivider.setDialog(dialog);
+        dialogDivider.setDivider();
     }
+
+    public void getToastMessage(String message) {
+
+        Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean checkGPS() {
+
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
 
     public class Receiver extends BroadcastReceiver {
 

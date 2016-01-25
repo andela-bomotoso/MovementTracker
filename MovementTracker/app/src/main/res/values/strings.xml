@@ -39,10 +39,10 @@
     <string name="cancel">Cancel</string>
     <string name="set">Set</string>
     <string name="current_location">Current Location</string>
-    <string name="searching_location">searching location...</string>
+    <string name="searching_location">Searching Location...</string>
     <string name="longitude_latitude">LongitudeLatitude</string>
     <string name="retrieving">retrieving...</string>
-    <string name="current_activity">Current Activity</string>
+    <string name="current_activity">Status</string>
     <string name="connecting">connecting...</string>
     <string name="time_spent">Time Spent</string>
     <string name="time_zero">00:00:00</string>
@@ -65,6 +65,9 @@
     <string name="application_info">Application Info</string>
     <string name="app_label">Movement Tracker</string>
     <string name="tracking_not_started">tracking not started</string>
+    <string name="back_arrow">back</string>
+    <string name="gps_not_detected">Please, turn on GPS</string>
+    <string name="gps_internet_not_detected">GPS and Internet not detected</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -44,9 +44,9 @@ public class Constants {
             "This is because it gives the users details" +
             " like the name of places visited, the logitude and latitude of such places, " +
             "the duration of the time spent doing things like (Walking, Standing still"+
-            ", In a Vehicle or Bicycle, ...). \n\nThe activity detection feature of this app is majorly" +
-            " provided through Google Activity recognition services. Therefore, the user "
-            +" needs a very good internet connection for optimized performance";
+            ", In a Vehicle or Bicycle, ...). \n\nThe location and activity detection features of this app are" +
+            " respectively provided through Google Location Services and Activity Detection recognition services. Therefore, the user "
+            +" needs a very good internet connection for optimized performance and the GPS of the phone also has to be turned on.";
 
     public static final String HELP = "This app is easy to use. The user however needs to turn on the " +
             "GPS and the" + " internet of the phone this app will run on.\n\n"+

@@ -51,18 +51,14 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
     public List<String> queryByDate(String selectedDate) {
 
-        List<String>records = new ArrayList<>();
-        String streetName="";
+        List<String> records = new ArrayList<>();
+        String streetName = "";
         String activity = "";
         String duration = "";
-        String previousStreet = "";
         String currentRecord = "";
-        String previousRecord = "";
         String durationMinutes = "";
-        int currentRow = 1;
 
         Cursor cursor = retrieveDBRows(selectedDate);
-        int recordCount = cursor.getCount();
 
         while (!cursor.isAfterLast()) {
 
@@ -71,30 +67,48 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
             duration = cursor.getString(cursor.getColumnIndex("Total_Duration"));
             durationMinutes = timer.formatTime(Integer.parseInt(duration));
 
-            currentRecord += " \n"+activity+" "+durationMinutes;
-
-            if((!streetName.equals(previousStreet) && previousStreet != "") || (currentRow == recordCount)) {
-
-                if(previousStreet == "") {
-                    records.add(streetName + previousRecord + "\n" + activity + " " + durationMinutes);
-                }
-                else {
-                    records.add(previousStreet + previousRecord + "\n" + activity + " " + durationMinutes);
-                }
-
-                previousRecord = "";
-                previousStreet = "";
-                currentRecord = "";
-            }
-            else {
-                previousStreet = streetName;
-                previousRecord = currentRecord;
-            }
+            currentRecord = streetName + "\n" + activity + " " + durationMinutes;
+            records.add(currentRecord);
 
             cursor.moveToNext();
-            currentRow ++;
         }
-        return records;
+            return mapStreetNames(records);
+    }
+
+    private List<String>mapStreetNames(List<String>trackTrail) {
+
+        String streetName = "";
+        String activity = "";
+        List<String>mappedStreetNames = new ArrayList<>();
+
+        if(trackTrail.size()>0) {
+
+            String previousStreet = trackTrail.get(0).split("\\r?\\n")[0];
+            String previousActivity = trackTrail.get(0).split("\\r?\\n")[1];
+            String previousRecord = "\n"+previousActivity;
+
+            for (int i = 1; i < trackTrail.size(); i++) {
+
+                streetName = trackTrail.get(i).split("\\r?\\n")[0];
+                activity = trackTrail.get(i).split("\\r?\\n")[1];
+
+                if ((!previousStreet.equals(streetName)) && !previousStreet.isEmpty()) {
+
+                    mappedStreetNames.add(previousStreet + previousRecord);
+                    previousRecord = "";
+                }
+
+                previousStreet = streetName;
+                previousRecord += "\n" + activity;
+
+            }
+            if(!previousRecord.isEmpty()) {
+
+                mappedStreetNames.add(previousStreet+previousRecord);
+            }
+        }
+
+        return mappedStreetNames;
     }
 
     public List<String> queryByLocation(String selectedLocation, String selectedDate) {
@@ -110,7 +124,7 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         String durationMinutes = "";
         int currentRow = 1;
 
-        Cursor cursor = retrieveDbRows(selectedDate,selectedLocation);
+        Cursor cursor = retrieveDbRows(selectedDate, selectedLocation);
         int recordCount = cursor.getCount();
 
         while (!cursor.isAfterLast()) {
@@ -123,26 +137,16 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
 
             currentRecord += " \n"+activity+" "+ durationMinutes+" "+ log_time;
 
-            if((!streetName.equals(previousStreet) && !previousStreet.isEmpty()) && currentRow != recordCount) {
-                records.add(previousStreet+"\n"+previousRecord);
+            if((!streetName.equals(previousStreet) && previousStreet != "") || (currentRow == recordCount)) {
+
+                records.add(previousRecord + "\n" + activity + " " + durationMinutes + " "+log_time);
 
                 previousRecord = "";
                 previousStreet = "";
                 currentRecord = "";
             }
-
-            else if((!streetName.equals(previousStreet) && !previousStreet.isEmpty()) && currentRow == recordCount) {
-
-                records.add(previousStreet+"\n"+previousRecord);
-                records.add(streetName+"\n"+currentRecord);
-            }
-
-            else if(previousStreet.isEmpty() && currentRow == recordCount) {
-
-                records.add(streetName+"\n"+currentRecord);
-            }
-
             else {
+
                 previousStreet = streetName;
                 previousRecord = currentRecord;
             }
@@ -150,10 +154,12 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
             cursor.moveToNext();
             currentRow ++;
         }
+
         return records;
     }
 
     public Cursor retrieveDBRows(String selectedDate) {
+
         String selectQuery = "";
 
         selectQuery = "SELECT street_name,activity,SUM(activity_duration) AS Total_Duration FROM tracker_trail " +
@@ -206,9 +212,11 @@ public class MovementTrackerDbHelper extends SQLiteOpenHelper {
         database.beginTransaction();
 
         try {
+
            database.insert(MovementTrackerContract.MovementTracker.TABLE_NAME, null, values);
             database.setTransactionSuccessful();
         } finally {
+
             database.endTransaction();
         }
     }
