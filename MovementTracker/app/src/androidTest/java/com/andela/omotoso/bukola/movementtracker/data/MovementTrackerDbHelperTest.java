@@ -71,6 +71,6 @@ public class MovementTrackerDbHelperTest extends AndroidTestCase {
                 TrackerColumnHashSet.isEmpty());
         db.close();
     }
-    
+
 
 }

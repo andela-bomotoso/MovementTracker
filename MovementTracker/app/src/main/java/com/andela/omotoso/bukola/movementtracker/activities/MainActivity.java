@@ -488,7 +488,7 @@ public class MainActivity extends AppCompatActivity
     public boolean readyForInsertion() {
 
         return (!currentActivityText.getText().toString().equals(activityText))
-                && !activityText.equals(R.string.connecting) && !activityText.equals(R.string.tracking_stopped);
+                && !activityText.equals(R.string.connecting) && (!activityText.equals(R.string.tracking_stopped)) && (delayElapsed);
     }
 
     public String checkLocation(String locationText) {
