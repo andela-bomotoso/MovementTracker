@@ -7,6 +7,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:orientation="vertical"
+    android:background="#B2DFDB"
     app:layout_behavior="@string/appbar_scrolling_view_behavior" tools:showIn="@layout/app_bar_main"
     tools:context=".MainActivity">
 
@@ -16,13 +17,20 @@
        android:layout_gravity="center"
        android:src="@drawable/google_location_icon_launcher"/>
 
-        <TextView
-            android:id="@+id/current_locationHint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/current_location"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="5dp"/>
+
+    <RelativeLayout
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/location_icon"
+        android:layout_width="50dp"
+        android:layout_height="70dp"
+        android:src="@drawable/ic_location_on_white_24dp"
+        android:layout_alignBottom="@+id/current_locationText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
             <TextView
                 android:id="@+id/current_locationText"
@@ -31,15 +39,16 @@
                 android:textStyle="bold|italic"
                 android:textSize="15sp"
                 android:text="@string/searching_location"
-                android:layout_gravity="center"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginLeft="64dp"
+                android:layout_toRightOf="@id/location_icon" />
 
-        <TextView
-            android:id="@+id/currentActivityHint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/current_activity"
-            android:layout_marginBottom="5dp"/>
+
+    <ImageView
+        android:id="@+id/activity_icon"
+        android:layout_width="50dp"
+        android:layout_height="70dp"
+        android:layout_below="@id/location_icon"
+        android:src="@drawable/ic_directions_walk_white_24dp" />
 
             <TextView
                 android:id="@+id/current_ActivityText"
@@ -48,22 +57,23 @@
                 android:textStyle="bold|italic"
                 android:text="@string/tracking_not_started"
                 android:textSize="15sp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="10dp"/>
-        <TextView
-            android:id="@+id/time_spentHint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/time_spent"
-            android:layout_marginBottom="5dp"/>
+                android:layout_marginLeft="64dp"
+                android:layout_marginTop="28dp"
+                android:layout_toRightOf="@id/activity_icon"
+                android:layout_below="@id/current_locationText"/>
+    </RelativeLayout>
+
             <TextView
                 android:id="@+id/time_spentText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="140dp"
+                android:layout_height="100dp"
                 android:textStyle="bold|italic"
                 android:textSize="30sp"
+                android:textColor="@color/whiteColor"
                 android:text="@string/time_zero"
                 android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:background="@drawable/ciricle"
                 android:layout_marginBottom="20dp"/>
 
     <ToggleButton
