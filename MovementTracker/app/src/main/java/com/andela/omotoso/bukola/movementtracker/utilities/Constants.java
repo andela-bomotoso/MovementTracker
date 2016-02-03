@@ -32,6 +32,8 @@ public class Constants {
     public static final String NOTIFIER_TAG = "Notifier";
     public static final String NOTIFICATION_TITLE = "Tracking in Progress";
     public static final String DELAY_KEY = "DELAY_KEY";
+    public static final String LONGITUDE = "LONGITUDE";
+    public static final String LATITUDE = "LATITUDE";
     public static final String LOCATION_FINDER = "LOCATION_FINDER";
 
     public static final int DATABASE_VERSION = 2;

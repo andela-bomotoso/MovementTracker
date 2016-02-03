@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.andela.omotoso.bukola.movementtracker.R;
+import com.andela.omotoso.bukola.movementtracker.utilities.SharedPreferenceManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -21,6 +22,7 @@ public class LocationMapActivity extends AppCompatActivity implements OnMapReady
 
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
+    private SharedPreferenceManager sharedPreferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,7 @@ public class LocationMapActivity extends AppCompatActivity implements OnMapReady
         setContentView(R.layout.activity_location_map);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        sharedPreferenceManager = new SharedPreferenceManager(this);
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_18dp);
         setSupportActionBar(toolbar);
@@ -61,11 +64,10 @@ public class LocationMapActivity extends AppCompatActivity implements OnMapReady
     private void setUpMap() {
 
         mMap = mapFragment.getMap();
-
-        LatLng currentLocation = new LatLng(6.5069193,3.3840121);
+        LatLng currentLocation = new LatLng(sharedPreferenceManager.retrieveLatitude(),sharedPreferenceManager.retrieveLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(6.5069193,3.3840121)).title("You are here!").snippet("Consider yourself located"));
+        mMap.addMarker(new MarkerOptions().position(currentLocation).title("You are here!").snippet("Consider yourself located"));
     }
 
 }

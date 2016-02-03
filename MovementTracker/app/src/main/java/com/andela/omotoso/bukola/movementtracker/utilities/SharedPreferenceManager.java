@@ -21,6 +21,7 @@ public class SharedPreferenceManager {
     public void saveDelayTime(String delayText) {
 
         editor.putString(Constants.DELAY_KEY, delayText);
+
         editor.commit();
     }
 
@@ -28,5 +29,31 @@ public class SharedPreferenceManager {
 
        return sharedPref.getString(Constants.DELAY_KEY, Constants.DEFAULT_DELAY);
     }
+
+    public void saveLongitude(float longitude) {
+
+        editor.putFloat(Constants.LONGITUDE, longitude);
+
+        editor.commit();
+    }
+
+    public float retrieveLongitude() {
+
+        return sharedPref.getFloat(Constants.LONGITUDE, 0);
+    }
+
+    public void saveLatitude(float longitude) {
+
+        editor.putFloat(Constants.LATITUDE, longitude);
+
+        editor.commit();
+    }
+
+    public float retrieveLatitude() {
+
+        return sharedPref.getFloat(Constants.LATITUDE, 0);
+    }
+
+
 
 }

@@ -332,6 +332,8 @@ public class MainActivity extends AppCompatActivity
     public void onLocationChanged(Location location) {
 
        currentLocationText.setText(locationDetector.fetchStreetName(this, location.getLatitude(), location.getLongitude()));
+       sharedPreferenceManager.saveLatitude((float)location.getLatitude());
+       sharedPreferenceManager.saveLongitude((float)location.getLongitude());
     }
 
     public void initializeActivityDetector() {
