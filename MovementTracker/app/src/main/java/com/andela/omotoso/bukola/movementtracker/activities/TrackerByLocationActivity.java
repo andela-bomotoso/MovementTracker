@@ -6,14 +6,17 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -26,6 +29,8 @@ import com.andela.omotoso.bukola.movementtracker.R;
 import com.andela.omotoso.bukola.movementtracker.utilities.DateHandler;
 import com.andela.omotoso.bukola.movementtracker.data.MovementTrackerDbHelper;
 import com.andela.omotoso.bukola.movementtracker.utilities.DialogDivider;
+import com.andela.omotoso.bukola.movementtracker.utilities.Trail;
+import com.andela.omotoso.bukola.movementtracker.utilities.TrailList;
 
 import java.util.Date;
 import java.util.List;
@@ -40,6 +45,8 @@ public class TrackerByLocationActivity extends AppCompatActivity  {
     private DialogDivider dialogDivider;
     private Dialog dialog;
     private ContextThemeWrapper ctw;
+    private List<String> values;
+    private TrailList trailList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +60,7 @@ public class TrackerByLocationActivity extends AppCompatActivity  {
 
         initializeComponents();
         setFabAction();
+        trailList =  TrailList.getTrailList(this);
     }
 
     public void initializeComponents() {
@@ -131,10 +139,11 @@ public class TrackerByLocationActivity extends AppCompatActivity  {
 
         String no_trail = getString(R.string.no_track);
         String selectedDate =  dateHandler.convertLongDateToShortDate(selectedDateText.getText().toString());
-        List<String> values  = movementTrackerDbHelper.queryByDate(selectedDate);
+        values  = movementTrackerDbHelper.queryByDate(selectedDate);
 
         if(values.size() == 0 ) {
             values.add(no_trail);
+            //trailList.setTrails();
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.data_list_item,R.id.rowData,values);
@@ -219,5 +228,6 @@ public class TrackerByLocationActivity extends AppCompatActivity  {
         dialogDivider.setDialog(dialog);
         dialogDivider.setDivider();
     }
+
 
 }

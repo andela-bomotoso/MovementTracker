@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/location_icon"
+            android:layout_marginRight="16dp"
+            android:id="@+id/location_icon"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/location_icon"
+            android:textStyle="bold"
+            android:id="@+id/location"
+            android:text="Location"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/location"
+        android:layout_below="@id/location_icon"
+        android:text="Tracker Duration"
+        android:id="@+id/duration"/>
+
+</RelativeLayout>
