@@ -18,7 +18,7 @@
 
 
     <RelativeLayout
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -42,32 +42,13 @@
                 android:layout_marginLeft="64dp"
                 android:layout_toRightOf="@id/location_icon" />
 
-
-    <ImageView
-        android:id="@+id/activity_icon"
-        android:layout_width="50dp"
-        android:layout_height="70dp"
-        android:layout_below="@id/location_icon"
-        android:src="@drawable/ic_directions_walk_white_24dp" />
-
-            <TextView
-                android:id="@+id/current_ActivityText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold|italic"
-                android:text="@string/tracking_not_started"
-                android:textColor="@color/colorPrimaryText"
-                android:textSize="20sp"
-                android:layout_marginLeft="64dp"
-                android:layout_marginTop="28dp"
-                android:layout_toRightOf="@id/activity_icon"
-                android:layout_below="@id/current_locationText"/>
     </RelativeLayout>
 
             <TextView
                 android:id="@+id/time_spentText"
                 android:layout_width="140dp"
                 android:layout_height="100dp"
+                android:layout_marginTop="16dp"
                 android:textStyle="bold|italic"
                 android:textSize="30sp"
                 android:textColor="@color/colorTextIcon"
@@ -91,5 +72,15 @@
         android:textColor="@color/colorTextIcon"
         android:textOn="@string/stop_tracking"
         android:textOff="@string/start_tracking"/>
+
+    <TextView
+        android:id="@+id/current_ActivityText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        android:text="@string/tracking_not_started"
+        android:textColor="@color/colorPrimaryText"
+        android:textSize="15sp"
+        android:layout_marginTop="28dp" />
 </LinearLayout>
 
