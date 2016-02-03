@@ -46,7 +46,7 @@ public class LocationMapActivity extends AppCompatActivity implements OnMapReady
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // TODO Auto-generated method stub
+
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
@@ -66,8 +66,8 @@ public class LocationMapActivity extends AppCompatActivity implements OnMapReady
         mMap = mapFragment.getMap();
         LatLng currentLocation = new LatLng(sharedPreferenceManager.retrieveLatitude(),sharedPreferenceManager.retrieveLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
-        mMap.addMarker(new MarkerOptions().position(currentLocation).title("You are here!").snippet("Consider yourself located"));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
+        mMap.addMarker(new MarkerOptions().position(currentLocation).title("You are here!").snippet("Consider yourself tracked"));
     }
 
 }
