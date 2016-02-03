@@ -268,9 +268,11 @@ public class MainActivity extends AppCompatActivity
 
         int id = item.getItemId();
 
-        if(id == R.id.app_display) {
+        if(id == R.id.location_map) {
 
-    }
+            Launcher.launchActivity(this,LocationMapActivity.class);
+
+        }
 
         if (id == R.id.tracked_location) {
 

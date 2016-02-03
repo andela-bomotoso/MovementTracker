@@ -69,6 +69,9 @@
     <string name="gps_not_detected">Please, turn on GPS</string>
     <string name="gps_internet_not_detected">GPS and Internet not detected</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_current_location_map">CurrentLocationMap</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_location_map">LocationMap</string>
 </resources>
